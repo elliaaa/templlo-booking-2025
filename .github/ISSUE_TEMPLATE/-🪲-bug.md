@@ -2,7 +2,7 @@
 name: "\b\U0001FAB2 BUG"
 about: BUG 발생 시 작성해주세요
 title: ''
-labels: ''
+labels: '🐞 BugFix'
 assignees: ''
 
 ---
