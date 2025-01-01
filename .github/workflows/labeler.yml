@@ -24,3 +24,18 @@ test:
   - '**/*.test'
   - '**/tests/**'
   - '**/*.spec'
+issues:
+  feat:
+    - 'feat'
+  deploy:
+    - 'deploy'
+  setting:
+    - 'setting'
+  BugFix:
+    - 'bugfix'
+  Docs:
+    - 'docs'
+  Refactor:
+    - 'refactor'
+  test:
+    - 'test'
