@@ -1,9 +1,9 @@
-name: Labeler
+name: Issue and PR Labeler
 on:
-  pull_request_target:
-    types: [opened, synchronize]
   issues:
     types: [opened, edited]
+  pull_request_target:
+    types: [opened, synchronize]
 
 jobs:
   label:
@@ -14,16 +14,16 @@ jobs:
       issues: write
 
     steps:
-      - name: Add Label to Pull Requests
-        if: ${{ github.event_name == 'pull_request_target' }}
-        uses: actions/labeler@v4
-        with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
-
-      - name: Add Label to Issues
+      - name: Label Issues Based on Title or Body
         if: ${{ github.event_name == 'issues' }}
         uses: actions-ecosystem/action-add-labels@v1
         with:
-          github_token: "${{ secrets.GITHUB_TOKEN }}"
-          labels: |
-            ${{ github.event.issue.title }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          labels: >
+            ${{ join(fromJSON('["⚙ Setting","✨ Feature","🌏 Deploy","🎨 Html&css","🐞 BugFix","💻 CrossBrowsing","📃 Docs","📬 API","🔨 Refactor","🙋‍♂️ Question","🥰 Accessibility","✅ Test"]')) }}
+
+      - name: Label Pull Requests Based on Changed Files
+        if: ${{ github.event_name == 'pull_request_target' }}
+        uses: actions/labeler@v4
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
