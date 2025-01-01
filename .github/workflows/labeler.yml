@@ -1,0 +1,26 @@
+feat:
+  - '**/*.feature'
+  - '**/features/**'
+  - '**/feat/**'
+deploy:
+  - '**/deploy/**'
+  - '**/*.deploy'
+  - '**/deployment/**'
+setting:
+  - '**/setting/**'
+  - '**/*.config'
+BugFix:
+  - '**/*.bug'
+  - '**/bugfix/**'
+Docs:
+  - '**/*.md'
+  - '**/docs/**'
+  - '**/*.doc'
+Refactor:
+  - '**/*.refactor'
+  - '**/refactor/**'
+  - '**/*.restructure'
+test:
+  - '**/*.test'
+  - '**/tests/**'
+  - '**/*.spec'
