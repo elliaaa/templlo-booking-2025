@@ -14,9 +14,12 @@ jobs:
       issues: write
 
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
       # Label Issues and PRs Based on Title or Body
       - name: Label Issues and Pull Requests Based on Title or Body
         uses: actions-ecosystem/action-add-labels@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          labels: '../labeler.yml' # 경로 수정
+          labels: '.github/workflows/labeler.yml'
