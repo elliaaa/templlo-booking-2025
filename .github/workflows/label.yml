@@ -1,9 +1,9 @@
 name: Issue and PR Labeler
 on:
   issues:
-    types: [opened, edited] # Issue가 열리거나 편집될 때 실행
+    types: [opened, edited]
   pull_request:
-    types: [opened, synchronize, edited] # PR이 열리거나 동기화, 편집될 때 실행
+    types: [opened, synchronize, edited]
 
 jobs:
   label:
@@ -21,4 +21,16 @@ jobs:
         uses: actions-ecosystem/action-add-labels@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          labels: '.github/workflows/labeler.yml'
+          labels: |
+            ⚙ Setting: setting
+            ✨ Feature: feature
+            🌏 Deploy: deploy
+            🎨 Html&css: html, css
+            🐞 BugFix: bugfix
+            📃 Docs: docs
+            🔨 Refactor: refactor
+            ✅ Test: test
+            🙋‍♂️ Question: question
+            🥰 Accessibility: accessibility
+            💻 CrossBrowsing: crossbrowsing
+            📬 API: api
