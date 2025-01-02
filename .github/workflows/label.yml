@@ -14,36 +14,33 @@ jobs:
       issues: write
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
       - name: Label Issues and PRs Based on Title or Body
         uses: actions-ecosystem/action-add-labels@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           labels: |
             ⚙ Setting:
-              - setting
+              - "setting"
             ✨ Feature:
-              - feature
+              - "feature"
             🌏 Deploy:
-              - deploy
+              - "deploy"
             🎨 Html&css:
-              - html
-              - css
+              - "html"
+              - "css"
             🐞 BugFix:
-              - bugfix
+              - "bugfix"
             📃 Docs:
-              - docs
+              - "docs"
             🔨 Refactor:
-              - refactor
+              - "refactor"
             ✅ Test:
-              - test
+              - "test"
             🙋‍♂️ Question:
-              - question
+              - "question"
             🥰 Accessibility:
-              - accessibility
+              - "accessibility"
             💻 CrossBrowsing:
-              - crossbrowsing
+              - "crossbrowsing"
             📬 API:
-              - api
+              - "api"
