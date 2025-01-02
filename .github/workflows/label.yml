@@ -19,4 +19,4 @@ jobs:
         uses: actions-ecosystem/action-add-labels@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          labels: '.github/labeler.yml'
+          labels: '../labeler.yml' # 경로 수정
