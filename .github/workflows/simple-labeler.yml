@@ -4,13 +4,38 @@ on:
     types: [opened, edited]
   pull_request:
     types: [opened, ready_for_review]
+
 jobs:
   simple-labeler:
-    runs-on: [ubuntu-latest]
+    runs-on: ubuntu-latest
     steps:
-      - name: Label to PR
-        uses: naver/simple-labeler@latest
+      - name: Labeler
+        uses: actions-ecosystem/action-add-labels-by-query@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          labels: "D-3"
-          duplicate: "D-*"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          labels: |
+            ⚙ Setting:
+              - setting
+            ✨ Feature:
+              - feature
+            🌏 Deploy:
+              - deploy
+            🎨 Html&css:
+              - html
+              - css
+            🐞 BugFix:
+              - bugfix
+            📃 Docs:
+              - docs
+            🔨 Refactor:
+              - refactor
+            ✅ Test:
+              - test
+            🙋‍♂️ Question:
+              - question
+            🥰 Accessibility:
+              - accessibility
+            💻 CrossBrowsing:
+              - crossbrowsing
+            📬 API:
+              - api
