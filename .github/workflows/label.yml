@@ -14,17 +14,8 @@ jobs:
       issues: write
 
     steps:
-      # Step for labeling issues based on title or body content
-      - name: Label Issues Based on Title or Body
-        if: ${{ github.event_name == 'issues' }}
-        uses: actions-ecosystem/action-add-labels@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          labels: '.github/labeler.yml'
-
-      # Step for labeling pull requests based on title or body content
-      - name: Label Pull Requests Based on Title or Body
-        if: ${{ github.event_name == 'pull_request' }}
+      # Label Issues and PRs Based on Title or Body
+      - name: Label Issues and Pull Requests Based on Title or Body
         uses: actions-ecosystem/action-add-labels@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
