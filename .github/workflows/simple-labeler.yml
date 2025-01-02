@@ -13,15 +13,23 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # 디버깅 로그로 이벤트 정보 출력
+      # 디버깅: 이벤트 데이터 출력
       - name: Debug Logging
         run: |
           echo "Event Name: ${{ github.event_name }}"
           echo "Event Payload: ${{ toJSON(github.event) }}"
+          echo "Issue Title: ${{ github.event.issue.title }}"
+          echo "Issue Body: ${{ github.event.issue.body }}"
 
-      # 라벨러 파일 경로 확인
+      # 라벨러 파일 확인
       - name: Check Labeler File
         run: ls -al .github
+
+      # 라벨러 파일 내용 확인
+      - name: Debug Labeler
+        run: |
+          echo "Running Labeler with Configuration"
+          cat .github/labeler.yml
 
       # Issues 이벤트 처리
       - name: Setup Labels for Issues
