@@ -13,15 +13,20 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setup Labels for Issues
-        if: github.event_name == 'issues'
+        if: ${{ github.event_name == 'issues' }}
         uses: actions/labeler@v4
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           configuration-path: .github/labeler.yml
 
-      - name: Setup Labels for PRs
-        if: github.event_name == 'pull_request'
+      - name: Setup Labels for Pull Requests
+        if: ${{ github.event_name == 'pull_request' }}
         uses: actions/labeler@v4
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           configuration-path: .github/labeler.yml
+
+      - name: Debug Logging
+        run: |
+          echo "Event Name: ${{ github.event_name }}"
+          echo "Event Payload: ${{ toJSON(github.event) }}"
