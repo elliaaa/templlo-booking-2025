@@ -18,29 +18,3 @@ jobs:
         uses: actions-ecosystem/action-add-labels@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          labels: |
-            ⚙ Setting:
-              - setting
-            ✨ Feature:
-              - feature
-            🌏 Deploy:
-              - deploy
-            🎨 Html&css:
-              - html
-              - css
-            🐞 BugFix:
-              - bugfix
-            📃 Docs:
-              - docs
-            🔨 Refactor:
-              - refactor
-            ✅ Test:
-              - test
-            🙋‍♂️ Question:
-              - question
-            🥰 Accessibility:
-              - accessibility
-            💻 CrossBrowsing:
-              - crossbrowsing
-            📬 API:
-              - api
