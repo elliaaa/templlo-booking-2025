@@ -1,9 +1,9 @@
 name: Issue and PR Labeler
 on:
   issues:
-    types: [opened, edited]
+    types: [opened, edited] # Issue가 열리거나 편집될 때 실행
   pull_request:
-    types: [opened, synchronize, edited]
+    types: [opened, synchronize, edited] # PR이 열리거나 동기화, 편집될 때 실행
 
 jobs:
   label:
