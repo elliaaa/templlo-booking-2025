@@ -12,8 +12,16 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Setup Labels
+      - name: Setup Labels for Issues
+        if: github.event_name == 'issues'
         uses: actions/labeler@v4
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          configuration-path: ../labeler.yml  # 설정 파일 경로 수정
+          configuration-path: .github/labeler.yml
+
+      - name: Setup Labels for PRs
+        if: github.event_name == 'pull_request'
+        uses: actions/labeler@v4
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          configuration-path: .github/labeler.yml
