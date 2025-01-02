@@ -9,9 +9,21 @@ jobs:
   simple-labeler:
     runs-on: ubuntu-latest
     steps:
+      # 코드 체크아웃
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      # 디버깅 로그로 이벤트 정보 출력
+      - name: Debug Logging
+        run: |
+          echo "Event Name: ${{ github.event_name }}"
+          echo "Event Payload: ${{ toJSON(github.event) }}"
+
+      # 라벨러 파일 경로 확인
+      - name: Check Labeler File
+        run: ls -al .github
+
+      # Issues 이벤트 처리
       - name: Setup Labels for Issues
         if: ${{ github.event_name == 'issues' }}
         uses: actions/labeler@v4
@@ -19,14 +31,10 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           configuration-path: .github/labeler.yml
 
+      # Pull Requests 이벤트 처리
       - name: Setup Labels for Pull Requests
         if: ${{ github.event_name == 'pull_request' }}
         uses: actions/labeler@v4
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           configuration-path: .github/labeler.yml
-
-      - name: Debug Logging
-        run: |
-          echo "Event Name: ${{ github.event_name }}"
-          echo "Event Payload: ${{ toJSON(github.event) }}"
