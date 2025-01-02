@@ -1,25 +1,36 @@
 ⚙ Setting:
-  - 'setting'
+  - setting
+
 ✨ Feature:
-  - 'feature'
+  - feature
+
 🌏 Deploy:
-  - 'deploy'
+  - deploy
+
 🎨 Html&css:
-  - 'html'
-  - 'css'
+  - html
+  - css
+
 🐞 BugFix:
-  - 'bugfix'
+  - bugfix
+
 📃 Docs:
-  - 'docs'
+  - docs
+
 🔨 Refactor:
-  - 'refactor'
+  - refactor
+
 ✅ Test:
-  - 'test'
+  - test
+
 🙋‍♂️ Question:
-  - 'question'
+  - question
+
 🥰 Accessibility:
-  - 'accessibility'
+  - accessibility
+
 💻 CrossBrowsing:
-  - 'crossbrowsing'
+  - crossbrowsing
+
 📬 API:
-  - 'api'
+  - api
