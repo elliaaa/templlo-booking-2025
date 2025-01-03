@@ -7,10 +7,10 @@ on:
       - 'gateway/**'
       - 'server/**'
       - 'com.templlo.service.user/**'
-      - 'com.templlo.service.promotion/**'
-      - 'com.templlo.service.reservation/**'
-      - 'com.templlo.service.temple/**'
-      - 'com.templlo.service.program/**'
+      # - 'com.templlo.service.promotion/**'
+      # - 'com.templlo.service.reservation/**'
+      # - 'com.templlo.service.temple/**'
+      # - 'com.templlo.service.program/**'
       - 'com.templlo.service.review/**'
   push:
     branches: [ "main" ]
@@ -18,10 +18,10 @@ on:
       - 'gateway/**'
       - 'server/**'
       - 'com.templlo.service.user/**'
-      - 'com.templlo.service.promotion/**'
-      - 'com.templlo.service.reservation/**'
-      - 'com.templlo.service.temple/**'
-      - 'com.templlo.service.program/**'
+      # - 'com.templlo.service.promotion/**'
+      # - 'com.templlo.service.reservation/**'
+      # - 'com.templlo.service.temple/**'
+      # - 'com.templlo.service.program/**'
       - 'com.templlo.service.review/**'
 
 jobs:
@@ -35,10 +35,10 @@ jobs:
           - gateway
           - server
           - com.templlo.service.user
-          - com.templlo.service.promotion
-          - com.templlo.service.reservation
-          - com.templlo.service.temple
-          - com.templlo.service.program
+          # - com.templlo.service.promotion
+          # - com.templlo.service.reservation
+          # - com.templlo.service.temple
+          # - com.templlo.service.program
           - com.templlo.service.review
 
     steps:
