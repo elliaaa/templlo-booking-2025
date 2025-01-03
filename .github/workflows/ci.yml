@@ -26,8 +26,20 @@ on:
 
 jobs:
   build:
-    name: Build Jar
+    name: Build and Test Services
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false  # 하나의 서비스 실패해도 다른 서비스 계속 빌드
+      matrix:
+        service:
+          - gateway
+          - server
+          - com.templlo.service.user
+          - com.templlo.service.promotion
+          - com.templlo.service.reservation
+          - com.templlo.service.temple
+          - com.templlo.service.program
+          - com.templlo.service.review
 
     steps:
       - name: Checkout
@@ -40,15 +52,9 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      # STEP1. 빌드
-      - name: Build with Gradle
-        id: build
-        run: ./gradlew clean build -x test
-
-      # STEP2. 테스트코드 실행
-      - name: Run Tests
-        id: test
-        run: ./gradlew test
+      - name: Build and Test
+        working-directory: ${{ matrix.service }}
+        run: |
+          echo "Building ${{ matrix.service }}"
+          chmod +x gradlew
+          ./gradlew clean build
