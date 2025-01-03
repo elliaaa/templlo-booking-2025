@@ -1,0 +1,72 @@
+name: Run Test 🚀
+
+on:
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'gateway/**'
+      - 'server/**'
+      - 'com.templlo.service.user/**'
+      - 'com.templlo.service.promotion/**'
+      - 'com.templlo.service.reservation/**'
+      - 'com.templlo.service.temple/**'
+      - 'com.templlo.service.program/**'
+      - 'com.templlo.service.review/**'
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'gateway/**'
+      - 'server/**'
+      - 'com.templlo.service.user/**'
+      - 'com.templlo.service.promotion/**'
+      - 'com.templlo.service.reservation/**'
+      - 'com.templlo.service.temple/**'
+      - 'com.templlo.service.program/**'
+      - 'com.templlo.service.review/**'
+
+jobs:
+  build:
+    # 해당 서비스의 변경사항이 있을 때만 실행되도록 조건 추가
+    if: contains(github.event.pull_request.files.*.path, matrix.service) ||
+      contains(github.event.push.files.*.path, matrix.service)
+    name: Build Jar
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - gateway
+          - server
+          - com.templlo.service.user
+          - com.templlo.service.promotion
+          - com.templlo.service.reservation
+          - com.templlo.service.temple
+          - com.templlo.service.program
+          - com.templlo.service.review
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ${{ matrix.service}}/gradlew
+
+      # STEP1. 빌드
+      - name: Build with Gradle
+        id: build
+        run: |
+          cd ${{ matrix.service}} 
+          ./gradlew clean build -x test
+
+      # STEP2. 테스트코드 실행
+      - name: Run Tests
+        id: test
+        run: |
+          cd ${{ matrix.service}} 
+          ./gradlew test
