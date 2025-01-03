@@ -28,19 +28,6 @@ jobs:
   build:
     name: Build Jar
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service:
-          - gateway
-          - server
-          - com.templlo.service.user
-          - com.templlo.service.promotion
-          - com.templlo.service.reservation
-          - com.templlo.service.temple
-          - com.templlo.service.program
-          - com.templlo.service.review
-
-    if: ${{ contains(github.event.pull_request.files.*.path, matrix.service) || contains(github.event.push.files.*.path, matrix.service) }}
 
     steps:
       - name: Checkout
@@ -54,18 +41,14 @@ jobs:
           cache: gradle
 
       - name: Grant execute permission for gradlew
-        run: chmod +x ${{ matrix.service}}/gradlew
+        run: chmod +x gradlew
 
       # STEP1. 빌드
       - name: Build with Gradle
         id: build
-        run: |
-          cd ${{ matrix.service}} 
-          ./gradlew clean build -x test
+        run: ./gradlew clean build -x test
 
       # STEP2. 테스트코드 실행
       - name: Run Tests
         id: test
-        run: |
-          cd ${{ matrix.service}} 
-          ./gradlew test
+        run: ./gradlew test
