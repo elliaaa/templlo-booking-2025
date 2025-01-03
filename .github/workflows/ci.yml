@@ -40,7 +40,7 @@ jobs:
           - com.templlo.service.program
           - com.templlo.service.review
 
-    if: ${{ contains(github.event.pull_request.files.*.path, format('{0}/', matrix.service)) || contains(github.event.push.files.*.path, format('{0}/', matrix.service)) }}
+    if: ${{ contains(github.event.pull_request.files.*.path, matrix.service) || contains(github.event.push.files.*.path, matrix.service) }}
 
     steps:
       - name: Checkout
