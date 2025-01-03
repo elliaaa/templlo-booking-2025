@@ -26,9 +26,6 @@ on:
 
 jobs:
   build:
-    # 해당 서비스의 변경사항이 있을 때만 실행되도록 조건 추가
-    if: contains(github.event.pull_request.files.*.path, matrix.service) ||
-      contains(github.event.push.files.*.path, matrix.service)
     name: Build Jar
     runs-on: ubuntu-latest
     strategy:
@@ -42,6 +39,8 @@ jobs:
           - com.templlo.service.temple
           - com.templlo.service.program
           - com.templlo.service.review
+
+    if: ${{ contains(github.event.pull_request.files.*.path, format('{0}/', matrix.service)) || contains(github.event.push.files.*.path, format('{0}/', matrix.service)) }}
 
     steps:
       - name: Checkout
