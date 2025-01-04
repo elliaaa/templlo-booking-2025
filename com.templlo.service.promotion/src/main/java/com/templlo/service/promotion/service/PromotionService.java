@@ -69,4 +69,21 @@ public class PromotionService {
                 .message("프로모션이 수정되었습니다.")
                 .build();
     }
+
+    public PromotionResponseDto deletePromotion(UUID promotionId) {
+        // 1. 프로모션 조회
+        Promotion promotion = promotionRepository.findById(promotionId)
+                .orElseThrow(() -> new IllegalArgumentException("프로모션을 찾을 수 없습니다."));
+
+        // 2. 프로모션 삭제
+        promotionRepository.delete(promotion);
+
+        // 3. 성공 메시지 반환
+        return PromotionResponseDto.builder()
+                .promotionId(promotionId)
+                .status("SUCCESS")
+                .message("프로모션이 삭제되었습니다.")
+                .build();
+    }
+
 }

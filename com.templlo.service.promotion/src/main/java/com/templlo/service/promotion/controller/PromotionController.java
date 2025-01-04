@@ -31,4 +31,10 @@ public class PromotionController {
         PromotionResponseDto responseDto = promotionService.updatePromotion(promotionId, updateDto);
         return ResponseEntity.ok(responseDto);
     }
+
+    @DeleteMapping("/{promotionId}")
+    public ResponseEntity<PromotionResponseDto> deletePromotion(@PathVariable UUID promotionId) {
+        PromotionResponseDto responseDto = promotionService.deletePromotion(promotionId);
+        return ResponseEntity.ok(responseDto);
+    }
 }
