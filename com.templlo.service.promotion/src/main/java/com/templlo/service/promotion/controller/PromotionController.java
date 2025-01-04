@@ -27,7 +27,7 @@ public class PromotionController {
     @PatchMapping("/{promotionId}")
     public ResponseEntity<PromotionResponseDto> updatePromotion(
             @PathVariable UUID promotionId,
-            @RequestBody PromotionUpdateDto updateDto) {
+            @Valid @RequestBody PromotionUpdateDto updateDto) {
         PromotionResponseDto responseDto = promotionService.updatePromotion(promotionId, updateDto);
         return ResponseEntity.ok(responseDto);
     }
