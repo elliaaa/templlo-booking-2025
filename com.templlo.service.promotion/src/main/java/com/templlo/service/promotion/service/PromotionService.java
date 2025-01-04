@@ -91,6 +91,28 @@ public class PromotionService {
                 .build();
     }
 
+    public PromotionDetailResponseDto getPromotion(UUID promotionId) {
+        // 1. 프로모션 조회
+        Promotion promotion = promotionRepository.findById(promotionId)
+                .orElseThrow(() -> new IllegalArgumentException("프로모션을 찾을 수 없습니다."));
+
+        // 2. 조회 결과를 DTO로 변환
+        return PromotionDetailResponseDto.builder()
+                .promotionId(promotion.getPromotionId())
+                .name(promotion.getName())
+                .type(promotion.getType())
+                .startDate(promotion.getStartDate())
+                .endDate(promotion.getEndDate())
+                .totalCoupon(promotion.getTotalCoupons())
+                .issuedCoupon(promotion.getIssuedCoupons())
+                .remainingCoupon(promotion.getRemainingCoupons())
+                .maleCoupons(promotion.getMaleCoupons())
+                .femaleCoupons(promotion.getFemaleCoupons())
+                .status(promotion.getStatus())
+                .build();
+    }
+
+
     public Page<PromotionDetailResponseDto> getPromotions(int page, int size, String type, String status) {
         // 1. 페이지네이션 요청 생성
         PageRequest pageRequest = PageRequest.of(page, size);

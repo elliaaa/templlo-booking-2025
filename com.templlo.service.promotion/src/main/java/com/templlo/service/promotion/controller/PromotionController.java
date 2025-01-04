@@ -49,4 +49,10 @@ public class PromotionController {
         Page<PromotionDetailResponseDto> promotions = promotionService.getPromotions(page, size, type, status);
         return ResponseEntity.ok(promotions);
     }
+
+    @GetMapping("/{promotionId}")
+    public ResponseEntity<PromotionDetailResponseDto> getPromotion(@PathVariable UUID promotionId) {
+        PromotionDetailResponseDto responseDto = promotionService.getPromotion(promotionId);
+        return ResponseEntity.ok(responseDto);
+    }
 }
