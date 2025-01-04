@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
 import java.time.LocalDate;
 
 @Getter
@@ -32,4 +31,6 @@ public class PromotionRequestDto {
 
     @NotNull(message = "전체 쿠폰 수량은 필수입니다.")
     private Integer totalCoupon;
+
+    private String status; // ACTIVE, INACTIVE 등
 }

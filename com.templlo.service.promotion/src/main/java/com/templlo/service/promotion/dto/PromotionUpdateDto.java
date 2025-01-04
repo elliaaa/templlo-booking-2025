@@ -31,4 +31,6 @@ public class PromotionUpdateDto {
 
     @NotBlank(message = "쿠폰 유형은 필수입니다.")
     private String couponType; // 쿠폰 유형 (예: DISCOUNT, ENTRY 등)
+
+    private String status; // 프로모션 상태
 }
