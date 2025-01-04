@@ -58,10 +58,16 @@ public class Promotion {
     @Column(nullable = false)
     private LocalDateTime updatedAt; // 수정일자
 
+    @Column(nullable = false, columnDefinition = "varchar(50) default 'ACTIVE'")
+    private String status; // 상태
+
     @PrePersist
     public void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        if (this.status == null) {
+            this.status = "ACTIVE"; // 기본값 설정
+        }
     }
 
     @PreUpdate
@@ -71,7 +77,7 @@ public class Promotion {
 
     public Promotion updatePromotion(String name, LocalDate startDate, LocalDate endDate,
                                      Integer maleCoupons, Integer femaleCoupons, Integer totalCoupons,
-                                     String couponType) {
+                                     String couponType, String status) {
         if (name != null) {
             this.name = name;
         }
@@ -93,9 +99,11 @@ public class Promotion {
             this.totalCoupons = totalCoupons;
         }
         if (couponType != null) {
-            this.couponType = couponType; // couponType 업데이트 처리
+            this.couponType = couponType;
+        }
+        if (status != null) {
+            this.status = status;
         }
         return this;
     }
-
 }
