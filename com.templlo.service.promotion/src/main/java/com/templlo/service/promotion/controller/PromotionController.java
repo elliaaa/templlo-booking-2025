@@ -1,11 +1,13 @@
 package com.templlo.service.promotion.controller;
 
+import com.templlo.service.promotion.dto.PromotionDetailResponseDto;
 import com.templlo.service.promotion.dto.PromotionRequestDto;
 import com.templlo.service.promotion.dto.PromotionResponseDto;
 import com.templlo.service.promotion.dto.PromotionUpdateDto;
 import com.templlo.service.promotion.service.PromotionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,5 +38,15 @@ public class PromotionController {
     public ResponseEntity<PromotionResponseDto> deletePromotion(@PathVariable UUID promotionId) {
         PromotionResponseDto responseDto = promotionService.deletePromotion(promotionId);
         return ResponseEntity.ok(responseDto);
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<PromotionDetailResponseDto>> getPromotions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String status) {
+        Page<PromotionDetailResponseDto> promotions = promotionService.getPromotions(page, size, type, status);
+        return ResponseEntity.ok(promotions);
     }
 }
