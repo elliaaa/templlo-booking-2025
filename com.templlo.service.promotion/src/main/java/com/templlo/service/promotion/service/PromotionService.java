@@ -1,11 +1,14 @@
 package com.templlo.service.promotion.service;
 
+import com.templlo.service.promotion.dto.PromotionDetailResponseDto;
 import com.templlo.service.promotion.dto.PromotionRequestDto;
 import com.templlo.service.promotion.dto.PromotionResponseDto;
 import com.templlo.service.promotion.dto.PromotionUpdateDto;
 import com.templlo.service.promotion.entity.Promotion;
 import com.templlo.service.promotion.repository.PromotionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -29,6 +32,7 @@ public class PromotionService {
                 .totalCoupons(requestDto.getTotalCoupon())
                 .issuedCoupons(0)
                 .remainingCoupons(requestDto.getTotalCoupon())
+                .status("ACTIVE")
                 .build();
 
         // 2. 데이터베이스 저장
@@ -56,7 +60,8 @@ public class PromotionService {
                 updateDto.getMaleCoupons(),
                 updateDto.getFemaleCoupons(),
                 updateDto.getTotalCoupons(),
-                updateDto.getCouponType() // couponType 업데이트 추가
+                updateDto.getCouponType(),
+                updateDto.getStatus()
         );
 
         // 3. 데이터베이스 저장
@@ -84,6 +89,29 @@ public class PromotionService {
                 .status("SUCCESS")
                 .message("프로모션이 삭제되었습니다.")
                 .build();
+    }
+
+    public Page<PromotionDetailResponseDto> getPromotions(int page, int size, String type, String status) {
+        // 1. 페이지네이션 요청 생성
+        PageRequest pageRequest = PageRequest.of(page, size);
+
+        // 2. 조건에 따라 데이터 조회
+        Page<Promotion> promotions = promotionRepository.findByFilters(type, status, pageRequest);
+
+        // 3. Promotion -> PromotionDetailResponseDto 매핑
+        return promotions.map(promotion -> PromotionDetailResponseDto.builder()
+                .promotionId(promotion.getPromotionId())
+                .name(promotion.getName())
+                .type(promotion.getType())
+                .startDate(promotion.getStartDate())
+                .endDate(promotion.getEndDate())
+                .totalCoupon(promotion.getTotalCoupons())
+                .issuedCoupon(promotion.getIssuedCoupons())
+                .remainingCoupon(promotion.getRemainingCoupons())
+                .maleCoupons(promotion.getMaleCoupons())
+                .femaleCoupons(promotion.getFemaleCoupons())
+                .status(promotion.getStatus())
+                .build());
     }
 
 }
