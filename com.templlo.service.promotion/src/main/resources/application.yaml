@@ -6,9 +6,9 @@ spring:
     name: promotion-service
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/templlo
-    username: root
-    password: 12341234
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
