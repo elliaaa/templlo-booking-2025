@@ -22,16 +22,16 @@ public class PromotionService {
     public PromotionResponseDto createPromotion(PromotionRequestDto requestDto) {
         // 1. Promotion 엔티티 생성
         Promotion promotion = Promotion.builder()
-                .name(requestDto.getName())
-                .type(requestDto.getType())
-                .startDate(requestDto.getStartDate())
-                .endDate(requestDto.getEndDate())
-                .couponType(requestDto.getCouponType())
-                .maleCoupons(requestDto.getMaleCoupon())
-                .femaleCoupons(requestDto.getFemaleCoupon())
-                .totalCoupons(requestDto.getTotalCoupon())
+                .name(requestDto.name())
+                .type(requestDto.type())
+                .startDate(requestDto.startDate())
+                .endDate(requestDto.endDate())
+                .couponType(requestDto.couponType())
+                .maleCoupons(requestDto.maleCoupon())
+                .femaleCoupons(requestDto.femaleCoupon())
+                .totalCoupons(requestDto.totalCoupon())
                 .issuedCoupons(0)
-                .remainingCoupons(requestDto.getTotalCoupon())
+                .remainingCoupons(requestDto.totalCoupon())
                 .status("ACTIVE")
                 .build();
 
@@ -39,13 +39,12 @@ public class PromotionService {
         Promotion savedPromotion = promotionRepository.save(promotion);
 
         // 3. ResponseDto 생성 및 반환
-        return PromotionResponseDto.builder()
-                .promotionId(savedPromotion.getPromotionId())
-                .status("SUCCESS")
-                .message("프로모션이 생성되었습니다.")
-                .build();
+        return new PromotionResponseDto(
+                savedPromotion.getPromotionId(),
+                "SUCCESS",
+                "프로모션이 생성되었습니다."
+        );
     }
-
 
     public PromotionResponseDto updatePromotion(UUID promotionId, PromotionUpdateDto updateDto) {
         // 1. 기존 프로모션 조회
@@ -54,25 +53,25 @@ public class PromotionService {
 
         // 2. 요청된 데이터로 프로모션 필드 업데이트
         promotion.updatePromotion(
-                updateDto.getName(),
-                updateDto.getStartDate(),
-                updateDto.getEndDate(),
-                updateDto.getMaleCoupons(),
-                updateDto.getFemaleCoupons(),
-                updateDto.getTotalCoupons(),
-                updateDto.getCouponType(),
-                updateDto.getStatus()
+                updateDto.name(),
+                updateDto.startDate(),
+                updateDto.endDate(),
+                updateDto.maleCoupons(),
+                updateDto.femaleCoupons(),
+                updateDto.totalCoupons(),
+                updateDto.couponType(),
+                updateDto.status()
         );
 
         // 3. 데이터베이스 저장
         promotionRepository.save(promotion);
 
         // 4. 성공 메시지 반환
-        return PromotionResponseDto.builder()
-                .promotionId(promotion.getPromotionId())
-                .status("SUCCESS")
-                .message("프로모션이 수정되었습니다.")
-                .build();
+        return new PromotionResponseDto(
+                promotion.getPromotionId(),
+                "SUCCESS",
+                "프로모션이 수정되었습니다."
+        );
     }
 
     public PromotionResponseDto deletePromotion(UUID promotionId) {
@@ -84,11 +83,11 @@ public class PromotionService {
         promotionRepository.delete(promotion);
 
         // 3. 성공 메시지 반환
-        return PromotionResponseDto.builder()
-                .promotionId(promotionId)
-                .status("SUCCESS")
-                .message("프로모션이 삭제되었습니다.")
-                .build();
+        return new PromotionResponseDto(
+                promotionId,
+                "SUCCESS",
+                "프로모션이 삭제되었습니다."
+        );
     }
 
     public PromotionDetailResponseDto getPromotion(UUID promotionId) {
@@ -97,21 +96,20 @@ public class PromotionService {
                 .orElseThrow(() -> new IllegalArgumentException("프로모션을 찾을 수 없습니다."));
 
         // 2. 조회 결과를 DTO로 변환
-        return PromotionDetailResponseDto.builder()
-                .promotionId(promotion.getPromotionId())
-                .name(promotion.getName())
-                .type(promotion.getType())
-                .startDate(promotion.getStartDate())
-                .endDate(promotion.getEndDate())
-                .totalCoupon(promotion.getTotalCoupons())
-                .issuedCoupon(promotion.getIssuedCoupons())
-                .remainingCoupon(promotion.getRemainingCoupons())
-                .maleCoupons(promotion.getMaleCoupons())
-                .femaleCoupons(promotion.getFemaleCoupons())
-                .status(promotion.getStatus())
-                .build();
+        return new PromotionDetailResponseDto(
+                promotion.getPromotionId(),
+                promotion.getName(),
+                promotion.getType(),
+                promotion.getStartDate(),
+                promotion.getEndDate(),
+                promotion.getTotalCoupons(),
+                promotion.getIssuedCoupons(),
+                promotion.getRemainingCoupons(),
+                promotion.getMaleCoupons(),
+                promotion.getFemaleCoupons(),
+                promotion.getStatus()
+        );
     }
-
 
     public Page<PromotionDetailResponseDto> getPromotions(int page, int size, String type, String status) {
         // 1. 페이지네이션 요청 생성
@@ -121,19 +119,18 @@ public class PromotionService {
         Page<Promotion> promotions = promotionRepository.findByFilters(type, status, pageRequest);
 
         // 3. Promotion -> PromotionDetailResponseDto 매핑
-        return promotions.map(promotion -> PromotionDetailResponseDto.builder()
-                .promotionId(promotion.getPromotionId())
-                .name(promotion.getName())
-                .type(promotion.getType())
-                .startDate(promotion.getStartDate())
-                .endDate(promotion.getEndDate())
-                .totalCoupon(promotion.getTotalCoupons())
-                .issuedCoupon(promotion.getIssuedCoupons())
-                .remainingCoupon(promotion.getRemainingCoupons())
-                .maleCoupons(promotion.getMaleCoupons())
-                .femaleCoupons(promotion.getFemaleCoupons())
-                .status(promotion.getStatus())
-                .build());
+        return promotions.map(promotion -> new PromotionDetailResponseDto(
+                promotion.getPromotionId(),
+                promotion.getName(),
+                promotion.getType(),
+                promotion.getStartDate(),
+                promotion.getEndDate(),
+                promotion.getTotalCoupons(),
+                promotion.getIssuedCoupons(),
+                promotion.getRemainingCoupons(),
+                promotion.getMaleCoupons(),
+                promotion.getFemaleCoupons(),
+                promotion.getStatus()
+        ));
     }
-
 }
