@@ -1,6 +1,7 @@
 package com.templlo.service.program.controller;
 
 import com.templlo.service.program.dto.CreateProgramRequest;
+import com.templlo.service.program.dto.DetailProgramResponse;
 import com.templlo.service.program.dto.SimpleProgramResponse;
 import com.templlo.service.program.entity.ProgramType;
 import com.templlo.service.program.exception.ProgramStatusCode;
@@ -44,7 +45,7 @@ public class ProgramController {
     }
 
     @GetMapping("/{programId}")
-    public ApiResponse<?> getPrograms(@PathVariable UUID programId, @RequestParam LocalDate programDate) {
+    public ApiResponse<DetailProgramResponse> getPrograms(@PathVariable UUID programId, @RequestParam LocalDate programDate) {
         return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_READ, programService.getProgram(programId, programDate));
     }
 
