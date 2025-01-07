@@ -35,8 +35,6 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
         String userRole = request.getHeader(HEADER_NAME_USER_ROLE);
         String usedAuthToken = request.getHeader(HEADER_NAME_USED_AUTH_TOKEN);
 
-        log.info("userId={}, userRole={}, usedAuthToken={}", userId, userRole, usedAuthToken);
-
         checkUserInfoValid(userId, userRole, usedAuthToken);
 
         List<GrantedAuthority> authorityList = toAuthorityList(userRole);
