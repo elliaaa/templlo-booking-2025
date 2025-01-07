@@ -3,19 +3,21 @@ POST http://localhost:19030/api/programs
 Content-Type: application/json
 
 {
-  "programId": "ae7db802-c94d-4773-a8e7-07d0c2cfe0e6",
   "templeId": "789e1234-e89b-56d3-a789-426614178999",
   "title": "블라인드 데이트 프로그램",
   "description": "특별한 만남을 위한 사찰에서의 블라인드 데이트.",
   "type": "BLIND_DATE",
   "programFee": 0,
-  "programStartAt": "16:00:00",
-  "reservationStartDate": "2024-01-01",
-  "reservationEndDate": "2024-01-10",
-  "programDays":[],
-  "programCapacity": 20,
-  "templeStayDailyInfoCount": 0
+  "reservationStartDate": "2025-01-11",
+  "reservationEndDate": "2025-01-30",
+  "programStartAt": "16:00",
+  "programCapacity": null,
+  "programDate": "2025-01-31",
+  "maleCapacity": 20,
+  "femaleCapacity": 20,
+  "programDays": []
 }
+
 
 ### Create Program(TEMPLE_STAY)
 POST http://localhost:19030/api/programs
