@@ -1,5 +1,6 @@
 package com.templlo.service.program.entity;
 
+import com.templlo.service.program.auditor.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
@@ -12,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class BlindDateInfo {
+public class BlindDateInfo extends BaseEntity {
 
     @Id
     @UuidGenerator
