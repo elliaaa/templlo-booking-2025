@@ -1,0 +1,6 @@
+### TEMPLE_ADMIN, MASTER 만 접근 가능
+
+GET http://localhost:19040/api/test/auth/temple
+USER_ID: tempUserId77
+USER_ROLE: TEMPLE_ADMIN
+JWT_TOKEN: token value something
