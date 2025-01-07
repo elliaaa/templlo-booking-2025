@@ -4,7 +4,7 @@ spring:
   application:
     name: user-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/templlo_user
+    url: jdbc:postgresql://localhost:5432/users
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   jpa:
@@ -15,9 +15,18 @@ spring:
         show_sql: true
         format_sql: true
 
+jwt:
+  secret: ${JWT_SECRET_KEY}
+
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:19090/eureka/
     register-with-eureka: true
     fetch-registry: true
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.sql: DEBUG

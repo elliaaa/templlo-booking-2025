@@ -8,12 +8,14 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.templlo.service.user.entity.enums.Gender;
 import com.templlo.service.user.entity.enums.UserRole;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -29,6 +31,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 public class User {
 
 	@Id
@@ -66,39 +69,39 @@ public class User {
 	@ColumnDefault("0")
 	private int reviewCount;
 
-	// TODO Auditor 설정 필요
 	@CreatedBy
-	private UUID createdBy;
+	@Column(updatable = false)
+	private String createdBy;
 
 	@CreatedDate
 	@Column(updatable = false)
 	private LocalDateTime createdAt;
 
 	@LastModifiedBy
-	private UUID updatedBy;
+	private String updatedBy;
 
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
 
-	private UUID deletedBy;
+	private String deletedBy;
 
 	private LocalDateTime deletedAt;
 
 	private boolean isDeleted;
 
 	@Builder(access = AccessLevel.PRIVATE)
-	public User(String phone, UserRole role, String birth, Gender gender, String nickName, String userName,
-		String password, String email, String loginId) {
-		this.createdAt = LocalDateTime.now();
-		this.phone = phone;
-		this.role = role;
-		this.birth = birth;
-		this.gender = gender;
-		this.nickName = nickName;
-		this.userName = userName;
+	public User(String loginId, String password, String email, String userName, String nickName, Gender gender,
+		String birth, UserRole role, String phone) {
+		this.loginId = loginId;
 		this.password = password;
 		this.email = email;
-		this.loginId = loginId;
+		this.userName = userName;
+		this.nickName = nickName;
+		this.gender = gender;
+		this.birth = birth;
+		this.role = role;
+		this.phone = phone;
+		this.isDeleted = false;
 	}
 
 	public static User create(String loginId, String password, String email, String userName,
