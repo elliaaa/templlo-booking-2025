@@ -7,10 +7,7 @@ import com.templlo.service.program.global.common.response.ApiResponse;
 import com.templlo.service.program.service.ProgramService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,8 +18,8 @@ public class ProgramController {
 
     @PostMapping
     public ApiResponse<SimpleProgramResponse> createProgram(@Valid @RequestBody CreateProgramRequest request) {
-        SimpleProgramResponse response = programService.createProgram(request);
-        return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_CREATE, response);
+        return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_CREATE, programService.createProgram(request));
     }
+
 
 }
