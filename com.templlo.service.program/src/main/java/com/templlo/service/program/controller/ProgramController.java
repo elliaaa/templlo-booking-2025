@@ -2,6 +2,8 @@ package com.templlo.service.program.controller;
 
 import com.templlo.service.program.dto.CreateProgramRequest;
 import com.templlo.service.program.dto.SimpleProgramResponse;
+import com.templlo.service.program.exception.ProgramStatusCode;
+import com.templlo.service.program.global.common.response.ApiResponse;
 import com.templlo.service.program.service.ProgramService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +22,9 @@ public class ProgramController {
     private final ProgramService programService;
 
     @PostMapping
-    public ResponseEntity<SimpleProgramResponse> createProgram(@Valid @RequestBody CreateProgramRequest request) {
+    public ApiResponse<SimpleProgramResponse> createProgram(@Valid @RequestBody CreateProgramRequest request) {
         SimpleProgramResponse response = programService.createProgram(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_CREATE, response);
     }
 
 }
