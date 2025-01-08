@@ -1,4 +1,4 @@
-package com.templlo.service.program.dto;
+package com.templlo.service.program.dto.response;
 
 import com.templlo.service.program.entity.Program;
 import com.templlo.service.program.entity.ProgramType;
