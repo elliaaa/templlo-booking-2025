@@ -21,7 +21,7 @@ public class WebSecurityConfig {
     private final CustomAuthenticationFilter customAuthenticationFilter;
     private final GlobalFilterExceptionHandlerFilter globalFilterExceptionHandlerFilter;
 
-    private final String ROLE_USER = UserRole.USER.name();
+    private final String ROLE_MEMBER = UserRole.MEMBER.name();
     private final String ROLE_TEMPLE = UserRole.TEMPLE_ADMIN.name();
     private final String ROLE_MASTER = UserRole.MASTER.name();
 
@@ -36,7 +36,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests((request) -> request
 
                         .requestMatchers("/api/test/reservation-exception").permitAll()
-                        .requestMatchers("/api/test/auth/user").hasAnyAuthority(ROLE_USER, ROLE_MASTER)
+                        .requestMatchers("/api/test/auth/user").hasAnyAuthority(ROLE_MEMBER, ROLE_MASTER)
                         .requestMatchers("/api/test/auth/temple").hasAnyAuthority(ROLE_TEMPLE, ROLE_MASTER)
                         .requestMatchers("/api/checker/**").permitAll()
                         .anyRequest().authenticated())
