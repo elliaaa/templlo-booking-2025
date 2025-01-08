@@ -1,6 +1,11 @@
 package com.templlo.service.program.service;
 
-import com.templlo.service.program.dto.*;
+import com.templlo.service.program.dto.request.CreateProgramRequest;
+import com.templlo.service.program.dto.request.UpdateProgramRequest;
+import com.templlo.service.program.dto.response.BlindDateProgramResponse;
+import com.templlo.service.program.dto.response.DetailProgramResponse;
+import com.templlo.service.program.dto.response.SimpleProgramResponse;
+import com.templlo.service.program.dto.response.TempleStayProgramResponse;
 import com.templlo.service.program.entity.BlindDateInfo;
 import com.templlo.service.program.entity.Program;
 import com.templlo.service.program.entity.ProgramType;
@@ -121,4 +126,23 @@ public class ProgramService {
 
 
     }
+
+    @Transactional
+    public SimpleProgramResponse updateProgram(UUID programId, UpdateProgramRequest request) {
+
+        log.info("Update program start");
+
+        Program program = jpaProgramRepository.findById(programId).orElseThrow(
+                () -> new ProgramException(ProgramStatusCode.PROGRAM_NOT_FOUND)
+        );
+
+        program.update(request.title(), request.description(), request.programStartAt());
+
+        log.info("Update program end");
+
+        return SimpleProgramResponse.from(program);
+
+    }
+
+
 }

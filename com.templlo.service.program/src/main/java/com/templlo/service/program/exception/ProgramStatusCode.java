@@ -12,6 +12,7 @@ public enum ProgramStatusCode implements StatusCode {
     // 성공
     SUCCESS_PROGRAM_CREATE(HttpStatus.CREATED, "프로그램 생성이 성공하였습니다."),
     SUCCESS_PROGRAM_READ(HttpStatus.OK, "프로그램 조회가 성공하였습니다."),
+    SUCCESS_PROGRAM_UPDATE(HttpStatus.OK, "프로그램 수정이 성공하였습니다."),
 
 
     // 실패

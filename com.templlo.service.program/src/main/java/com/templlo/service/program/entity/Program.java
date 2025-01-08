@@ -148,4 +148,9 @@ public class Program extends BaseEntity {
         }
     }
 
+    public void update(String title, String description, LocalTime programStartAt) {
+        this.title = title;
+        this.description = description;
+        this.programStartAt = programStartAt;
+    }
 }
