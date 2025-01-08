@@ -8,10 +8,14 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum ReservationStatusCode implements StatusCode {
-    SUCCESS_RESERVATION_CREATE(HttpStatus.CREATED, "예약 신청 성공"),
+    CREATE_RESERVATION_SUCCESS(HttpStatus.CREATED, "예약 신청에 성공했습니다"),
 
-    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 id 에 해당하는 예약을 찾을 수 없음")
+    GET_RESERVATION_SUCCESS(HttpStatus.OK, "예약 단건 조회에 성공했습니다"),
 
+    GET_RESERVATIONS_OF_USER_SUCCESS(HttpStatus.OK, "나의 예약 신청내역 조회에 성공했습니다"),
+    GET_RESERVATIONS_OF_TEMPLE_SUCCESS(HttpStatus.OK, "사찰의 예약 수신내역 조회에 성공했습니다"),
+
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 id 의 예약을 찾을 수 없습니다."),
     ;
 
     private final HttpStatus httpStatus;
