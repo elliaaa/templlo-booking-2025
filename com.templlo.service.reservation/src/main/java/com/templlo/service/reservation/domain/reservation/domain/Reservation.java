@@ -1,6 +1,6 @@
 package com.templlo.service.reservation.domain.reservation.domain;
 
-import com.templlo.service.reservation.global.config.BaseEntity;
+import com.templlo.service.reservation.global.common.jpa.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;

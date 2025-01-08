@@ -1,4 +1,4 @@
-package com.templlo.service.reservation.global.config;
+package com.templlo.service.reservation.global.common.jpa;
 
 
 import jakarta.persistence.Column;
