@@ -1,11 +1,11 @@
 package com.templlo.service.reservation.domain.reservation.domain;
 
+import com.templlo.service.reservation.global.config.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
-import java.time.ZonedDateTime;
 import java.util.UUID;
 
 
@@ -17,11 +17,17 @@ import java.util.UUID;
 @Entity
 @Table(name="reservation")
 @SQLRestriction("is_delete = false")
-public class Reservation {
+public class Reservation extends BaseEntity {
     @Id
     @UuidGenerator(style = UuidGenerator.Style.TIME)
     @Column(name="reservation_id", updatable = false, nullable = false)
     private UUID reservationId;
+
+    @Column(name = "program_id", nullable = false)
+    private UUID programId;
+
+    @Column(name = "program_schedule_id", nullable = false)
+    private UUID programScheduleId;
 
     @Column(name = "user_id", nullable = false)
     private UUID userId;
@@ -29,9 +35,6 @@ public class Reservation {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
     private ReservationStatus status;
-
-    @Column(name = "reservation_date_time", nullable = false)
-    private ZonedDateTime reservationDateTime;
 
     @Column(name = "name", nullable = false, length = 50)
     private String name;
