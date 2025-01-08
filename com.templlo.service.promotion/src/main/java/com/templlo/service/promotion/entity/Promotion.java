@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 public class Promotion {
 
 	@Id
@@ -43,19 +43,19 @@ public class Promotion {
 	@Column(nullable = false)
 	private String couponType; // 쿠폰 유형 (예: 할인, 입장권 등)
 
-	@Column(nullable = true) // null 허용
+	@Column(nullable = true)
 	private Integer maleCoupons; // 남성 쿠폰 수량
 
-	@Column(nullable = true) // null 허용
+	@Column(nullable = true)
 	private Integer femaleCoupons; // 여성 쿠폰 수량
 
-	@Column(nullable = false, columnDefinition = "integer default 0")
+	@Column(nullable = false)
 	private Integer totalCoupons; // 전체 쿠폰 수량
 
 	@Column(nullable = false, columnDefinition = "integer default 0")
-	private Integer issuedCoupons; // 발급된 쿠폰 수량
+	private Integer issuedCoupons = 0; // 발급된 쿠폰 수량 초기값
 
-	@Column(nullable = false, columnDefinition = "integer default 0")
+	@Column(nullable = false)
 	private Integer remainingCoupons; // 남은 쿠폰 수량
 
 	@Column(nullable = false, updatable = false)
@@ -64,16 +64,20 @@ public class Promotion {
 	@Column(nullable = false)
 	private LocalDateTime updatedAt; // 수정일자
 
-	@Column(nullable = false, columnDefinition = "varchar(50) default 'ACTIVE'")
-	private String status; // 상태
+	@Column(nullable = false)
+	private String status;
+
+	@Column(nullable = false, updatable = false)
+	private String createdBy;
 
 	@PrePersist
 	public void onCreate() {
+		this.remainingCoupons = this.totalCoupons; // 남은 쿠폰 초기화
+		if (this.status == null) {
+			this.status = "ACTIVE";
+		}
 		this.createdAt = LocalDateTime.now();
 		this.updatedAt = LocalDateTime.now();
-		if (this.status == null) {
-			this.status = "ACTIVE"; // 기본값 설정
-		}
 	}
 
 	@PreUpdate
@@ -81,9 +85,8 @@ public class Promotion {
 		this.updatedAt = LocalDateTime.now();
 	}
 
-	public Promotion updatePromotion(String name, LocalDate startDate, LocalDate endDate,
-		Integer maleCoupons, Integer femaleCoupons, Integer totalCoupons,
-		String couponType, String status) {
+	public void updatePromotion(String name, LocalDate startDate, LocalDate endDate, Integer maleCoupons,
+		Integer femaleCoupons, Integer totalCoupons, String couponType, String status) {
 		if (name != null) {
 			this.name = name;
 		}
@@ -94,17 +97,14 @@ public class Promotion {
 			this.endDate = endDate;
 		}
 		if (maleCoupons != null) {
-			this.remainingCoupons =
-				this.remainingCoupons - (this.maleCoupons != null ? this.maleCoupons : 0) + maleCoupons;
 			this.maleCoupons = maleCoupons;
 		}
 		if (femaleCoupons != null) {
-			this.remainingCoupons =
-				this.remainingCoupons - (this.femaleCoupons != null ? this.femaleCoupons : 0) + femaleCoupons;
 			this.femaleCoupons = femaleCoupons;
 		}
 		if (totalCoupons != null) {
 			this.totalCoupons = totalCoupons;
+			this.remainingCoupons = totalCoupons - this.issuedCoupons; // 남은 쿠폰 재계산
 		}
 		if (couponType != null) {
 			this.couponType = couponType;
@@ -112,6 +112,5 @@ public class Promotion {
 		if (status != null) {
 			this.status = status;
 		}
-		return this;
 	}
 }
