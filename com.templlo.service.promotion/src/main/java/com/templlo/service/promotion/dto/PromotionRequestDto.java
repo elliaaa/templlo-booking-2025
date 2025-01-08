@@ -22,6 +22,7 @@ public record PromotionRequestDto(
 	String couponType, // 할인, 입장권 등
 
 	Integer maleCoupon,
+
 	Integer femaleCoupon,
 
 	@NotNull(message = "전체 쿠폰 수량은 필수입니다.")
@@ -29,4 +30,11 @@ public record PromotionRequestDto(
 
 	String status // ACTIVE, INACTIVE 등
 ) {
+	public Integer maleCoupon() {
+		return maleCoupon == null ? 0 : maleCoupon; // null인 경우 기본값 0 반환
+	}
+
+	public Integer femaleCoupon() {
+		return femaleCoupon == null ? 0 : femaleCoupon; // null인 경우 기본값 0 반환
+	}
 }
