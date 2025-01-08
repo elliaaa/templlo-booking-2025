@@ -36,3 +36,13 @@ Content-Type: application/json
     "femaleCapacity": null,
     "programDays": ["Monday", "Sunday", "Thursday"]
 }
+
+### Update Program
+PATCH http://localhost:19030/api/programs/{programId}
+Content-Type: application/json
+
+{
+  "title":"sdfdfsdf",
+  "description": "sdfddddsdfsd",
+  "programStartAt": "14:00:00"
+}
