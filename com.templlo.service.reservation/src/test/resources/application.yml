@@ -22,8 +22,12 @@ spring:
         type: trace
         default_schema: reservation
 
+
+  kafka:
+    bootstrap-servers: mock:9092
+
 #eureka:
 #  client:
-#    service-url:
-#      defaultZone: http://localhost:19090/eureka/
+#    enabled: false
+
 
