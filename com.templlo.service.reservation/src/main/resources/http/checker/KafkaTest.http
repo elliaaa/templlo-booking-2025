@@ -1,0 +1,14 @@
+# Kafka test controller api list
+
+### t1
+GET http://localhost:19040/api/test/kafka/t1
+
+### t2
+GET http://localhost:19040/api/test/kafka/t2?topic=topicF&key=
+Content-Type: application/json
+
+{
+  "name" : "피카",
+  "status" : "휴식",
+  "reservationStatus" : "COMPLETED"
+}

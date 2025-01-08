@@ -35,6 +35,7 @@ public class WebSecurityConfig {
                 
                 .authorizeHttpRequests((request) -> request
 
+                        .requestMatchers("/api/test/kafka/**").permitAll()
                         .requestMatchers("/api/test/reservation-exception").permitAll()
                         .requestMatchers("/api/test/auth/user").hasAnyAuthority(ROLE_MEMBER, ROLE_MASTER)
                         .requestMatchers("/api/test/auth/temple").hasAnyAuthority(ROLE_TEMPLE, ROLE_MASTER)
