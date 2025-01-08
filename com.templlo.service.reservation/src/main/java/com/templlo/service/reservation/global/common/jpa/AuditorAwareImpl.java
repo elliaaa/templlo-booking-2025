@@ -1,4 +1,4 @@
-package com.templlo.service.reservation.global.security;
+package com.templlo.service.reservation.global.common.jpa;
 
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
