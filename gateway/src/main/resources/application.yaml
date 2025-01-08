@@ -32,8 +32,7 @@ spring:
         - id: promotion-service
           uri: lb://promotion-service
           predicates:
-            - Path=/api/promotions/**
-            - Path=/api/coupons/**
+            - Path=/api/promotions/**, /api/coupons/**
       discovery:
         locator:
           enabled: true

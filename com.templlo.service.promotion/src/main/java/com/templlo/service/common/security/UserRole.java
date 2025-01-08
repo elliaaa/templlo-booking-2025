@@ -1,7 +1,7 @@
 package com.templlo.service.common.security;
 
 public enum UserRole {
-	USER,
+	MEMBER,
 	TEMPLE_ADMIN,
 	MASTER
 }

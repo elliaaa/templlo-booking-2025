@@ -23,7 +23,7 @@ public class WebSecurityConfig {
 	private final CustomAuthenticationFilter customAuthenticationFilter;
 	private final GlobalFilterExceptionHandlerFilter globalFilterExceptionHandlerFilter;
 
-	private final String USER = UserRole.USER.name();
+	private final String USER = UserRole.MEMBER.name();
 	private final String TEMPLE = UserRole.TEMPLE_ADMIN.name();
 	private final String MASTER = UserRole.MASTER.name();
 
@@ -37,7 +37,7 @@ public class WebSecurityConfig {
 
 			.authorizeHttpRequests((request) -> request
 				// Promotion 경로 설정
-				.requestMatchers("/api/promotion")
+				.requestMatchers("/api/promotions")
 				.hasAuthority(MASTER) // 프로모션 생성
 				.requestMatchers("/api/promotion/{promotionId}")
 				.hasAuthority(MASTER) // 프로모션 수정, 삭제

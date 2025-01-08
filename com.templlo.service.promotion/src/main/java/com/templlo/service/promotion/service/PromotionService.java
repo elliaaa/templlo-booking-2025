@@ -28,7 +28,7 @@ public class PromotionService {
 	@Transactional
 	public PromotionResponseDto createPromotion(PromotionRequestDto requestDto, String userId, String role) {
 		// 1. 역할 검증
-		if (!"ADMIN".equalsIgnoreCase(role)) {
+		if (!"MASTER".equalsIgnoreCase(role)) {
 			throw new IllegalArgumentException("권한이 부족합니다. 프로모션을 생성하려면 ADMIN 역할이 필요합니다.");
 		}
 
