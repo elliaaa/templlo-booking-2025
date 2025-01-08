@@ -12,8 +12,7 @@ spring:
         - id: user-service
           uri: lb://user-service
           predicates:
-            - Path=/api/auth/**
-            - Path=/api/users/**
+            - Path=/api/auth/**, /api/users/**
         - id: review-service
           uri: lb://review-service
           predicates:
@@ -39,7 +38,14 @@ spring:
         locator:
           enabled: true
 
+jwt:
+  secret: ${JWT_SECRET_KEY}
+
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:19090/eureka/
+
+logging:
+  level:
+    org.springframework.web: DEBUG
