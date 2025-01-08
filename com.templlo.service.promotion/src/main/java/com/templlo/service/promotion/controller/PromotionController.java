@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,15 +25,22 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/promotion")
+@RequestMapping("/api/promotions")
 @RequiredArgsConstructor
 public class PromotionController {
 
 	private final PromotionService promotionService;
 
 	@PostMapping
-	public ResponseEntity<PromotionResponseDto> createPromotion(@Valid @RequestBody PromotionRequestDto requestDto) {
-		PromotionResponseDto responseDto = promotionService.createPromotion(requestDto);
+	public ResponseEntity<PromotionResponseDto> createPromotion(
+		@Valid @RequestBody PromotionRequestDto requestDto,
+		@RequestHeader(value = "X-Login-Id", required = false) String userId,
+		@RequestHeader(value = "X-User-Role", required = false) String role
+	) {
+		System.out.println("X-Login-Id: " + userId);
+		System.out.println("X-User-Role: " + role);
+
+		PromotionResponseDto responseDto = promotionService.createPromotion(requestDto, userId, role);
 		return ResponseEntity.ok(responseDto);
 	}
 
