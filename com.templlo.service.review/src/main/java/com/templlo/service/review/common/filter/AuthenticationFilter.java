@@ -1,4 +1,4 @@
-package com.templlo.service.user.common.filter;
+package com.templlo.service.review.common.filter;
 
 import java.io.IOException;
 
@@ -9,7 +9,7 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.templlo.service.user.common.security.GatewayUserDetailsImpl;
+import com.templlo.service.review.common.security.UserDetailsImpl;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -31,7 +31,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 		log.info("Request loginId : {} , role : {}", loginId, role);
 
 		if (loginId != null && role != null) {
-			GatewayUserDetailsImpl userDetails = new GatewayUserDetailsImpl(loginId, role);
+			UserDetailsImpl userDetails = new UserDetailsImpl(loginId, role);
 			Authentication authentication = new PreAuthenticatedAuthenticationToken(userDetails, null,
 				userDetails.getAuthorities());
 			SecurityContextHolder.getContext().setAuthentication(authentication);
