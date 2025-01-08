@@ -1,4 +1,4 @@
-package com.templlo.service.reservation.domain.checker.controller;
+package com.templlo.service.reservation.domain.temp;
 
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;

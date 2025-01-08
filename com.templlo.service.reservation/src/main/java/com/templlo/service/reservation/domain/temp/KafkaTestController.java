@@ -1,4 +1,4 @@
-package com.templlo.service.reservation.domain.checker.controller;
+package com.templlo.service.reservation.domain.temp;
 
 import com.google.gson.Gson;
 import com.templlo.service.reservation.global.common.response.ApiResponse;
