@@ -1,5 +1,6 @@
 package com.templlo.service.promotion.service;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -28,7 +29,7 @@ public class PromotionService {
 
 	@Transactional
 	public PromotionResponseDto createPromotion(PromotionRequestDto requestDto, String userId, String role) {
-		// 1. 역할 검증
+		// 권한 검증
 		if (!"MASTER".equalsIgnoreCase(role) && !"ADMIN".equalsIgnoreCase(role)) {
 			throw new IllegalArgumentException("권한이 부족합니다. 프로모션을 생성하려면 MASTER 또는 ADMIN 역할이 필요합니다.");
 		}
@@ -43,30 +44,43 @@ public class PromotionService {
 			.maleCoupons(requestDto.maleCoupon() != null ? requestDto.maleCoupon() : 0)
 			.femaleCoupons(requestDto.femaleCoupon() != null ? requestDto.femaleCoupon() : 0)
 			.totalCoupons(requestDto.totalCoupon())
-			.issuedCoupons(0) // 발급된 쿠폰 초기화
-			.remainingCoupons(requestDto.totalCoupon()) // 남은 쿠폰 초기화
+			.issuedCoupons(0)
+			.remainingCoupons(requestDto.totalCoupon())
 			.status(requestDto.status() != null ? requestDto.status() : "ACTIVE")
 			.build();
 
-		// 수동으로 createdBy와 updatedBy 설정
 		promotion.setCreatedBy(userId);
 		promotion.setUpdatedBy(userId);
 
-		// 엔티티 저장
 		promotion = promotionRepository.save(promotion);
 
-		// 3. 쿠폰 생성 로직
+		// 쿠폰 생성
+		createCouponsForPromotion(promotion, requestDto);
+
+		return new PromotionResponseDto(
+			promotion.getPromotionId(),
+			"SUCCESS",
+			"프로모션이 생성되었습니다."
+		);
+	}
+
+	private void createCouponsForPromotion(Promotion promotion, PromotionRequestDto requestDto) {
 		int maleCouponCount = requestDto.maleCoupon() != null ? requestDto.maleCoupon() : 0;
 		int femaleCouponCount = requestDto.femaleCoupon() != null ? requestDto.femaleCoupon() : 0;
 		int remainingCoupons = requestDto.totalCoupon() - maleCouponCount - femaleCouponCount;
+
+		BigDecimal value = requestDto.value(); // 할인 금액 또는 비율
+		String discountType = requestDto.discountType();
 
 		// 남성용 쿠폰 생성
 		if (maleCouponCount > 0) {
 			for (int i = 0; i < maleCouponCount; i++) {
 				Coupon maleCoupon = Coupon.builder()
 					.promotion(promotion)
+					.type(requestDto.couponType())
+					.discountType(discountType)
+					.value(value)
 					.gender("MALE")
-					.type(requestDto.couponType()) // 타입 설정
 					.status("AVAILABLE")
 					.build();
 				couponRepository.save(maleCoupon);
@@ -78,8 +92,10 @@ public class PromotionService {
 			for (int i = 0; i < femaleCouponCount; i++) {
 				Coupon femaleCoupon = Coupon.builder()
 					.promotion(promotion)
+					.type(requestDto.couponType())
+					.discountType(discountType)
+					.value(value)
 					.gender("FEMALE")
-					.type(requestDto.couponType()) // 타입 설정
 					.status("AVAILABLE")
 					.build();
 				couponRepository.save(femaleCoupon);
@@ -91,20 +107,15 @@ public class PromotionService {
 			for (int i = 0; i < remainingCoupons; i++) {
 				Coupon generalCoupon = Coupon.builder()
 					.promotion(promotion)
-					.gender(null) // 성별 없음
-					.type(requestDto.couponType()) // 타입 설정
+					.type(requestDto.couponType())
+					.discountType(discountType)
+					.value(value)
+					.gender(null)
 					.status("AVAILABLE")
 					.build();
 				couponRepository.save(generalCoupon);
 			}
 		}
-
-		// 4. 응답 생성
-		return new PromotionResponseDto(
-			promotion.getPromotionId(),
-			"SUCCESS",
-			"프로모션이 생성되었습니다."
-		);
 	}
 
 	@Transactional
