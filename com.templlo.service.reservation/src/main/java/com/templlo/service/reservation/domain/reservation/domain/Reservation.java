@@ -17,7 +17,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @Table(name="reservation")
-@SQLRestriction("is_delete = false")
+@SQLRestriction("is_deleted = false")
 public class Reservation extends BaseEntity {
     @Id
     @UuidGenerator(style = UuidGenerator.Style.TIME)
@@ -59,4 +59,12 @@ public class Reservation extends BaseEntity {
 
     @Column(name = "coupon_id")
     private UUID couponId;
+
+    public void updateStatusFailed() {
+        this.status = ReservationStatus.FAILED;
+    }
+
+    public void updateStatusCompleted() {
+        this.status = ReservationStatus.COMPLETED;
+    }
 }
