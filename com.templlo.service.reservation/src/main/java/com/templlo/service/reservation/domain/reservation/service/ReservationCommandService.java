@@ -18,7 +18,7 @@ import static com.templlo.service.reservation.domain.reservation.service.model.p
 @RequiredArgsConstructor
 public class ReservationCommandService {
     private final ReservationRepository reservationRepository;
-    public final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
     private final Gson gson; // TODO : KafkaTemplate 새로 만들어서 처리하기
 
     // TODO : 함수의 책임, 트랜잭션에 대해 생각

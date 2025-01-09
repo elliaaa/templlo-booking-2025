@@ -21,6 +21,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ReservationQueryService {
     public final ReservationRepository reservationRepository;
+    private final ReservationRepository reservationRepository;
 
     public ReservationDetailRes getReservationById(UUID reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
