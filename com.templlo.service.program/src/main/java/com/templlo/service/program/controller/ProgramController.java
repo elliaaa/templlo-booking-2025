@@ -46,12 +46,12 @@ public class ProgramController {
     }
 
     @GetMapping("/{programId}")
-    public ApiResponse<DetailProgramResponse> getPrograms(@PathVariable UUID programId, @RequestParam LocalDate programDate) {
+    public ApiResponse<DetailProgramResponse> getPrograms(@PathVariable(name = "programId") UUID programId, @RequestParam LocalDate programDate) {
         return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_READ, programService.getProgram(programId, programDate));
     }
 
     @PatchMapping("/{programId}")
-    public ApiResponse<SimpleProgramResponse> updateProgram(@PathVariable UUID programId, @Valid @RequestBody UpdateProgramRequest request) {
+    public ApiResponse<SimpleProgramResponse> updateProgram(@PathVariable(name = "programId") UUID programId, @Valid @RequestBody UpdateProgramRequest request) {
         return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_UPDATE, programService.updateProgram(programId, request));
     }
 
