@@ -6,3 +6,7 @@ spring:
     driver-class-name: org.h2.Driver
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
+  kafka:
+    bootstrap-servers: mock:9092
+    topics:
+      review-created: test-topic ### 설정파일에서 topic 가져와서 읽는거 있으면 여기 수정해서
