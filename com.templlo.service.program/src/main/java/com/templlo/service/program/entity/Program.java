@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.templlo.service.program.auditor.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.DayOfWeek;
@@ -19,6 +20,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@SQLRestriction(value = "is_deleted = false")
 public class Program extends BaseEntity {
 
     @Id
@@ -146,4 +148,9 @@ public class Program extends BaseEntity {
         }
     }
 
+    public void update(String title, String description, LocalTime programStartAt) {
+        this.title = title;
+        this.description = description;
+        this.programStartAt = programStartAt;
+    }
 }

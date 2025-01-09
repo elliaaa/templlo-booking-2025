@@ -1,4 +1,4 @@
-package com.templlo.service.program.dto;
+package com.templlo.service.program.dto.response;
 
 import com.templlo.service.program.entity.Program;
 import com.templlo.service.program.entity.ProgramType;
@@ -22,8 +22,7 @@ public record SimpleProgramResponse(
         LocalDate reservationStartDate,
         LocalDate reservationEndDate,
         List<String> programDays,
-        Integer programCapacity,
-        Integer templeStayDailyInfoCount
+        Integer programCapacity
 ) {
 
    public static SimpleProgramResponse from(Program program) {
@@ -40,7 +39,6 @@ public record SimpleProgramResponse(
                .reservationEndDate(program.getReservationEndDate())
                .programDays(program.convertProgramDaysToList(program.getProgramDays()))
                .programCapacity(program.getProgramCapacity())
-               .templeStayDailyInfoCount(program.getType() == ProgramType.TEMPLE_STAY ? program.getTempleStayDailyInfos().size() : 0 )
                .build();
 
    }

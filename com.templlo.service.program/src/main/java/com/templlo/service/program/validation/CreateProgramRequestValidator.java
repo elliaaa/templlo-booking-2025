@@ -1,6 +1,6 @@
 package com.templlo.service.program.validation;
 
-import com.templlo.service.program.dto.CreateProgramRequest;
+import com.templlo.service.program.dto.request.CreateProgramRequest;
 import com.templlo.service.program.entity.ProgramType;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

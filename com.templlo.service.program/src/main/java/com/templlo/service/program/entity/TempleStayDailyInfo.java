@@ -3,6 +3,7 @@ package com.templlo.service.program.entity;
 import com.templlo.service.program.auditor.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@SQLRestriction(value = "is_deleted = false")
 public class TempleStayDailyInfo extends BaseEntity {
     @Id
     @UuidGenerator

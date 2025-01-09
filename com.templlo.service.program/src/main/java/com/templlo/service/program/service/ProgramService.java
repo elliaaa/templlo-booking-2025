@@ -1,15 +1,32 @@
 package com.templlo.service.program.service;
 
-import com.templlo.service.program.dto.CreateProgramRequest;
-import com.templlo.service.program.dto.SimpleProgramResponse;
+import com.templlo.service.program.dto.request.CreateProgramRequest;
+import com.templlo.service.program.dto.request.UpdateProgramRequest;
+import com.templlo.service.program.dto.response.BlindDateProgramResponse;
+import com.templlo.service.program.dto.response.DetailProgramResponse;
+import com.templlo.service.program.dto.response.SimpleProgramResponse;
+import com.templlo.service.program.dto.response.TempleStayProgramResponse;
 import com.templlo.service.program.entity.BlindDateInfo;
 import com.templlo.service.program.entity.Program;
 import com.templlo.service.program.entity.ProgramType;
+import com.templlo.service.program.entity.TempleStayDailyInfo;
+import com.templlo.service.program.exception.ProgramException;
+import com.templlo.service.program.exception.ProgramStatusCode;
 import com.templlo.service.program.repository.JpaProgramRepository;
+import com.templlo.service.program.repository.JpaTempleStayDailyInfoRepository;
+import com.templlo.service.program.repository.QueryProgramRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +34,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProgramService {
 
     private final JpaProgramRepository jpaProgramRepository;
+    private final QueryProgramRepository queryProgramRepository;
+    private final JpaTempleStayDailyInfoRepository jpaTempleStayDailyInfoRepository;
 
     @Transactional
     public SimpleProgramResponse createProgram(CreateProgramRequest request) {
@@ -62,5 +81,68 @@ public class ProgramService {
         return SimpleProgramResponse.from(program);
 
     }
+
+    @Transactional(readOnly = true)
+    public PagedModel<SimpleProgramResponse> getPrograms(String keyword, ProgramType type, List<String> days, Pageable pageable) {
+
+        log.info("Get programs start");
+
+        Page<Program> programs = queryProgramRepository.findByKeyword(keyword, type, days, pageable);
+
+        List<SimpleProgramResponse> contents = programs.getContent().stream().map(SimpleProgramResponse::from).toList();
+
+        log.info("Get programs end");
+
+        return new PagedModel<>(new PageImpl<>(contents, pageable, programs.getTotalElements()));
+
+    }
+
+
+    public DetailProgramResponse getProgram(UUID programId, LocalDate programDate) {
+
+        log.info("Get program start");
+
+        Program program = jpaProgramRepository.findById(programId).orElseThrow(
+                () -> new ProgramException(ProgramStatusCode.PROGRAM_NOT_FOUND)
+        );
+
+        if (program.getType() == ProgramType.TEMPLE_STAY) {
+
+            TempleStayDailyInfo templeStayDailyInfo = jpaTempleStayDailyInfoRepository.findByProgram_IdAndProgramDate(programId, programDate)
+                    .orElseThrow(() -> new ProgramException(ProgramStatusCode.TEMPLE_STAY_DAILY_INFO_NOT_FOUND));
+
+            log.info("Get temple_stay program end");
+            return TempleStayProgramResponse.from(program, templeStayDailyInfo);
+
+        } else {
+
+            if (!program.getBlindDateInfo().getProgramDate().isEqual(programDate)) {
+                throw new ProgramException(ProgramStatusCode.BLIND_DATE_INFO_NOT_FOUND);
+            }
+
+            log.info("Get blind_date program end");
+            return BlindDateProgramResponse.from(program);
+        }
+
+
+    }
+
+    @Transactional
+    public SimpleProgramResponse updateProgram(UUID programId, UpdateProgramRequest request) {
+
+        log.info("Update program start");
+
+        Program program = jpaProgramRepository.findById(programId).orElseThrow(
+                () -> new ProgramException(ProgramStatusCode.PROGRAM_NOT_FOUND)
+        );
+
+        program.update(request.title(), request.description(), request.programStartAt());
+
+        log.info("Update program end");
+
+        return SimpleProgramResponse.from(program);
+
+    }
+
 
 }

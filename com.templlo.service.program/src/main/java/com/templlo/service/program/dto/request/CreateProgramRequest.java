@@ -1,4 +1,4 @@
-package com.templlo.service.program.dto;
+package com.templlo.service.program.dto.request;
 
 import com.templlo.service.program.entity.ProgramType;
 import com.templlo.service.program.validation.ValidCreateProgramRequest;
