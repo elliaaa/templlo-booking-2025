@@ -1,12 +1,11 @@
 package com.templlo.service.reservation.domain.reservation.controller.model.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.templlo.service.reservation.domain.reservation.controller.model.request.CouponUsedType;
-import com.templlo.service.reservation.domain.reservation.domain.PaymentStatus;
-import com.templlo.service.reservation.domain.reservation.domain.PaymentType;
-import com.templlo.service.reservation.domain.reservation.domain.Reservation;
-import com.templlo.service.reservation.domain.reservation.domain.ReservationStatus;
+import com.templlo.service.reservation.domain.reservation.domain.*;
 import lombok.Builder;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -14,11 +13,15 @@ import java.util.UUID;
 public record CreateReservationRes(
         UUID reservationId,
         UUID programId,
-        UUID programScheduleId,
+
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+        LocalDate programDate,
+
         UUID userId,
         ReservationStatus status,
         String name,
         String phoneNumber,
+        ReservationGenderType gender,
         CouponUsedType couponUsedType,
         UUID couponId,
         PaymentStatus paymentStatus,
@@ -33,11 +36,12 @@ public record CreateReservationRes(
         return CreateReservationRes.builder()
                 .reservationId(reservation.getReservationId())
                 .programId(reservation.getProgramId())
-                .programScheduleId(reservation.getProgramScheduleId())
+                .programDate(reservation.getProgramDate())
                 .userId(reservation.getUserId())
                 .status(reservation.getStatus())
                 .name(reservation.getName())
                 .phoneNumber(reservation.getPhoneNumber())
+                .gender(reservation.getGender())
                 .couponUsedType(couponUsedType)
                 .couponId(reservation.getCouponId())
                 .paymentStatus(reservation.getPaymentStatus())

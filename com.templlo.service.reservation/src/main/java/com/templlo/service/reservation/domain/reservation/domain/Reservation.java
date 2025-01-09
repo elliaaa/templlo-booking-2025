@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 
@@ -26,8 +27,8 @@ public class Reservation extends BaseEntity {
     @Column(name = "program_id", nullable = false)
     private UUID programId;
 
-    @Column(name = "program_schedule_id", nullable = false)
-    private UUID programScheduleId;
+    @Column(name = "program_date", nullable = false)
+    private LocalDate programDate;
 
     @Column(name = "user_id", nullable = false)
     private UUID userId;
@@ -41,6 +42,9 @@ public class Reservation extends BaseEntity {
 
     @Column(name = "phone_number", nullable = false, length = 50)
     private String phoneNumber;
+
+    @Column(name = "reservation_gender_type", nullable = false, length = 20)
+    private ReservationGenderType gender;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_status", nullable = false, length = 20)
