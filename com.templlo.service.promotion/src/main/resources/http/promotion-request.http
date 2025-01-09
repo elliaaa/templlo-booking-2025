@@ -1,0 +1,91 @@
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzY0Mjc0NjksImV4cCI6MTczNjQyOTI2OSwibG9naW5JZCI6Im1hc3Rlcjk5OTkiLCJyb2xlIjoiTUFTVEVSIiwidHlwZSI6ImFjY2VzcyJ9.Cm8Y5kniTLDCVAf8dJL3KSGBtD-ZjkOWOmk8sVcMRbU
+@page = 0
+@size = 10
+@sortBy = createdAt
+@promotionId = 4d285d06-b43b-4c74-952d-3de6a50f0c91
+@couponId = 7952576e-07d1-4532-be09-1098966c991f
+@toUserId = 641d428e-797b-4bae-a9e6-855ee07a8fdb
+
+
+### Create Promotion
+POST http://localhost:19091/api/promotions
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "뉴 핫딜 프로모션",
+  "type": "HOTDEAL",
+  "startDate": "2025-01-01",
+  "endDate": "2025-01-10",
+  "couponType": "DISCOUNT",
+  "maleCoupon": 10,
+  "femaleCoupon": 10,
+  "totalCoupon": 20
+}
+
+###
+
+### Update Promotion
+PATCH http://localhost:19091/api/promotions/{{promotionId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "수정된 핫딜 프로모션",
+  "startDate": "2024-01-05",
+  "endDate": "2024-01-15",
+  "maleCoupons": 120,
+  "femaleCoupons": 120,
+  "totalCoupons": 240,
+  "couponType": "DISCOUNT"
+}
+
+
+###
+
+### Get Promotions with Pagination and Filters
+GET http://localhost:19091/api/promotions?page=0&size=10&type=HOTDEAL&status=ACTIVE
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Get Promotion by ID
+GET http://localhost:19091/api/promotions/{{promotionId}}
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Delete Promotion
+DELETE http://localhost:19091/api/promotions/{{promotionId}}
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Issue Coupon
+POST http://localhost:19091/api/coupons/issue?promotionId={{promotionId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+
+### Coupon
+GET http://localhost:19091/api/coupons/{{couponId}}/validate
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+### Transfer Coupon
+POST http://localhost:19091/api/coupons/{{couponId}}/transfer
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "toUserId": "{{toUserId}}"
+}
+
+### My Coupon
+GET http://localhost:19091/api/coupons/my-coupons
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+### 특정 유저 쿠폰 조회
+GET http://localhost:19091/api/coupons?user={{toUserId}}&page={{page}}&size={{size}}
+Authorization: Bearer {{accessToken}}
