@@ -29,35 +29,41 @@ import lombok.NoArgsConstructor;
 public class Coupon extends BaseEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.UUID) // UUID 전략 사용
+	@GeneratedValue(strategy = GenerationType.UUID)
 	@Column(name = "coupon_id", nullable = false, updatable = false)
 	private UUID couponId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "promotion_id", nullable = false) // 외래 키 설정
+	@JoinColumn(name = "promotion_id", nullable = false)
 	@JsonIgnore
 	private Promotion promotion;
 
 	@Column(name = "type", nullable = false, length = 50)
-	private String type; // 예: DISCOUNT, GIFT 등
+	private String type;
+
+	@Column(name = "discount_type", nullable = true, length = 20)
+	private String discountType; // PERCENTAGE, AMOUNT 등
 
 	@Column(name = "value", precision = 10, scale = 2)
-	private BigDecimal value; // 할인 금액 또는 할인율 (null 가능)
+	private BigDecimal value; // 할인 금액 또는 할인율
 
 	@Column(name = "gender", length = 10)
-	private String gender; // MALE, FEMALE 또는 NULL(성별 구분 없음)
+	private String gender;
 
 	@Column(name = "status", nullable = false, length = 20)
-	private String status; // AVAILABLE, ISSUED, EXPIRED 등
+	private String status;
 
 	@Builder(toBuilder = true)
-	public Coupon(UUID couponId, Promotion promotion, String type, BigDecimal value, String gender, String status) {
+	public Coupon(UUID couponId, Promotion promotion, String type, String discountType, BigDecimal value, String gender,
+		String status, String createdBy) {
 		this.couponId = couponId;
 		this.promotion = promotion;
 		this.type = type;
+		this.discountType = discountType;
 		this.value = value;
 		this.gender = gender;
 		this.status = status;
+		this.createdBy = createdBy;
 	}
 
 	// 상태 업데이트 메서드
