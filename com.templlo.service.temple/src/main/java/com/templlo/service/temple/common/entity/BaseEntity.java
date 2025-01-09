@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public class BaseEntity {
+
     @Column(nullable = false)
     private boolean isDeleted = false;
 
@@ -36,4 +37,10 @@ public class BaseEntity {
     private LocalDateTime deletedAt;
 
     private String deletedBy;
+
+    public void delete(String loginId) {
+        isDeleted = true;
+        deletedAt = LocalDateTime.now();
+        deletedBy = loginId;
+    }
 }

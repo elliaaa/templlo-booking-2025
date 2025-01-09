@@ -9,6 +9,7 @@ import java.util.Optional;
 
 @Component("auditorAwareImpl")
 public class AuditorAwareImple implements AuditorAware<String> {
+
     @Override
     public Optional<String> getCurrentAuditor() {
 

@@ -44,10 +44,7 @@ public class Temple extends BaseEntity {
         return temple;
     }
 
-    public void setUserId(UUID userId) {
-        this.userId = userId;
-    }
-
+    public void setUserId(UUID userId) {this.userId = userId;}
 
     public void setTempleName(String templeName) {
         this.templeName = templeName;
@@ -60,4 +57,6 @@ public class Temple extends BaseEntity {
     public void setTemplePhone(String templePhone) {
         this.templePhone = templePhone;
     }
+
+
 }

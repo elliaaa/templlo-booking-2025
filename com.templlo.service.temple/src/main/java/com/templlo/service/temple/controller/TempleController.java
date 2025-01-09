@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +37,24 @@ public class TempleController {
         return ResponseEntity.ok(ApiResponse.of(BasicStatusCode.OK, response));
     }
 
+    @PreAuthorize("hasAuthority('TEMPLE_ADMIN')")
+    @PatchMapping("/{templeId}")
+    public ResponseEntity<ApiResponse<TempleResponse>> updateTemple(@PathVariable UUID templeId,
+                                                                    @RequestBody UpdateTempleRequest request,
+                                                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        TempleResponse response = templeService.updateTemple(templeId, request,userDetails.getLoginId());
+        return ResponseEntity.ok(ApiResponse.of(BasicStatusCode.OK, response));
+    }
+
+    @PreAuthorize("hasAuthority('MASTER')")
+    @DeleteMapping("/{templeId}")
+    public ResponseEntity<ApiResponse<Void>> deleteTemple(@PathVariable UUID templeId,
+                                                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        templeService.deleteTemple(templeId,userDetails.getLoginId());
+        return ResponseEntity.ok(ApiResponse.of(BasicStatusCode.OK, null));
+    }
+
     @GetMapping("/region")
     public ResponseEntity<ApiResponse<PageResponse<TempleResponse>>> getTemplesByRegion(@RequestParam String region,
                                                                                         Pageable pageable) {
@@ -51,18 +70,4 @@ public class TempleController {
         return ResponseEntity.ok(ApiResponse.of(BasicStatusCode.OK, responses));
     }
 
-
-    @PatchMapping("/{templeId}")
-    public ResponseEntity<ApiResponse<TempleResponse>> updateTemple(@PathVariable UUID templeId,
-                                                                    @RequestBody UpdateTempleRequest request) {
-
-        TempleResponse response = templeService.updateTemple(templeId, request);
-        return ResponseEntity.ok(ApiResponse.of(BasicStatusCode.OK, response));
-    }
-
-    @DeleteMapping("/{templeId}")
-    public ResponseEntity<ApiResponse<Void>> deleteTemple(@PathVariable UUID templeId) {
-        templeService.deleteTemple(templeId);
-        return ResponseEntity.ok(ApiResponse.of(BasicStatusCode.OK, null));
-    }
 }

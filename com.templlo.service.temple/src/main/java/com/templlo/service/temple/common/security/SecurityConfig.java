@@ -32,11 +32,11 @@ public class SecurityConfig {
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
 			.authorizeHttpRequests(auth -> {
+				auth.requestMatchers("/api/temples/region", "/api/temples/search").permitAll();
 				auth.anyRequest().authenticated();
 			})
 			.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
 			.build();
-
 	}
 
 }

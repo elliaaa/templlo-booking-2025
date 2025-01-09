@@ -17,21 +17,21 @@ import java.util.UUID;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TempleResponse implements Serializable {
+    private UUID userId;
     private String templeName;
     private String templeDescription;
     private String templePhone;
     private String roadAddress;
     private String detailAddress;
-    private UUID userId;
 
     public static TempleResponse from(Temple temple) {
         return TempleResponse.builder()
+                .userId(temple.getUserId())
                 .templeName(temple.getTempleName())
                 .templeDescription(temple.getTempleDescription())
                 .templePhone(temple.getTemplePhone())
                 .roadAddress(temple.getAddress().getRoadAddress())
                 .detailAddress(temple.getAddress().getDetailAddress())
-                .userId(temple.getUserId())
                 .build();
     }
 
