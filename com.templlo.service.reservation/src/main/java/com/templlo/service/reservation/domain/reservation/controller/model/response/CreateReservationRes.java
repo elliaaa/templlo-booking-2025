@@ -13,10 +13,7 @@ import java.util.UUID;
 public record CreateReservationRes(
         UUID reservationId,
         UUID programId,
-
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-        LocalDate programDate,
-
+        String programDate,
         UUID userId,
         ReservationStatus status,
         String name,
@@ -32,11 +29,10 @@ public record CreateReservationRes(
 
     public static CreateReservationRes from(Reservation reservation) {
         CouponUsedType couponUsedType = CouponUsedType.valueOfIsUsed(reservation.isCouponUsed());
-
         return CreateReservationRes.builder()
                 .reservationId(reservation.getReservationId())
                 .programId(reservation.getProgramId())
-                .programDate(reservation.getProgramDate())
+                .programDate(reservation.getProgramDateFormatted())
                 .userId(reservation.getUserId())
                 .status(reservation.getStatus())
                 .name(reservation.getName())

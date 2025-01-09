@@ -10,14 +10,14 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
+import static com.templlo.service.reservation.global.GlobalConst.PROGRAM_DATE_FORMAT;
+
 @Builder
 public record CreateReservationProduce(
         UUID userId,
         UUID reservationId,
         UUID programId,
-
         String programDate,
-
         ReservationGenderType gender,
         Integer amount,
         CouponUsedType couponUsedType,
@@ -25,12 +25,11 @@ public record CreateReservationProduce(
 ) {
 
     public static CreateReservationProduce from(Reservation reservation, int amount) {
-        String programDateStr = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(reservation.getProgramDate());
         return CreateReservationProduce.builder()
                 .userId(reservation.getUserId())
                 .reservationId(reservation.getReservationId())
                 .programId(reservation.getProgramId())
-                .programDate(programDateStr)
+                .programDate(reservation.getProgramDateFormatted())
                 .gender(reservation.getGender())
                 .amount(amount)
                 .couponUsedType(CouponUsedType.valueOfIsUsed(reservation.isCouponUsed()))
