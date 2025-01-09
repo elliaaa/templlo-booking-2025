@@ -31,7 +31,7 @@ public class ReservationConsumeService {
 
         switch (message.status()) {
             case SUCCESS -> reservation.updateStatusCompleted();
-            case FAILED -> reservation.updateStatusFailed();
+            case FAILURE -> reservation.updateStatusFailed();
         }
     }
 }

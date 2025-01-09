@@ -30,7 +30,7 @@ public class KafkaTestController {
 
         CreateReservationResultConsume dto2 = CreateReservationResultConsume.builder()
                 .reservationId(reservationId)
-                .status(CreateReservationResultStatus.FAILED)
+                .status(CreateReservationResultStatus.FAILURE)
                 .build();
 
         kafkaTemplate.send(TOPIC_RESERVATION_CONFIRM, null, gson.toJson(dto1));
