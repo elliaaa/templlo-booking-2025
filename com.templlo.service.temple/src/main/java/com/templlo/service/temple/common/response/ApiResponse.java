@@ -1,4 +1,4 @@
-package com.templlo.service.temple.global.response;
+package com.templlo.service.temple.common.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
@@ -30,5 +30,7 @@ public record ApiResponse<T>( String status,
                 .data(data)
                 .build();
     }
+
+    public T getData() {return data;}
 
 }

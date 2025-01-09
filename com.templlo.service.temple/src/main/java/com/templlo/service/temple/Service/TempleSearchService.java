@@ -3,7 +3,7 @@ package com.templlo.service.temple.Service;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import com.templlo.service.temple.dto.TempleResponse;
-import com.templlo.service.temple.global.response.PageResponse;
+import com.templlo.service.temple.common.response.PageResponse;
 import com.templlo.service.temple.model.SearchTemple;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

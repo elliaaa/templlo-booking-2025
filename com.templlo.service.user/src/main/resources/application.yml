@@ -4,9 +4,9 @@ spring:
   application:
     name: user-service
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/templlo
+    username: root
+    password: password
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -19,7 +19,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
 jwt:
-  secret: ${JWT_SECRET_KEY}
+  secret: templlo123456789templlo123456789templlo123456789templlo123456789templlo123456789templlo123456789
 
 eureka:
   client:

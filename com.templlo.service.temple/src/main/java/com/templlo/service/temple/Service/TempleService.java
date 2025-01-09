@@ -1,15 +1,15 @@
 package com.templlo.service.temple.Service;
 
-import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
+import com.templlo.service.temple.common.response.ApiResponse;
 import com.templlo.service.temple.dto.CreateTempleRequest;
 import com.templlo.service.temple.dto.TempleResponse;
 import com.templlo.service.temple.dto.UpdateTempleRequest;
-import com.templlo.service.temple.global.exception.BaseException;
-import com.templlo.service.temple.global.response.BasicStatusCode;
-import com.templlo.service.temple.global.response.PageResponse;
+import com.templlo.service.temple.common.exception.BaseException;
+import com.templlo.service.temple.common.response.BasicStatusCode;
+import com.templlo.service.temple.common.response.PageResponse;
+import com.templlo.service.temple.external.client.UserClient;
+import com.templlo.service.temple.external.dto.UserData;
 import com.templlo.service.temple.model.SearchTemple;
-import com.templlo.service.temple.model.SearchTempleAddress;
 import com.templlo.service.temple.model.Temple;
 import com.templlo.service.temple.repository.TempleRepository;
 import com.templlo.service.temple.repository.elasticsearch.TempleElasticSearchRepository;
@@ -19,14 +19,10 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.client.elc.NativeQuery;
-import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -34,14 +30,29 @@ import java.util.UUID;
 @Slf4j
 public class TempleService {
 
+    private final UserClient userClient;
     private final TempleRepository templeRepository;
     private final TempleElasticSearchRepository templeElasticSearchRepository;
 
     @Transactional
     @CacheEvict(value = "templesByRegion", allEntries = true)
-    public TempleResponse createTemple(CreateTempleRequest request) {
+    public TempleResponse createTemple(CreateTempleRequest request, String loginId) {
 
-        // 1. JPA로 Temple 저장
+        // 1. FeignClient를 통해 사용자 정보 가져오기
+        ApiResponse<UserData> userResponse = userClient.getUserInfo(loginId);
+
+        if (userResponse == null || Integer.parseInt(userResponse.status()) != 200 || userResponse.getData() == null) {
+            throw new IllegalArgumentException("사용자 정보를 찾을 수 없습니다.");
+        }
+
+        UserData userData = userResponse.getData();
+
+        // 2. 사용자 권한 검증 (TEMPLE_ADMIN만 허용)
+        if (!"TEMPLE_ADMIN".equals(userData.role())) {
+            throw new AccessDeniedException("TEMPLE_ADMIN 권한이 필요합니다.");
+        }
+
+        // 3. JPA로 Temple 저장
         Temple temple = Temple.of(
                 request.getTempleName(),
                 request.getTempleDescription(),
@@ -50,9 +61,11 @@ public class TempleService {
                 request.getDetailAddress()
         );
 
+        temple.setUserId(userData.id());
+
         Temple savedTemple = templeRepository.save(temple);
 
-        // 2. Elasticsearch에 SearchTemple 저장
+        // 4. Elasticsearch에 SearchTemple 저장
         SearchTemple searchTemple = SearchTemple.from(savedTemple);
         templeElasticSearchRepository.save(searchTemple);
 

@@ -2,16 +2,19 @@ package com.templlo.service.temple.controller;
 
 import com.templlo.service.temple.Service.TempleSearchService;
 import com.templlo.service.temple.Service.TempleService;
+import com.templlo.service.temple.common.security.UserDetailsImpl;
 import com.templlo.service.temple.dto.CreateTempleRequest;
 import com.templlo.service.temple.dto.TempleResponse;
 import com.templlo.service.temple.dto.UpdateTempleRequest;
-import com.templlo.service.temple.global.response.ApiResponse;
-import com.templlo.service.temple.global.response.BasicStatusCode;
-import com.templlo.service.temple.global.response.PageResponse;
+import com.templlo.service.temple.common.response.ApiResponse;
+import com.templlo.service.temple.common.response.BasicStatusCode;
+import com.templlo.service.temple.common.response.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -24,10 +27,12 @@ public class TempleController {
     private final TempleService templeService;
     private final TempleSearchService templeSearchService;
 
+    @PreAuthorize("hasAuthority('TEMPLE_ADMIN')")
     @PostMapping
-    public ResponseEntity<ApiResponse<TempleResponse>> createTemple(@RequestBody CreateTempleRequest request) {
+    public ResponseEntity<ApiResponse<TempleResponse>> createTemple(@RequestBody CreateTempleRequest request,
+                                                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        TempleResponse response = templeService.createTemple(request);
+        TempleResponse response = templeService.createTemple(request,userDetails.getLoginId());
         return ResponseEntity.ok(ApiResponse.of(BasicStatusCode.OK, response));
     }
 

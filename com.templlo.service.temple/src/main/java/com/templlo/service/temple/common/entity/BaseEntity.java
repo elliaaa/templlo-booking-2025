@@ -1,4 +1,4 @@
-package com.templlo.service.temple.global.entity;
+package com.templlo.service.temple.common.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

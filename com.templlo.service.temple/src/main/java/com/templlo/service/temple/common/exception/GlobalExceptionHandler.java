@@ -1,8 +1,8 @@
-package com.templlo.service.temple.global.exception;
+package com.templlo.service.temple.common.exception;
 
-import com.templlo.service.temple.global.response.ApiResponse;
-import com.templlo.service.temple.global.response.BasicStatusCode;
-import com.templlo.service.temple.global.response.StatusCode;
+import com.templlo.service.temple.common.response.ApiResponse;
+import com.templlo.service.temple.common.response.BasicStatusCode;
+import com.templlo.service.temple.common.response.StatusCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,6 +21,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Object> handleAllRuntimeException(RuntimeException e){
         return handleException(BasicStatusCode.INTERNAL_SERVER_ERROR, e.getMessage());
+    }
+
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<Object> handleNullPointerException(NullPointerException e) {
+        return handleException(BasicStatusCode.NPE, e.getMessage());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Object> illegalArgumentExceptionHandler(IllegalArgumentException e) {
+        return handleException(BasicStatusCode.BAD_REQUEST, e.getMessage());
     }
 
     private ResponseEntity<Object> handleException(StatusCode code){

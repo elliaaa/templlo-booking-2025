@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 @Getter
 @Builder
@@ -21,6 +22,7 @@ public class TempleResponse implements Serializable {
     private String templePhone;
     private String roadAddress;
     private String detailAddress;
+    private UUID userId;
 
     public static TempleResponse from(Temple temple) {
         return TempleResponse.builder()
@@ -29,6 +31,7 @@ public class TempleResponse implements Serializable {
                 .templePhone(temple.getTemplePhone())
                 .roadAddress(temple.getAddress().getRoadAddress())
                 .detailAddress(temple.getAddress().getDetailAddress())
+                .userId(temple.getUserId())
                 .build();
     }
 

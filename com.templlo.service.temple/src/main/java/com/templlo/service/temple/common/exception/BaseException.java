@@ -1,6 +1,6 @@
-package com.templlo.service.temple.global.exception;
+package com.templlo.service.temple.common.exception;
 
-import com.templlo.service.temple.global.response.StatusCode;
+import com.templlo.service.temple.common.response.StatusCode;
 import lombok.Getter;
 
 @Getter

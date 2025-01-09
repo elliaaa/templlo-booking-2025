@@ -1,4 +1,4 @@
-package com.templlo.service.temple.global.response;
+package com.templlo.service.temple.common.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.data.domain.Page;

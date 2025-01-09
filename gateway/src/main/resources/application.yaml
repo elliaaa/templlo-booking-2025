@@ -39,7 +39,7 @@ spring:
           enabled: true
 
 jwt:
-  secret: ${JWT_SECRET_KEY}
+  secret: templlo123456789templlo123456789templlo123456789templlo123456789templlo123456789templlo123456789
 
 eureka:
   client:

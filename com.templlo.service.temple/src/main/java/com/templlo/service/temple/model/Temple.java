@@ -1,6 +1,6 @@
 package com.templlo.service.temple.model;
 
-import com.templlo.service.temple.global.entity.BaseEntity;
+import com.templlo.service.temple.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -19,6 +19,8 @@ public class Temple extends BaseEntity {
     @GeneratedValue(generator = "UUID")
     private UUID templeId;
 
+    private UUID userId; // 사용자 엔티티의 user_id (TEMPLE_ADMIN 역할)
+
     private String templeName;
 
     @Column(length = 500)
@@ -28,8 +30,6 @@ public class Temple extends BaseEntity {
 
     @Embedded
     private Address address;
-
-//    private UUID templeAdminUserId; // 사용자 엔티티의 user_id (TEMPLE_ADMIN 역할)
 
     @Builder
     public static Temple of(String templeName, String templeDescription, String templePhone, String roadAddress, String detailAddress) {
@@ -43,6 +43,11 @@ public class Temple extends BaseEntity {
                 .build();
         return temple;
     }
+
+    public void setUserId(UUID userId) {
+        this.userId = userId;
+    }
+
 
     public void setTempleName(String templeName) {
         this.templeName = templeName;

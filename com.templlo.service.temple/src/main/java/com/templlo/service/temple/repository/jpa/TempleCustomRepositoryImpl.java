@@ -2,8 +2,8 @@ package com.templlo.service.temple.repository.jpa;
 
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.templlo.service.temple.global.exception.BaseException;
-import com.templlo.service.temple.global.response.BasicStatusCode;
+import com.templlo.service.temple.common.exception.BaseException;
+import com.templlo.service.temple.common.response.BasicStatusCode;
 import com.templlo.service.temple.model.QTemple;
 import com.templlo.service.temple.model.Temple;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class TempleCustomRepositoryImpl implements TempleCustomRepository {
         QTemple temple = QTemple.temple;
 
         if (region == null || region.isEmpty()) {
-            throw new BaseException(BasicStatusCode.BAD_REQUEST);
+            throw new BaseException(BasicStatusCode.REGION_NOT_FOUND);
         }
 
         // 사용자가 입력한 지역명에서 앞 두 글자만 추출

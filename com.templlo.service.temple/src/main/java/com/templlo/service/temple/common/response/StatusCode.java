@@ -1,4 +1,4 @@
-package com.templlo.service.temple.global.response;
+package com.templlo.service.temple.common.response;
 
 import org.springframework.http.HttpStatus;
 
