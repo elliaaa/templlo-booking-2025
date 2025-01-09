@@ -1,4 +1,4 @@
-@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzY0Mjc0NjksImV4cCI6MTczNjQyOTI2OSwibG9naW5JZCI6Im1hc3Rlcjk5OTkiLCJyb2xlIjoiTUFTVEVSIiwidHlwZSI6ImFjY2VzcyJ9.Cm8Y5kniTLDCVAf8dJL3KSGBtD-ZjkOWOmk8sVcMRbU
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzY0Mzk0ODAsImV4cCI6MTczNjQ0MTI4MCwibG9naW5JZCI6Im1hc3Rlcjk5OTkiLCJyb2xlIjoiTUFTVEVSIiwidHlwZSI6ImFjY2VzcyJ9.457oI-F09a1saI8GYRYaw_bV8KF33UvkHv3CD5ElZ_c
 @page = 0
 @size = 10
 @sortBy = createdAt
@@ -7,20 +7,57 @@
 @toUserId = 641d428e-797b-4bae-a9e6-855ee07a8fdb
 
 
-### Create Promotion
+### 퍼센트 할인권 프로모션 생성
 POST http://localhost:19091/api/promotions
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 {
-  "name": "뉴 핫딜 프로모션",
+  "name": "퍼센트 할인 프로모션",
   "type": "HOTDEAL",
   "startDate": "2025-01-01",
   "endDate": "2025-01-10",
   "couponType": "DISCOUNT",
+  "totalCoupon": 30,
+  "value": 20,
+  "discountType": "PERCENTAGE",
+  "status": "ACTIVE"
+}
+
+### 금액 할인권 프로모션 생성
+POST http://localhost:19091/api/promotions
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "금액 할인 프로모션",
+  "type": "HOTDEAL",
+  "startDate": "2025-01-01",
+  "endDate": "2025-01-10",
+  "couponType": "DISCOUNT",
+  "totalCoupon": 15,
+  "value": 5000,
+  "discountType": "AMOUNT",
+  "status": "ACTIVE"
+}
+
+### 선예매권 프로모션 생성
+POST http://localhost:19091/api/promotions
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "선예매권 프로모션",
+  "type": "ADVANCED_TICKET",
+  "startDate": "2025-01-01",
+  "endDate": "2025-01-10",
+  "couponType": "ADVANCED_TICKET",
   "maleCoupon": 10,
   "femaleCoupon": 10,
-  "totalCoupon": 20
+  "totalCoupon": 20,
+  "value": null,
+  "discountType": null,
+  "status": "ACTIVE"
 }
 
 ###
