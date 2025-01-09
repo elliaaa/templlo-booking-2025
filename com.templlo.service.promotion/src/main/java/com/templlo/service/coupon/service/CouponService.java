@@ -1,5 +1,7 @@
 package com.templlo.service.coupon.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -17,6 +19,9 @@ import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.templlo.service.common.client.ProgramFeignClient;
+import com.templlo.service.common.dto.DetailProgramResponse;
+import com.templlo.service.common.response.ApiResponse;
 import com.templlo.service.coupon.dto.CouponDeleteResponseDto;
 import com.templlo.service.coupon.dto.CouponIssueResponseDto;
 import com.templlo.service.coupon.dto.CouponStatusEvent;
@@ -47,6 +52,7 @@ public class CouponService {
 	private final RedissonClient redissonClient;
 	private final KafkaProducerService kafkaProducerService;
 	private final RedisTemplate<String, Object> redisTemplate; // RedisTemplate 주입
+	private final ProgramFeignClient programFeignClient;
 
 	@Transactional
 	public CouponIssueResponseDto issueCoupon(UUID promotionId, String gender, UUID userId, String userLoginId) {
@@ -188,11 +194,27 @@ public class CouponService {
 	}
 
 	@Transactional
-	public CouponUseResponseDto useCoupon(UUID couponId, UUID programId) {
+	public CouponUseResponseDto useCoupon(UUID couponId, UUID programId, LocalDate programDate) {
+		// 1. 쿠폰 조회
 		Coupon coupon = couponRepository.findById(couponId)
 			.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 쿠폰 ID입니다."));
 
-		if (!coupon.getStatus().equals("ISSUED")) {
+		// 2. 프로그램 정보 조회 (Feign Client 사용)
+		ApiResponse<DetailProgramResponse> programResponse = programFeignClient.getProgram(programId, programDate);
+
+		if (programResponse == null || programResponse.data() == null) {
+			throw new IllegalStateException("프로그램 정보를 가져올 수 없습니다.");
+		}
+
+		DetailProgramResponse program = programResponse.data();
+
+		// 3. 프로그램 타입 검증
+		if ("BLIND_DATE".equals(program.type()) && !"ADVANCED_TICKET".equals(coupon.getType())) {
+			return new CouponUseResponseDto("FAILURE", "이 프로그램에서는 ADVANCED_TICKET 쿠폰만 사용할 수 있습니다.");
+		}
+
+		// 4. 쿠폰 상태 검증
+		if (!"ISSUED".equals(coupon.getStatus())) {
 			String message = switch (coupon.getStatus()) {
 				case "AVAILABLE" -> "쿠폰이 발급되지 않았습니다.";
 				case "EXPIRED" -> "쿠폰이 만료되었습니다.";
@@ -202,10 +224,28 @@ public class CouponService {
 			return new CouponUseResponseDto("FAILURE", message);
 		}
 
-		coupon.updateStatus("USED"); // 상태 업데이트
+		// 5. 할인 금액 계산
+		BigDecimal discountAmount = BigDecimal.ZERO;
+		if ("PERCENTAGE".equals(coupon.getDiscountType())) {
+			discountAmount = program.programFee().multiply(coupon.getValue().divide(BigDecimal.valueOf(100)));
+		} else if ("AMOUNT".equals(coupon.getDiscountType())) {
+			discountAmount = coupon.getValue();
+		}
+
+		// 할인 금액이 프로그램 금액을 초과하지 않도록 제한
+		if (discountAmount.compareTo(program.programFee()) > 0) {
+			discountAmount = program.programFee();
+		}
+
+		// 최종 금액 계산
+		BigDecimal finalPrice = program.programFee().subtract(discountAmount);
+
+		// 6. 쿠폰 상태 업데이트
+		coupon.updateStatus("USED");
 		couponRepository.save(coupon);
 
-		return new CouponUseResponseDto("SUCCESS", "쿠폰이 사용되었습니다.");
+		// 7. 응답 생성
+		return new CouponUseResponseDto("SUCCESS", "쿠폰이 사용되었습니다.", finalPrice);
 	}
 
 	@Transactional
@@ -322,4 +362,26 @@ public class CouponService {
 		return result != null && result == 1;
 	}
 
+	@Transactional
+	public void issueLevelUpCoupon(UUID userId) {
+		// 1. 쿠폰 생성
+		Coupon coupon = Coupon.builder()
+			.type("LEVEL_UP")
+			.status("ISSUED")
+			.createdBy("SYSTEM")
+			.build();
+		coupon = couponRepository.save(coupon);
+
+		// 2. 유저 쿠폰 발급
+		UserCoupon userCoupon = UserCoupon.builder()
+			.userId(userId)
+			.coupon(coupon)
+			.status("ISSUED")
+			.issuedAt(LocalDateTime.now())
+			.createdBy("SYSTEM")
+			.build();
+		userCouponRepository.save(userCoupon);
+
+		log.info("Issued level-up coupon for userId: {}", userId);
+	}
 }

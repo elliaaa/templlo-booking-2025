@@ -106,7 +106,7 @@ public class CouponController {
 		@PathVariable UUID couponId,
 		@RequestBody CouponUseRequestDto request
 	) {
-		CouponUseResponseDto response = couponService.useCoupon(couponId, request.programId());
+		CouponUseResponseDto response = couponService.useCoupon(couponId, request.programId(), request.programDate());
 		return ResponseEntity.ok(response);
 	}
 
