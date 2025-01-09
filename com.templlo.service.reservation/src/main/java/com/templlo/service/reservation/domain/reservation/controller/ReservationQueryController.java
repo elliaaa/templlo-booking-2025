@@ -3,6 +3,7 @@ package com.templlo.service.reservation.domain.reservation.controller;
 import com.templlo.service.reservation.domain.reservation.controller.exception.ReservationStatusCode;
 import com.templlo.service.reservation.domain.reservation.controller.model.response.ReservationDetailRes;
 import com.templlo.service.reservation.domain.reservation.controller.model.response.ReservationListWrapperRes;
+import com.templlo.service.reservation.domain.reservation.controller.model.response.UserReservationListWrapperRes;
 import com.templlo.service.reservation.domain.reservation.service.ReservationQueryService;
 import com.templlo.service.reservation.global.PageUtil;
 import com.templlo.service.reservation.global.common.response.ApiResponse;
@@ -32,12 +33,12 @@ public class ReservationQueryController {
     }
 
     @GetMapping("/users/{userId}/reservations")
-    public ResponseEntity<ApiResponse<ReservationListWrapperRes>> getReservationsByUser(
+    public ResponseEntity<ApiResponse<UserReservationListWrapperRes>> getReservationsByUser(
             @PathVariable(name = "userId") UUID userId,
             Pageable pageable
     ) {
         Pageable pageRequest = PageUtil.getCheckedPageable(pageable);
-        ReservationListWrapperRes responseDto = reservationQueryService.getReservationsByUser(userId, pageRequest);
+        UserReservationListWrapperRes responseDto = reservationQueryService.getReservationsByUser(userId, pageRequest);
         return ResponseEntity.ok().body(
                 ApiResponse.of(ReservationStatusCode.GET_RESERVATIONS_OF_USER_SUCCESS, responseDto));
     }
