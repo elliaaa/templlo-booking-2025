@@ -25,7 +25,7 @@ public class PageUtil {
         }
 
         Sort sort = pageable.getSort();
-        Sort.Order order = sort.stream().iterator().next();
+        Sort.Order order = sort.stream().iterator().next(); // TODO : 없을 경우 예외처리
         String sortBy = order.getProperty();
         if (!SortBy.isValid(sortBy)) {
             sortBy = DEFAULT_SORT_BY;
@@ -35,8 +35,8 @@ public class PageUtil {
     }
 
     private enum SortBy {
-        CREATED_AT("created_at"),
-        UPDATED_AT("updated_at");
+        CREATED_AT("createdAt"),
+        UPDATED_AT("updatedAt");
 
         private final String fieldName;
 
