@@ -1,8 +1,9 @@
 package com.templlo.service.program.controller;
 
-import com.templlo.service.program.dto.CreateProgramRequest;
-import com.templlo.service.program.dto.DetailProgramResponse;
-import com.templlo.service.program.dto.SimpleProgramResponse;
+import com.templlo.service.program.dto.request.CreateProgramRequest;
+import com.templlo.service.program.dto.response.DetailProgramResponse;
+import com.templlo.service.program.dto.response.SimpleProgramResponse;
+import com.templlo.service.program.dto.request.UpdateProgramRequest;
 import com.templlo.service.program.entity.ProgramType;
 import com.templlo.service.program.exception.ProgramStatusCode;
 import com.templlo.service.program.global.common.response.ApiResponse;
@@ -45,8 +46,13 @@ public class ProgramController {
     }
 
     @GetMapping("/{programId}")
-    public ApiResponse<DetailProgramResponse> getPrograms(@PathVariable UUID programId, @RequestParam LocalDate programDate) {
+    public ApiResponse<DetailProgramResponse> getPrograms(@PathVariable(name = "programId") UUID programId, @RequestParam LocalDate programDate) {
         return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_READ, programService.getProgram(programId, programDate));
+    }
+
+    @PatchMapping("/{programId}")
+    public ApiResponse<SimpleProgramResponse> updateProgram(@PathVariable(name = "programId") UUID programId, @Valid @RequestBody UpdateProgramRequest request) {
+        return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_UPDATE, programService.updateProgram(programId, request));
     }
 
 }

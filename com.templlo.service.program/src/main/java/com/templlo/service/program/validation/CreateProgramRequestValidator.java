@@ -1,6 +1,6 @@
 package com.templlo.service.program.validation;
 
-import com.templlo.service.program.dto.CreateProgramRequest;
+import com.templlo.service.program.dto.request.CreateProgramRequest;
 import com.templlo.service.program.entity.ProgramType;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -52,10 +52,16 @@ public class CreateProgramRequestValidator implements ConstraintValidator<ValidC
             }
             if (request.programFee() != 0) {
                 addConstraintViolation(context, "BLIND_DATE는 가격이 0원 이어야 합니다.", "programFee");
+                isValid = false;
             }
             // BLIND_DATE 일 때 TEMPLE_STAY 필드 입력 시
-            if (!request.programDays().isEmpty()) {
+            if (request.programDays() != null && !request.programDays().isEmpty()) {
                 addConstraintViolation(context, "BLIND_DATE는 요일 주기의 입력이 불가능합니다.", "programDays");
+                isValid = false;
+            }
+            if (!request.reservationEndDate().isBefore(request.programDate())) {
+                addConstraintViolation(context, "프로그램 시작 날짜는 예약 종료일 이후여야 합니다.", "programDate");
+                isValid = false;
             }
 
         }

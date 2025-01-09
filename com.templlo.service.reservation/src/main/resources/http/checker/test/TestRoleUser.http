@@ -1,0 +1,6 @@
+### USER, MASTER 만 접근 가능
+
+GET http://localhost:19040/api/test/auth/user
+USER_ID: tempUserId77
+USER_ROLE: USER
+JWT_TOKEN: token value something
