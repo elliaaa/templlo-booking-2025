@@ -1,4 +1,4 @@
-package com.templlo.service.reservation.domain.reservation.service.model;
+package com.templlo.service.reservation.domain.reservation.service.model.produce;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.templlo.service.reservation.domain.reservation.controller.model.request.CouponUsedType;
@@ -7,16 +7,16 @@ import com.templlo.service.reservation.domain.reservation.domain.ReservationGend
 import lombok.Builder;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @Builder
-public record CreateReservationMessage(
+public record CreateReservationProduce(
         UUID userId,
         UUID reservationId,
         UUID programId,
 
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-        LocalDate programDate,
+        String programDate,
 
         ReservationGenderType gender,
         Integer amount,
@@ -24,12 +24,13 @@ public record CreateReservationMessage(
         UUID couponId
 ) {
 
-    public static CreateReservationMessage from(Reservation reservation, int amount) {
-        return CreateReservationMessage.builder()
+    public static CreateReservationProduce from(Reservation reservation, int amount) {
+        String programDateStr = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(reservation.getProgramDate());
+        return CreateReservationProduce.builder()
                 .userId(reservation.getUserId())
                 .reservationId(reservation.getReservationId())
                 .programId(reservation.getProgramId())
-                .programDate(reservation.getProgramDate())
+                .programDate(programDateStr)
                 .gender(reservation.getGender())
                 .amount(amount)
                 .couponUsedType(CouponUsedType.valueOfIsUsed(reservation.isCouponUsed()))
