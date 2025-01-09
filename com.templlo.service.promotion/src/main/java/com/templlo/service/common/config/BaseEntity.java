@@ -24,7 +24,7 @@ public abstract class BaseEntity {
 
 	@CreatedBy
 	@Column(nullable = false, updatable = false)
-	private String createdBy;
+	protected String createdBy;
 
 	@LastModifiedDate
 	@Column(nullable = false)
