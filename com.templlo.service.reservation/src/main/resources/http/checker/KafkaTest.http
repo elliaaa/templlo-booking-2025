@@ -1,5 +1,9 @@
 # Kafka test controller api list
 
+### tempCreateReservationMessageProducer
+GET http://localhost:19040/api/test/kafka/create-reservation-result?reservationId=ac197001-9449-1963-8194-49d9f1400000
+
+
 ### t1
 GET http://localhost:19040/api/test/kafka/t1
 
