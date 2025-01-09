@@ -33,9 +33,9 @@ public class UserCoupon extends BaseEntity {
 	private UUID userCouponId;
 
 	@Column(name = "user_id", nullable = false)
-	private UUID userId; // UUID 형태 유지
+	private UUID userId;
 
-	@Column(name = "user_login_id", nullable = false, length = 50) // 추가된 필드
+	@Column(name = "user_login_id", nullable = false, length = 50)
 	private String userLoginId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -43,7 +43,7 @@ public class UserCoupon extends BaseEntity {
 	private Coupon coupon;
 
 	@Column(name = "status", nullable = false, length = 20)
-	private String status; // 예: ACTIVE, USED, EXPIRED
+	private String status;
 
 	@Column(name = "issued_at", nullable = false)
 	private LocalDateTime issuedAt;
@@ -62,9 +62,9 @@ public class UserCoupon extends BaseEntity {
 
 	@Builder(toBuilder = true)
 	public UserCoupon(UUID userId, String userLoginId, Coupon coupon, String status, LocalDateTime issuedAt,
-		LocalDateTime usedAt, LocalDateTime transferredAt, UUID fromUserId, UUID toUserId) {
+		LocalDateTime usedAt, LocalDateTime transferredAt, UUID fromUserId, UUID toUserId, String createdBy) {
 		this.userId = userId;
-		this.userLoginId = userLoginId; // 새 필드 초기화
+		this.userLoginId = userLoginId;
 		this.coupon = coupon;
 		this.status = status;
 		this.issuedAt = issuedAt;
@@ -72,6 +72,7 @@ public class UserCoupon extends BaseEntity {
 		this.transferredAt = transferredAt;
 		this.fromUserId = fromUserId;
 		this.toUserId = toUserId;
+		this.createdBy = createdBy; // 직접 초기화
 	}
 
 	// 쿠폰 사용 메서드
