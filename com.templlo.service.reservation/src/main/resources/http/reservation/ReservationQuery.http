@@ -1,9 +1,13 @@
 # ReservationQueryController api list
 @reservationId = ac197001-944c-127e-8194-4c22fd9c0001
-@userId = aa67f7ef-bfce-49a1-ac83-bb6f0a44561b
-@templeId = ac197001-9449-11d5-8194-49e379740000
-@tempProgramId1 = b32f79c3-eadc-47c2-99a2-834e48a37b83
-@tempProgramId2 = b32f79c3-eadc-47c2-99a2-834e48a37b83
+@userId = 85491e4b-8290-44b0-9d73-c657f62ffeb6
+@templeId = 2560006b-0962-4950-8ea7-c6babddffce0
+@tempProgramId1 = 2560006b-0962-4950-8ea7-c6babddffce3
+@tempProgramId2 = 2560006b-0962-4950-8ea7-c6babddffce3
+
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzY1MDEyMTEsImV4cCI6MTczNjUwMzAxMSwibG9naW5JZCI6InRlc3QxMjM0Iiwicm9sZSI6Ik1FTUJFUiIsInR5cGUiOiJhY2Nlc3MifQ.O83AJZG2qlUsUBowQ1-OZAjKdMJf6NM9Mg4gSSNrdz0
+@promotionId = 20455a70-7c75-46c0-a87d-65baeb19b20e
+
 
 ### getReservation
 GET http://localhost:19040/api/reservations/{{reservationId}}
@@ -13,14 +17,13 @@ X-Token: token value something
 
 
 ### getReservationsByUser
-GET http://localhost:19040/api/users/{{userId}}/reservations?page=-1&size=20&sort=created_at
-X-Login-Id: tempUserId77
-X-User-Role: MASTER
-X-Token: token value something
+GET http://localhost:19091/api/reservations/users/{{userId}}/reservations?page=-1&size=20&sort=created_at
+Authorization: Bearer {{accessToken}}
+
 
 
 ### getReservationsByTemple
-GET http://localhost:19040/api/temples/{{templeId}}/reservations?page=0&size=&sort=updatedAt&tempProgramId1={{tempProgramId1}}&tempProgramId2={{tempProgramId2}}
-X-Login-Id: tempUserId77
-X-User-Role: MASTER
-X-Token: token value something
+GET http://localhost:19091/api/reservations/temples/2560006b-0962-4950-8ea7-c6babddffce0/reservations?page=0&size=&
+    sort=updatedAt&
+    tempProgramId1={{tempProgramId1}}&tempProgramId2={{tempProgramId2}}
+Authorization: Bearer {{accessToken}}

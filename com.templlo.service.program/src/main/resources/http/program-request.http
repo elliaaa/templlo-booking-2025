@@ -1,9 +1,13 @@
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzY1MDA3MDYsImV4cCI6MTczNjUwMjUwNiwibG9naW5JZCI6InRlc3QxMjM0Iiwicm9sZSI6Ik1FTUJFUiIsInR5cGUiOiJhY2Nlc3MifQ.ln64pSVXgy_jUHecMewZxu64w5w3qbg1uP5WaYIxzeA
+
+
 ### Create Program(BLIND_DATE)
-POST http://localhost:19030/api/programs
+POST http://localhost:19091/api/programs
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-  "templeId": "789e1234-e89b-56d3-a789-426614178999",
+  "templeId": "2560006b-0962-4950-8ea7-c6babddffce0",
   "title": "블라인드 데이트 프로그램",
   "description": "특별한 만남을 위한 사찰에서의 블라인드 데이트.",
   "type": "BLIND_DATE",
@@ -23,19 +27,23 @@ POST http://localhost:19030/api/programs
 Content-Type: application/json
 
 {
-    "templeId": "789e1234-e89b-56d3-a789-426614178999",
-    "title": "템플 스테이",
-    "description": "템플스테이.",
-    "type": "TEMPLE_STAY",
-    "programFee": 0,
-    "reservationStartDate": "2025-01-11",
-    "reservationEndDate": "2025-01-30",
-    "programStartAt": "16:00",
-    "programCapacity": 20,
-    "programDate": null,
-    "maleCapacity": null,
-    "femaleCapacity": null,
-    "programDays": ["Monday", "Sunday", "Thursday"]
+  "templeId": "789e1234-e89b-56d3-a789-426614178999",
+  "title": "템플 스테이",
+  "description": "템플스테이.",
+  "type": "TEMPLE_STAY",
+  "programFee": 0,
+  "reservationStartDate": "2025-01-11",
+  "reservationEndDate": "2025-01-30",
+  "programStartAt": "16:00",
+  "programCapacity": 20,
+  "programDate": null,
+  "maleCapacity": null,
+  "femaleCapacity": null,
+  "programDays": [
+    "Monday",
+    "Sunday",
+    "Thursday"
+  ]
 }
 
 ### Update Program
@@ -43,7 +51,11 @@ PATCH http://localhost:19030/api/programs/{programId}
 Content-Type: application/json
 
 {
-  "title":"sdfdfsdf",
+  "title": "sdfdfsdf",
   "description": "sdfddddsdfsd",
   "programStartAt": "14:00:00"
 }
+
+### Search Program
+GET http://localhost:19091/api/programs/2560006b-0962-4950-8ea7-c6babddffce3?programDate=2025-01-01
+Authorization: Bearer {{accessToken}}
