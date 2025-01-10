@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.templlo.service.coupon.dto.TicketApplyRequestDto;
 import com.templlo.service.coupon.dto.TicketApplyResponseDto;
+import com.templlo.service.kafka.KafkaProducerService;
 
 import lombok.RequiredArgsConstructor;
 
