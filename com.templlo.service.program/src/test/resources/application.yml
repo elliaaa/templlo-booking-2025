@@ -6,3 +6,11 @@ spring:
     driver-class-name: org.h2.Driver
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
+  kafka:
+    bootstrap-servers: mock:9092
+    topics:
+      review-created: test-topic
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 0
