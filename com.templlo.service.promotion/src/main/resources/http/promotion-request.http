@@ -1,9 +1,9 @@
-@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzY0ODc0MjIsImV4cCI6MTczNjQ4OTIyMiwibG9naW5JZCI6InRlc3QxMjM0Iiwicm9sZSI6Ik1FTUJFUiIsInR5cGUiOiJhY2Nlc3MifQ.tysdQIRVt21vZhbWkoWKjMvzHrRXyGuUK8Ez5ccm1EQ
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzY1MDEyMTEsImV4cCI6MTczNjUwMzAxMSwibG9naW5JZCI6InRlc3QxMjM0Iiwicm9sZSI6Ik1FTUJFUiIsInR5cGUiOiJhY2Nlc3MifQ.O83AJZG2qlUsUBowQ1-OZAjKdMJf6NM9Mg4gSSNrdz0
 @page = 0
 @size = 10
 @sortBy = createdAt
-@promotionId = e2e60c3f-fb89-42d1-8ce8-c3b73799c133
-@couponId = 7952576e-07d1-4532-be09-1098966c991f
+@promotionId = 20455a70-7c75-46c0-a87d-65baeb19b20e
+@couponId = bc102bff-e987-4360-a5b6-40df5e3bfaff
 @toUserId = 641d428e-797b-4bae-a9e6-855ee07a8fdb
 
 

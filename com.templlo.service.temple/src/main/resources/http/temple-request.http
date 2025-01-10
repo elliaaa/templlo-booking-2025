@@ -1,12 +1,17 @@
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzY0OTkxNjcsImV4cCI6MTczNjUwMDk2NywibG9naW5JZCI6ImFkbWluMTAwMCIsInJvbGUiOiJURU1QTEVfQURNSU4iLCJ0eXBlIjoiYWNjZXNzIn0.NC7NM2fKAxjfvCZallf4elg0lg1XwkO9CtIMFoq1dKw
+
+
 ### create Temple
-POST http://localhost:19020/api/temples
+POST http://localhost:19091/api/temples
 Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
 
 {
-  "templeName": "화엄사",
+  "templeName": "수염사",
   "templeDescription": "아름다운 자연 속 사찰",
   "templePhone": "010-1234-5678",
-  "roadAddress": "전라남도 구례군",
+  "roadAddress": "경기도 수지구",
   "detailAddress": "산동면 화엄사길 1"
 }
 
@@ -17,6 +22,7 @@ Content-Type: application/json
 ### update Temple
 PATCH http://localhost:19020/api/temples/{{templeId}}
 Content-Type: application/json
+Authorization: Bearer {{accessToken}}
 
 {
   "templeName": "수정된 화엄사",
@@ -27,7 +33,9 @@ Content-Type: application/json
 }
 
 ### Get Temples by Region
-GET http://localhost:19020/api/temples?region=전라남도&page=0&size=10
+GET http://localhost:19091/api/temples/region?region=전라남도&page=0&size=10
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
 
 ### Search Temples
 GET http://localhost:19020/api/temples/search?keyword=화엄사&page=0&size=10
