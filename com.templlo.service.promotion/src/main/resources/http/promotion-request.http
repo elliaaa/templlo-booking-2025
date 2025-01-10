@@ -1,27 +1,70 @@
-### Create Promotion
-POST http://localhost:19050/api/promotion
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzY0Mzk0ODAsImV4cCI6MTczNjQ0MTI4MCwibG9naW5JZCI6Im1hc3Rlcjk5OTkiLCJyb2xlIjoiTUFTVEVSIiwidHlwZSI6ImFjY2VzcyJ9.457oI-F09a1saI8GYRYaw_bV8KF33UvkHv3CD5ElZ_c
+@page = 0
+@size = 10
+@sortBy = createdAt
+@promotionId = 4d285d06-b43b-4c74-952d-3de6a50f0c91
+@couponId = 7952576e-07d1-4532-be09-1098966c991f
+@toUserId = 641d428e-797b-4bae-a9e6-855ee07a8fdb
+
+
+### 퍼센트 할인권 프로모션 생성
+POST http://localhost:19091/api/promotions
 Content-Type: application/json
+Authorization: Bearer {{accessToken}}
 
 {
-  "name": "뉴 핫딜 프로모션",
+  "name": "퍼센트 할인 프로모션",
   "type": "HOTDEAL",
   "startDate": "2025-01-01",
   "endDate": "2025-01-10",
   "couponType": "DISCOUNT",
-  "maleCoupon": 100,
-  "femaleCoupon": 100,
-  "totalCoupon": 200
+  "totalCoupon": 30,
+  "value": 20,
+  "discountType": "PERCENTAGE",
+  "status": "ACTIVE"
 }
 
-> {%
-    // 응답에서 promotionId 추출하여 변수 저장
-    client.global.set("promotionId", response.body.promotionId);
-%}
+### 금액 할인권 프로모션 생성
+POST http://localhost:19091/api/promotions
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "금액 할인 프로모션",
+  "type": "HOTDEAL",
+  "startDate": "2025-01-01",
+  "endDate": "2025-01-10",
+  "couponType": "DISCOUNT",
+  "totalCoupon": 15,
+  "value": 5000,
+  "discountType": "AMOUNT",
+  "status": "ACTIVE"
+}
+
+### 선예매권 프로모션 생성
+POST http://localhost:19091/api/promotions
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "선예매권 프로모션",
+  "type": "ADVANCED_TICKET",
+  "startDate": "2025-01-01",
+  "endDate": "2025-01-10",
+  "couponType": "ADVANCED_TICKET",
+  "maleCoupon": 10,
+  "femaleCoupon": 10,
+  "totalCoupon": 20,
+  "value": null,
+  "discountType": null,
+  "status": "ACTIVE"
+}
 
 ###
 
 ### Update Promotion
-PATCH http://localhost:19050/api/promotion/{{promotionId}}
+PATCH http://localhost:19091/api/promotions/{{promotionId}}
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
@@ -34,17 +77,52 @@ Content-Type: application/json
   "couponType": "DISCOUNT"
 }
 
+
 ###
 
 ### Get Promotions with Pagination and Filters
-GET http://localhost:19050/api/promotion?page=0&size=10&type=HOTDEAL&status=ACTIVE
+GET http://localhost:19091/api/promotions?page=0&size=10&type=HOTDEAL&status=ACTIVE
+Authorization: Bearer {{accessToken}}
 
 ###
 
 ### Get Promotion by ID
-GET http://localhost:19050/api/promotion/{{promotionId}}
+GET http://localhost:19091/api/promotions/{{promotionId}}
+Authorization: Bearer {{accessToken}}
 
 ###
 
 ### Delete Promotion
-DELETE http://localhost:19050/api/promotion/{{promotionId}}
+DELETE http://localhost:19091/api/promotions/{{promotionId}}
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Issue Coupon
+POST http://localhost:19091/api/coupons/issue?promotionId={{promotionId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+
+### Coupon
+GET http://localhost:19091/api/coupons/{{couponId}}/validate
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+### Transfer Coupon
+POST http://localhost:19091/api/coupons/{{couponId}}/transfer
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "toUserId": "{{toUserId}}"
+}
+
+### My Coupon
+GET http://localhost:19091/api/coupons/my-coupons
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+### 특정 유저 쿠폰 조회
+GET http://localhost:19091/api/coupons?user={{toUserId}}&page={{page}}&size={{size}}
+Authorization: Bearer {{accessToken}}
