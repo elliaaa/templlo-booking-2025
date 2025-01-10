@@ -18,18 +18,20 @@ public record CreateReservationProduce(
         UUID reservationId,
         UUID programId,
         String programDate,
+        ReservationOpenType openType,
         ReservationGenderType gender,
         Integer amount,
         CouponUsedType couponUsedType,
         UUID couponId
 ) {
 
-    public static CreateReservationProduce from(Reservation reservation, int amount) {
+    public static CreateReservationProduce from(Reservation reservation, int amount, ReservationOpenType openType) {
         return CreateReservationProduce.builder()
                 .userId(reservation.getUserId())
                 .reservationId(reservation.getReservationId())
                 .programId(reservation.getProgramId())
                 .programDate(reservation.getProgramDateFormatted())
+                .openType(openType)
                 .gender(reservation.getGender())
                 .amount(amount)
                 .couponUsedType(CouponUsedType.valueOfIsUsed(reservation.isCouponUsed()))
