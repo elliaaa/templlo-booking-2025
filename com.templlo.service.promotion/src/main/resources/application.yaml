@@ -57,7 +57,6 @@ cloud:
 logging:
   level:
     org.hibernate.SQL: DEBUG
-    org.hibernate.orm.jdbc.bind: TRACE
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     com.templlo.service.coupon.feign: DEBUG
 

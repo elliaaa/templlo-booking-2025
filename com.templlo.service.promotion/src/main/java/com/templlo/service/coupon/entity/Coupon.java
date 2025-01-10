@@ -55,7 +55,7 @@ public class Coupon extends BaseEntity {
 
 	@Builder(toBuilder = true)
 	public Coupon(UUID couponId, Promotion promotion, String type, String discountType, BigDecimal value, String gender,
-		String status, String createdBy) {
+		String status, String createdBy, String updatedBy) {
 		this.couponId = couponId;
 		this.promotion = promotion;
 		this.type = type;
@@ -64,6 +64,7 @@ public class Coupon extends BaseEntity {
 		this.gender = gender;
 		this.status = status;
 		this.createdBy = createdBy;
+		this.updatedBy = updatedBy;
 	}
 
 	// 상태 업데이트 메서드
