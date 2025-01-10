@@ -153,4 +153,19 @@ public class Program extends BaseEntity {
         this.description = description;
         this.programStartAt = programStartAt;
     }
+
+    public void updateCalculateRating(double rating, Integer totalCount) {
+        // 기존에 리뷰 개수 0
+        if (this.programRating == null || this.programRating == 0.0) {
+            this.programRating = rating;
+        }
+        double calculated = ( this.programRating * (totalCount -1 ) + rating) / totalCount;
+        this.programRating = Double.parseDouble(String.format("%.1f", calculated));
+
+    }
+
+    public void updateReCalculateRating(double newRating, double oldRating, Integer totalCount) {
+        double calculated = (this.programRating * totalCount - oldRating + newRating) / totalCount;
+        this.programRating = Double.parseDouble(String.format("%.1f", calculated));
+    }
 }
