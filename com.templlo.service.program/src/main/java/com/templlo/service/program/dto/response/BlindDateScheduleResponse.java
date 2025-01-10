@@ -3,7 +3,6 @@ package com.templlo.service.program.dto.response;
 import com.templlo.service.program.entity.Program;
 import com.templlo.service.program.entity.ProgramGenderStatus;
 import com.templlo.service.program.entity.ProgramStatus;
-import com.templlo.service.program.entity.ProgramType;
 import lombok.AccessLevel;
 import lombok.Builder;
 
@@ -12,14 +11,10 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 @Builder(access = AccessLevel.PRIVATE)
-public record BlindDateProgramResponse(
+public record BlindDateScheduleResponse(
 
         UUID programId,
-        UUID templeId,
-        String title,
-        String description,
         LocalDate programDate,
-        ProgramType type,
         ProgramStatus status,
         ProgramGenderStatus genderStatus,
         LocalTime programStartAt,
@@ -31,16 +26,12 @@ public record BlindDateProgramResponse(
         LocalDate additionalReservationStartDate,
         LocalDate additionalReservationEndDate
 
-) implements DetailProgramResponse {
+) implements ProgramScheduleResponse {
 
-    public static BlindDateProgramResponse from(Program program) {
-        return BlindDateProgramResponse.builder()
+    public static BlindDateScheduleResponse from(Program program) {
+        return BlindDateScheduleResponse.builder()
                 .programId(program.getId())
-                .templeId(program.getTempleId())
-                .title(program.getTitle())
-                .description(program.getDescription())
                 .programDate(program.getBlindDateInfo().getProgramDate())
-                .type(program.getType())
                 .status(program.getBlindDateInfo().getStatus())
                 .genderStatus(program.getBlindDateInfo().getGenderStatus())
                 .programStartAt(program.getProgramStartAt())

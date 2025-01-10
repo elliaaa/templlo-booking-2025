@@ -2,10 +2,7 @@ package com.templlo.service.program.service;
 
 import com.templlo.service.program.dto.request.CreateProgramRequest;
 import com.templlo.service.program.dto.request.UpdateProgramRequest;
-import com.templlo.service.program.dto.response.BlindDateProgramResponse;
-import com.templlo.service.program.dto.response.DetailProgramResponse;
-import com.templlo.service.program.dto.response.SimpleProgramResponse;
-import com.templlo.service.program.dto.response.TempleStayProgramResponse;
+import com.templlo.service.program.dto.response.*;
 import com.templlo.service.program.entity.BlindDateInfo;
 import com.templlo.service.program.entity.Program;
 import com.templlo.service.program.entity.ProgramType;
@@ -29,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -109,7 +107,7 @@ public class ProgramService {
     }
 
 
-    public DetailProgramResponse getProgram(UUID programId, LocalDate programDate) {
+    public ProgramScheduleResponse getProgramSchedule(UUID programId, LocalDate programDate) {
 
         log.info("Get program start");
 
@@ -123,7 +121,7 @@ public class ProgramService {
                     .orElseThrow(() -> new ProgramException(ProgramStatusCode.TEMPLE_STAY_DAILY_INFO_NOT_FOUND));
 
             log.info("Get temple_stay program end");
-            return TempleStayProgramResponse.from(program, templeStayDailyInfo);
+            return TempleStayScheduleResponse.from(program, templeStayDailyInfo);
 
         } else {
 
@@ -132,10 +130,23 @@ public class ProgramService {
             }
 
             log.info("Get blind_date program end");
-            return BlindDateProgramResponse.from(program);
+            return BlindDateScheduleResponse.from(program);
+        }
+
+    }
+
+    public List<ProgramsByTempleResponse> getProgramsByTemple(UUID templeId, boolean detail) {
+
+        List<Program> programs = jpaProgramRepository.findByTempleId(templeId);
+
+        List<ProgramsByTempleResponse> programsByTempleResponses = new ArrayList<>();
+
+        for (Program program : programs) {
+            programsByTempleResponses.add(ProgramsByTempleResponse.From(program, detail));
         }
 
 
+        return programsByTempleResponses;
     }
 
     @Transactional

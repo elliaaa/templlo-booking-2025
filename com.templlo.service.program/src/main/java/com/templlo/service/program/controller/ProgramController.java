@@ -1,7 +1,8 @@
 package com.templlo.service.program.controller;
 
 import com.templlo.service.program.dto.request.CreateProgramRequest;
-import com.templlo.service.program.dto.response.DetailProgramResponse;
+import com.templlo.service.program.dto.response.ProgramScheduleResponse;
+import com.templlo.service.program.dto.response.ProgramsByTempleResponse;
 import com.templlo.service.program.dto.response.SimpleProgramResponse;
 import com.templlo.service.program.dto.request.UpdateProgramRequest;
 import com.templlo.service.program.entity.ProgramType;
@@ -51,8 +52,14 @@ public class ProgramController {
 
     // 프로그램의 스케쥴 상세 조회
     @GetMapping("/{programId}")
-    public ApiResponse<DetailProgramResponse> getPrograms(@PathVariable(name = "programId") UUID programId, @RequestParam LocalDate programDate) {
-        return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_READ, programService.getProgram(programId, programDate));
+    public ApiResponse<ProgramScheduleResponse> getProgramSchedule(@PathVariable(name = "programId") UUID programId, @RequestParam LocalDate programDate) {
+        return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_READ, programService.getProgramSchedule(programId, programDate));
+    }
+
+    // 사찰 별 프로그램 조회
+    @GetMapping("/temple/{templeId}")
+    public ApiResponse<List<ProgramsByTempleResponse>> getProgramsByTemple(@PathVariable(name = "templeId") UUID templeId, @RequestParam(defaultValue = "false") boolean detail) {
+        return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_READ, programService.getProgramsByTemple(templeId, detail));
     }
 
     @PreAuthorize("hasAnyAuthority('TEMPLE_ADMIN', 'MASTER')")
