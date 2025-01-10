@@ -55,6 +55,15 @@ public class TempleController {
         return ResponseEntity.ok(ApiResponse.of(BasicStatusCode.OK, null));
     }
 
+    @PreAuthorize("hasAuthority('TEMPLE_ADMIN')")
+    @GetMapping("/{templeId}/validate-admin")
+    public ResponseEntity<ApiResponse<Void>> checkTempleOwnership(@PathVariable UUID templeId,
+                                                                  @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        templeService.validateTempleAdmin(templeId, userDetails.getLoginId());
+        return ResponseEntity.ok(ApiResponse.of(BasicStatusCode.OK, null));
+    }
+
+
     @GetMapping("/region")
     public ResponseEntity<ApiResponse<PageResponse<TempleResponse>>> getTemplesByRegion(@RequestParam String region,
                                                                                         Pageable pageable) {
