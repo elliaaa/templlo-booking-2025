@@ -117,6 +117,20 @@ public class TempleService {
         return PageResponse.of(templeResponses);
     }
 
+    @Transactional(readOnly = true)
+    public void validateTempleAdmin(UUID templeId, String loginId) {
+        // 사용자 정보 및 권한 확인
+        UserData userData = getUserDataAndValidateRole(loginId, "TEMPLE_ADMIN");
+
+        // Temple 엔티티 확인 및 userId 매칭
+        Temple temple = templeRepository.findById(templeId)
+                .orElseThrow(() -> new BaseException(BasicStatusCode.TEMPLE_NOT_FOUND));
+
+        if (!temple.getUserId().equals(userData.id())) {
+            throw new AccessDeniedException("해당 사찰의 관리자가 아닙니다.");
+        }
+    }
+
 
     // 사용자 정보 및 권한 검증을 처리하는 공통 메서드
     private UserData getUserDataAndValidateRole(String loginId, String requiredRole) {
