@@ -7,13 +7,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.templlo.service.user.common.excepion.BaseException;
+import com.templlo.service.user.common.exception.BaseException;
 import com.templlo.service.user.common.jwt.JwtTokenProvider;
 import com.templlo.service.user.common.response.BasicStatusCode;
 import com.templlo.service.user.common.security.UserDetailsImpl;
 import com.templlo.service.user.dto.LoginRequestDto;
 import com.templlo.service.user.dto.TokenDto;
 import com.templlo.service.user.entity.User;
+import com.templlo.service.user.entity.enums.UserRole;
 
 import lombok.RequiredArgsConstructor;
 
@@ -42,5 +43,12 @@ public class AuthService {
 			throw new BaseException(BasicStatusCode.INVALID_USER);
 		}
 
+	}
+
+	public TokenDto reissue(String loginId, String role) {
+		String accessToken = jwtTokenProvider.createAccessToken(loginId, UserRole.fromString(role));
+		String refreshToken = jwtTokenProvider.createRefreshToken(loginId, UserRole.fromString(role));
+
+		return new TokenDto(accessToken, refreshToken);
 	}
 }
