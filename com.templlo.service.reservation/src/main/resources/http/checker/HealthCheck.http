@@ -1,0 +1,4 @@
+# Health Check Controller api list
+
+### healthCheck
+GET http://localhost:19040/api/checker/health-check

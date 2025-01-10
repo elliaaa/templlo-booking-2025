@@ -21,7 +21,7 @@ import static com.templlo.service.reservation.global.GlobalConst.*;
 @Slf4j
 @Component
 public class CustomAuthenticationFilter extends OncePerRequestFilter {
-    private final String[] EXCLUDE_PATH_PREFIXES = {"/api/checker/health-check", "/api/test/reservation-exception"};
+    private final String[] EXCLUDE_PATH_PREFIXES = {"/api/checker/health-check", "/api/test/reservation-exception", "/api/test/kafka"};
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {

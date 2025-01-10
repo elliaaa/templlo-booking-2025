@@ -12,13 +12,21 @@ spring:
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
+    database: postgresql
     hibernate:
       ddl-auto: update
+    show-sql: true
     properties:
-      show-sql: true
-      format-sql: true
-      use_sql_comments: true
-      default_schema: reservation
+      hibernate:
+        format_sql: true
+        type: trace
+        default_schema: reservation
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 #eureka:
 #  client:

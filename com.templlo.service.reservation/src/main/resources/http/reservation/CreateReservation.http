@@ -1,0 +1,21 @@
+# CreateReservation controller api list
+
+### createReservation
+POST http://localhost:19040/api/reservations
+Content-Type: application/json
+X-Login-Id: tempUserId77
+X-User-Role: MEMBER
+X-Token: token value something
+
+{
+  "userId" : "aa67f7ef-bfce-49a1-ac83-bb6f0a44561b",
+  "programId" : "b32f79c3-eadc-47c2-99a2-834e48a37b83",
+  "programDate" : "2025-01-01",
+  "couponUsedType": "USED",
+  "couponId" : "9745ad8d-2f74-46da-a7fd-58a69b45d0ba",
+  "name" : "메타몽",
+  "phoneNumber" : "010-333-7777",
+  "gender" : "FEMALE",
+  "paymentType": "NO_PAY",
+  "paymentStatus": "COMPLETED"
+}

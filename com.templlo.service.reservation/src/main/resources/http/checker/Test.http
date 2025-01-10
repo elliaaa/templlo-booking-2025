@@ -1,0 +1,34 @@
+# Test Controller api list
+
+### reservationExceptionTest
+GET http://localhost:19040/api/test/reservation-exception
+
+
+### needAuthTest : 어떤 권한이든 접근 가능
+GET http://localhost:19040/api/test/need-auth
+X-Login-Id: tempUserId77
+X-User-Role: MEMBER
+X-Token: token value something
+
+
+### testRoleUser : MEMBER, MASTER 만 접근 가능
+GET http://localhost:19040/api/test/auth/user
+X-Login-Id: tempUserId77
+X-User-Role: MEMBER
+X-Token: token value something
+
+
+### testRoleTemple : TEMPLE_ADMIN, MASTER 만 접근 가능
+GET http://localhost:19040/api/test/auth/temple
+X-Login-Id: tempUserId77
+X-User-Role: TEMPLE_ADMIN
+X-Token: token value something
+
+
+### testRoleMaster : MASTER 만 접근 가능
+GET http://localhost:19040/api/test/auth/master
+X-Login-Id: tempUserId77
+X-User-Role: MASTER
+X-Token: token value something
+
+# TODO : 접근할 수 없는 경우의 에러 응답 핸들링
