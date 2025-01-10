@@ -32,7 +32,7 @@ public abstract class BaseEntity {
 
 	@LastModifiedBy
 	@Column(nullable = false)
-	private String updatedBy;
+	protected String updatedBy;
 
 	private LocalDateTime deletedAt;
 
