@@ -12,9 +12,13 @@ import com.templlo.service.program.entity.ProgramType;
 import com.templlo.service.program.entity.TempleStayDailyInfo;
 import com.templlo.service.program.exception.ProgramException;
 import com.templlo.service.program.exception.ProgramStatusCode;
+import com.templlo.service.program.feign.TempleClient;
+import com.templlo.service.program.global.common.response.BasicStatusCode;
 import com.templlo.service.program.repository.JpaProgramRepository;
 import com.templlo.service.program.repository.JpaTempleStayDailyInfoRepository;
 import com.templlo.service.program.repository.QueryProgramRepository;
+import com.templlo.service.program.security.UserDetailsImpl;
+import com.templlo.service.program.security.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -36,11 +40,18 @@ public class ProgramService {
     private final JpaProgramRepository jpaProgramRepository;
     private final QueryProgramRepository queryProgramRepository;
     private final JpaTempleStayDailyInfoRepository jpaTempleStayDailyInfoRepository;
+    private final TempleClient templeClient;
 
     @Transactional
-    public SimpleProgramResponse createProgram(CreateProgramRequest request) {
+    public SimpleProgramResponse createProgram(CreateProgramRequest request, UserDetailsImpl userDetails) {
 
         log.info("Create program start");
+
+        if (userDetails.getUserRole() == UserRole.TEMPLE_ADMIN) {
+            if (!templeClient.checkTempleOwnership(request.templeId(), userDetails).getStatusCode().is2xxSuccessful()) {
+                throw new ProgramException(BasicStatusCode.UNAUTHORIZED);
+            };
+        }
 
         // program 생성
         Program program = Program.create(
@@ -128,13 +139,19 @@ public class ProgramService {
     }
 
     @Transactional
-    public SimpleProgramResponse updateProgram(UUID programId, UpdateProgramRequest request) {
+    public SimpleProgramResponse updateProgram(UUID programId, UpdateProgramRequest request, UserDetailsImpl userDetails) {
 
         log.info("Update program start");
 
         Program program = jpaProgramRepository.findById(programId).orElseThrow(
                 () -> new ProgramException(ProgramStatusCode.PROGRAM_NOT_FOUND)
         );
+
+        if (userDetails.getUserRole() == UserRole.TEMPLE_ADMIN) {
+            if (!templeClient.checkTempleOwnership(program.getTempleId(), userDetails).getStatusCode().is2xxSuccessful()) {
+                throw new ProgramException(BasicStatusCode.UNAUTHORIZED);
+            };
+        }
 
         program.update(request.title(), request.description(), request.programStartAt());
 

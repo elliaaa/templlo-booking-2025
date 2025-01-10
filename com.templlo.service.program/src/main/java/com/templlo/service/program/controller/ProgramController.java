@@ -34,7 +34,7 @@ public class ProgramController {
     public ApiResponse<SimpleProgramResponse> createProgram(@Valid @RequestBody CreateProgramRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_CREATE, programService.createProgram(request, userDetails));
     }
-
+    // 프로그램 전체 조회
     @GetMapping
     public PagedModel<SimpleProgramResponse> getPrograms(
             @RequestParam(defaultValue = "0") int page,
@@ -49,7 +49,7 @@ public class ProgramController {
         return programService.getPrograms(keyword, type, programDays, pageable);
     }
 
-
+    // 프로그램의 스케쥴 상세 조회
     @GetMapping("/{programId}")
     public ApiResponse<DetailProgramResponse> getPrograms(@PathVariable(name = "programId") UUID programId, @RequestParam LocalDate programDate) {
         return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_READ, programService.getProgram(programId, programDate));
@@ -58,7 +58,7 @@ public class ProgramController {
     @PreAuthorize("hasAnyAuthority('TEMPLE_ADMIN', 'MASTER')")
     @PatchMapping("/{programId}")
     public ApiResponse<SimpleProgramResponse> updateProgram(@PathVariable(name = "programId") UUID programId, @Valid @RequestBody UpdateProgramRequest request,  @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_UPDATE, programService.updateProgram(programId, request));
+        return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_UPDATE, programService.updateProgram(programId, request, userDetails));
     }
 
 }
