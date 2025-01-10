@@ -7,10 +7,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import com.templlo.service.common.response.PageResponse;
 import com.templlo.service.coupon.entity.Coupon;
 import com.templlo.service.coupon.repository.CouponRepository;
+import com.templlo.service.kafka.KafkaProducerService;
+import com.templlo.service.promotion.dto.PromotionCreatedEvent;
 import com.templlo.service.promotion.dto.PromotionDetailResponseDto;
 import com.templlo.service.promotion.dto.PromotionRequestDto;
 import com.templlo.service.promotion.dto.PromotionResponseDto;
@@ -26,6 +29,7 @@ public class PromotionService {
 
 	private final PromotionRepository promotionRepository;
 	private final CouponRepository couponRepository;
+	private final KafkaProducerService kafkaProducerService;
 
 	@Transactional
 	public PromotionResponseDto createPromotion(PromotionRequestDto requestDto, String userId, String role) {
@@ -57,11 +61,28 @@ public class PromotionService {
 		// 쿠폰 생성
 		createCouponsForPromotion(promotion, requestDto);
 
+		// Kafka 메시지 발행 (별도 트랜잭션에서 처리)
+		sendPromotionCreatedEvent(promotion);
+
 		return new PromotionResponseDto(
 			promotion.getPromotionId(),
 			"SUCCESS",
 			"프로모션이 생성되었습니다."
 		);
+	}
+
+	@TransactionalEventListener
+	public void sendPromotionCreatedEvent(Promotion promotion) {
+		PromotionCreatedEvent event = new PromotionCreatedEvent(
+			promotion.getPromotionId(),
+			promotion.getName(),
+			promotion.getStartDate(),
+			promotion.getEndDate(),
+			promotion.getCouponType(),
+			promotion.getTotalCoupons()
+		);
+
+		kafkaProducerService.sendPromotionCreatedEvent(event);
 	}
 
 	private void createCouponsForPromotion(Promotion promotion, PromotionRequestDto requestDto) {
