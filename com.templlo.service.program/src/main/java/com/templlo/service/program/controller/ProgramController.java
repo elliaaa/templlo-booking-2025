@@ -7,12 +7,15 @@ import com.templlo.service.program.dto.request.UpdateProgramRequest;
 import com.templlo.service.program.entity.ProgramType;
 import com.templlo.service.program.exception.ProgramStatusCode;
 import com.templlo.service.program.global.common.response.ApiResponse;
+import com.templlo.service.program.security.UserDetailsImpl;
 import com.templlo.service.program.service.ProgramService;
 import com.templlo.service.program.util.PagingUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -26,9 +29,10 @@ public class ProgramController {
 
     private final ProgramService programService;
 
+    @PreAuthorize("hasAnyAuthority('TEMPLE_ADMIN', 'MASTER')")
     @PostMapping
-    public ApiResponse<SimpleProgramResponse> createProgram(@Valid @RequestBody CreateProgramRequest request) {
-        return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_CREATE, programService.createProgram(request));
+    public ApiResponse<SimpleProgramResponse> createProgram(@Valid @RequestBody CreateProgramRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_CREATE, programService.createProgram(request, userDetails));
     }
 
     @GetMapping
@@ -45,13 +49,15 @@ public class ProgramController {
         return programService.getPrograms(keyword, type, programDays, pageable);
     }
 
+
     @GetMapping("/{programId}")
     public ApiResponse<DetailProgramResponse> getPrograms(@PathVariable(name = "programId") UUID programId, @RequestParam LocalDate programDate) {
         return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_READ, programService.getProgram(programId, programDate));
     }
 
+    @PreAuthorize("hasAnyAuthority('TEMPLE_ADMIN', 'MASTER')")
     @PatchMapping("/{programId}")
-    public ApiResponse<SimpleProgramResponse> updateProgram(@PathVariable(name = "programId") UUID programId, @Valid @RequestBody UpdateProgramRequest request) {
+    public ApiResponse<SimpleProgramResponse> updateProgram(@PathVariable(name = "programId") UUID programId, @Valid @RequestBody UpdateProgramRequest request,  @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_UPDATE, programService.updateProgram(programId, request));
     }
 
