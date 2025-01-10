@@ -43,4 +43,12 @@ public class TempleStayDailyInfo extends BaseEntity {
                 .status(ProgramStatus.INACTIVE)
                 .build();
     }
+
+    public void reduceAvailableCapacity() {
+        this.availableCapacity -= 1;
+
+        if (this.availableCapacity == 0) {
+            this.status = ProgramStatus.CLOSED;
+        }
+    }
 }

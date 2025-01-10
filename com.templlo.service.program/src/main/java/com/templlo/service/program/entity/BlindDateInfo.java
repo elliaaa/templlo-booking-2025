@@ -1,6 +1,7 @@
 package com.templlo.service.program.entity;
 
 import com.templlo.service.program.auditor.BaseEntity;
+import com.templlo.service.program.kafka.message.reservation.Gender;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
@@ -65,4 +66,33 @@ public class BlindDateInfo extends BaseEntity {
                 .build();
     }
 
+    public void reduceAvailableCapacity(Gender gender) {
+        // 남성
+        if (gender == Gender.MALE) {
+            // 정원 감소
+            this.availableMaleCapacity -= 1;
+            // 남성 가능 정원이 0 이라면
+            if (availableMaleCapacity == 0) {
+                // 남성 가능 정원이 0이 되었는데 이미 여성 정원도 마감이라면, 해당 스케쥴 마감으로 변경
+                if (this.genderStatus == ProgramGenderStatus.FEMALE_CLOSED) {
+                    this.status = ProgramStatus.CLOSED;
+                } else {
+                    this.genderStatus = ProgramGenderStatus.MALE_CLOSED;
+                }
+            }
+        }
+        // 여성
+        if (gender == Gender.FEMALE) {
+
+            this.availableFemaleCapacity -= 1;
+
+            if (availableFemaleCapacity == 0) {
+                if (this.genderStatus == ProgramGenderStatus.MALE_CLOSED) {
+                    this.status = ProgramStatus.CLOSED;
+                } else {
+                    this.genderStatus = ProgramGenderStatus.FEMALE_CLOSED;
+                }
+            }
+        }
+    }
 }

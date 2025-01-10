@@ -2,19 +2,20 @@ package com.templlo.service.program.service;
 
 import com.templlo.service.program.dto.request.CreateProgramRequest;
 import com.templlo.service.program.dto.request.UpdateProgramRequest;
-import com.templlo.service.program.dto.response.BlindDateProgramResponse;
-import com.templlo.service.program.dto.response.DetailProgramResponse;
-import com.templlo.service.program.dto.response.SimpleProgramResponse;
-import com.templlo.service.program.dto.response.TempleStayProgramResponse;
+import com.templlo.service.program.dto.response.*;
 import com.templlo.service.program.entity.BlindDateInfo;
 import com.templlo.service.program.entity.Program;
 import com.templlo.service.program.entity.ProgramType;
 import com.templlo.service.program.entity.TempleStayDailyInfo;
 import com.templlo.service.program.exception.ProgramException;
 import com.templlo.service.program.exception.ProgramStatusCode;
+import com.templlo.service.program.feign.TempleClient;
+import com.templlo.service.program.global.common.response.BasicStatusCode;
 import com.templlo.service.program.repository.JpaProgramRepository;
 import com.templlo.service.program.repository.JpaTempleStayDailyInfoRepository;
 import com.templlo.service.program.repository.QueryProgramRepository;
+import com.templlo.service.program.security.UserDetailsImpl;
+import com.templlo.service.program.security.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,11 +38,18 @@ public class ProgramService {
     private final JpaProgramRepository jpaProgramRepository;
     private final QueryProgramRepository queryProgramRepository;
     private final JpaTempleStayDailyInfoRepository jpaTempleStayDailyInfoRepository;
+    private final TempleClient templeClient;
 
     @Transactional
-    public SimpleProgramResponse createProgram(CreateProgramRequest request) {
+    public SimpleProgramResponse createProgram(CreateProgramRequest request, UserDetailsImpl userDetails) {
 
         log.info("Create program start");
+
+        if (userDetails.getUserRole() == UserRole.TEMPLE_ADMIN) {
+            if (!templeClient.checkTempleOwnership(request.templeId(), userDetails).getStatusCode().is2xxSuccessful()) {
+                throw new ProgramException(BasicStatusCode.UNAUTHORIZED);
+            };
+        }
 
         // program 생성
         Program program = Program.create(
@@ -98,7 +107,7 @@ public class ProgramService {
     }
 
 
-    public DetailProgramResponse getProgram(UUID programId, LocalDate programDate) {
+    public ProgramScheduleResponse getProgramSchedule(UUID programId, LocalDate programDate) {
 
         log.info("Get program start");
 
@@ -112,7 +121,7 @@ public class ProgramService {
                     .orElseThrow(() -> new ProgramException(ProgramStatusCode.TEMPLE_STAY_DAILY_INFO_NOT_FOUND));
 
             log.info("Get temple_stay program end");
-            return TempleStayProgramResponse.from(program, templeStayDailyInfo);
+            return TempleStayScheduleResponse.from(program, templeStayDailyInfo);
 
         } else {
 
@@ -121,20 +130,39 @@ public class ProgramService {
             }
 
             log.info("Get blind_date program end");
-            return BlindDateProgramResponse.from(program);
+            return BlindDateScheduleResponse.from(program);
         }
-
 
     }
 
+    public List<ProgramsByTempleResponse> getProgramsByTemple(UUID templeId, boolean detail) {
+
+        List<Program> programs = jpaProgramRepository.findByTempleId(templeId);
+
+        List<ProgramsByTempleResponse> programsByTempleResponses = new ArrayList<>();
+
+        for (Program program : programs) {
+            programsByTempleResponses.add(ProgramsByTempleResponse.From(program, detail));
+        }
+
+
+        return programsByTempleResponses;
+    }
+
     @Transactional
-    public SimpleProgramResponse updateProgram(UUID programId, UpdateProgramRequest request) {
+    public SimpleProgramResponse updateProgram(UUID programId, UpdateProgramRequest request, UserDetailsImpl userDetails) {
 
         log.info("Update program start");
 
         Program program = jpaProgramRepository.findById(programId).orElseThrow(
                 () -> new ProgramException(ProgramStatusCode.PROGRAM_NOT_FOUND)
         );
+
+        if (userDetails.getUserRole() == UserRole.TEMPLE_ADMIN) {
+            if (!templeClient.checkTempleOwnership(program.getTempleId(), userDetails).getStatusCode().is2xxSuccessful()) {
+                throw new ProgramException(BasicStatusCode.UNAUTHORIZED);
+            };
+        }
 
         program.update(request.title(), request.description(), request.programStartAt());
 
