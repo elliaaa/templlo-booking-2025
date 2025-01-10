@@ -57,7 +57,7 @@ public class ProgramController {
     }
 
     // 사찰 별 프로그램 조회
-    @GetMapping("/temple/{templeId}")
+    @GetMapping("/temples/{templeId}")
     public ApiResponse<List<ProgramsByTempleResponse>> getProgramsByTemple(@PathVariable(name = "templeId") UUID templeId, @RequestParam(defaultValue = "false") boolean detail) {
         return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_READ, programService.getProgramsByTemple(templeId, detail));
     }
