@@ -25,129 +25,129 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-@Service
-@RequiredArgsConstructor
-@Slf4j
-public class TempleService {
+    @Service
+    @RequiredArgsConstructor
+    @Slf4j
+    public class TempleService {
 
-    private final UserClient userClient;
-    private final TempleRepository templeRepository;
-    private final TempleElasticSearchRepository templeElasticSearchRepository;
+        private final UserClient userClient;
+        private final TempleRepository templeRepository;
+        private final TempleElasticSearchRepository templeElasticSearchRepository;
 
-    @Transactional
-    @CacheEvict(value = "templesByRegion", allEntries = true)
-    public TempleResponse createTemple(CreateTempleRequest request, String loginId) {
+        @Transactional
+        @CacheEvict(value = "templesByRegion", allEntries = true)
+        public TempleResponse createTemple(CreateTempleRequest request, String loginId) {
 
-        UserData userData = getUserDataAndValidateRole(loginId, "TEMPLE_ADMIN");
+            UserData userData = getUserDataAndValidateRole(loginId, "TEMPLE_ADMIN");
 
-        // 1. JPA로 Temple 저장
-        Temple temple = Temple.of(
-                request.getTempleName(),
-                request.getTempleDescription(),
-                request.getTemplePhone(),
-                request.getRoadAddress(),
-                request.getDetailAddress()
-        );
+            // 1. JPA로 Temple 저장
+            Temple temple = Temple.of(
+                    request.getTempleName(),
+                    request.getTempleDescription(),
+                    request.getTemplePhone(),
+                    request.getRoadAddress(),
+                    request.getDetailAddress()
+            );
 
-        temple.setUserId(userData.id());
+            temple.setUserId(userData.id());
 
-        Temple savedTemple = templeRepository.save(temple);
+            Temple savedTemple = templeRepository.save(temple);
 
-        // 2. Elasticsearch에 SearchTemple 저장
-        SearchTemple searchTemple = SearchTemple.from(savedTemple);
-        templeElasticSearchRepository.save(searchTemple);
+            // 2. Elasticsearch에 SearchTemple 저장
+            SearchTemple searchTemple = SearchTemple.from(savedTemple);
+            templeElasticSearchRepository.save(searchTemple);
 
-        return TempleResponse.from(savedTemple);
+            return TempleResponse.from(savedTemple);
+        }
+
+
+        @Transactional
+        public TempleResponse updateTemple(UUID templeId, UpdateTempleRequest request,String loginId) {
+
+            UserData userData = getUserDataAndValidateRole(loginId, "TEMPLE_ADMIN");
+
+            Temple temple = templeRepository.findById(templeId)
+                    .orElseThrow(() -> new BaseException(BasicStatusCode.TEMPLE_NOT_FOUND));
+
+            // 수정할 필드 업데이트
+            if (request.getTempleName() != null) {
+                temple.setTempleName(request.getTempleName());
+            }
+            if (request.getTempleDescription() != null) {
+                temple.setTempleDescription(request.getTempleDescription());
+            }
+            if (request.getTemplePhone() != null) {
+                temple.setTemplePhone(request.getTemplePhone());
+            }
+            if (request.getRoadAddress() != null) {
+                temple.getAddress().setRoadAddress(request.getRoadAddress());
+            }
+            if (request.getDetailAddress() != null) {
+                temple.getAddress().setDetailAddress(request.getDetailAddress());
+            }
+
+            Temple savedTemple = templeRepository.save(temple);
+
+            // Elasticsearch에도 수정내용 반영
+            SearchTemple searchTemple = SearchTemple.from(savedTemple);
+            templeElasticSearchRepository.save(searchTemple);
+
+            return TempleResponse.from(savedTemple);
+        }
+
+        @Transactional
+        public void deleteTemple(UUID templeId,String loginId) {
+
+            UserData userData = getUserDataAndValidateRole(loginId, "MASTER");
+
+            Temple temple = templeRepository.findById(templeId)
+                    .orElseThrow(() -> new BaseException(BasicStatusCode.TEMPLE_NOT_FOUND));
+
+            temple.delete(loginId);
+
+            templeRepository.save(temple);
+        }
+
+        @Cacheable(value = "templesByRegion", key = "#region + '-' + #pageable.pageNumber")
+        public PageResponse<TempleResponse> getTemplesByRegion(String region, Pageable pageable) {
+
+            Page<Temple> templesPage = templeRepository.findTemplesByRegion(region, pageable);
+            Page<TempleResponse> templeResponses = templesPage.map(temple -> TempleResponse.from(temple));
+
+            return PageResponse.of(templeResponses);
+        }
+
+        @Transactional(readOnly = true)
+        public void validateTempleAdmin(UUID templeId, String loginId) {
+            // 사용자 정보 및 권한 확인
+            UserData userData = getUserDataAndValidateRole(loginId, "TEMPLE_ADMIN");
+
+            // Temple 엔티티 확인 및 userId 매칭
+            Temple temple = templeRepository.findById(templeId)
+                    .orElseThrow(() -> new BaseException(BasicStatusCode.TEMPLE_NOT_FOUND));
+
+            if (!temple.getUserId().equals(userData.id())) {
+                throw new AccessDeniedException("해당 사찰의 관리자가 아닙니다.");
+            }
+        }
+
+
+        // 사용자 정보 및 권한 검증을 처리하는 공통 메서드
+        private UserData getUserDataAndValidateRole(String loginId, String requiredRole) {
+
+            ApiResponse<UserData> userResponse = userClient.getUserInfo(loginId);
+
+            if (userResponse == null || Integer.parseInt(userResponse.status()) != 200 || userResponse.getData() == null) {
+                throw new IllegalArgumentException("사용자 정보를 찾을 수 없습니다.");
+            }
+
+            UserData userData = userResponse.getData();
+
+            if (!requiredRole.equals(userData.role())) {
+                throw new AccessDeniedException(requiredRole + " 권한이 필요합니다.");
+            }
+
+            return userData;
+        }
+
     }
-
-
-    @Transactional
-    public TempleResponse updateTemple(UUID templeId, UpdateTempleRequest request,String loginId) {
-
-        UserData userData = getUserDataAndValidateRole(loginId, "TEMPLE_ADMIN");
-
-        Temple temple = templeRepository.findById(templeId)
-                .orElseThrow(() -> new BaseException(BasicStatusCode.TEMPLE_NOT_FOUND));
-
-        // 수정할 필드 업데이트
-        if (request.getTempleName() != null) {
-            temple.setTempleName(request.getTempleName());
-        }
-        if (request.getTempleDescription() != null) {
-            temple.setTempleDescription(request.getTempleDescription());
-        }
-        if (request.getTemplePhone() != null) {
-            temple.setTemplePhone(request.getTemplePhone());
-        }
-        if (request.getRoadAddress() != null) {
-            temple.getAddress().setRoadAddress(request.getRoadAddress());
-        }
-        if (request.getDetailAddress() != null) {
-            temple.getAddress().setDetailAddress(request.getDetailAddress());
-        }
-
-        Temple savedTemple = templeRepository.save(temple);
-
-        // Elasticsearch에도 수정내용 반영
-        SearchTemple searchTemple = SearchTemple.from(savedTemple);
-        templeElasticSearchRepository.save(searchTemple);
-
-        return TempleResponse.from(savedTemple);
-    }
-
-    @Transactional
-    public void deleteTemple(UUID templeId,String loginId) {
-
-        UserData userData = getUserDataAndValidateRole(loginId, "MASTER");
-
-        Temple temple = templeRepository.findById(templeId)
-                .orElseThrow(() -> new BaseException(BasicStatusCode.TEMPLE_NOT_FOUND));
-
-        temple.delete(loginId);
-
-        templeRepository.save(temple);
-    }
-
-    @Cacheable(value = "templesByRegion", key = "#region + '-' + #pageable.pageNumber")
-    public PageResponse<TempleResponse> getTemplesByRegion(String region, Pageable pageable) {
-
-        Page<Temple> templesPage = templeRepository.findTemplesByRegion(region, pageable);
-        Page<TempleResponse> templeResponses = templesPage.map(temple -> TempleResponse.from(temple));
-
-        return PageResponse.of(templeResponses);
-    }
-
-    @Transactional(readOnly = true)
-    public void validateTempleAdmin(UUID templeId, String loginId) {
-        // 사용자 정보 및 권한 확인
-        UserData userData = getUserDataAndValidateRole(loginId, "TEMPLE_ADMIN");
-
-        // Temple 엔티티 확인 및 userId 매칭
-        Temple temple = templeRepository.findById(templeId)
-                .orElseThrow(() -> new BaseException(BasicStatusCode.TEMPLE_NOT_FOUND));
-
-        if (!temple.getUserId().equals(userData.id())) {
-            throw new AccessDeniedException("해당 사찰의 관리자가 아닙니다.");
-        }
-    }
-
-
-    // 사용자 정보 및 권한 검증을 처리하는 공통 메서드
-    private UserData getUserDataAndValidateRole(String loginId, String requiredRole) {
-
-        ApiResponse<UserData> userResponse = userClient.getUserInfo(loginId);
-
-        if (userResponse == null || Integer.parseInt(userResponse.status()) != 200 || userResponse.getData() == null) {
-            throw new IllegalArgumentException("사용자 정보를 찾을 수 없습니다.");
-        }
-
-        UserData userData = userResponse.getData();
-
-        if (!requiredRole.equals(userData.role())) {
-            throw new AccessDeniedException(requiredRole + " 권한이 필요합니다.");
-        }
-
-        return userData;
-    }
-
-}
