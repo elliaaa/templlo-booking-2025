@@ -43,12 +43,10 @@ public class ReservationQueryController {
     @GetMapping("/temples/{templeId}/reservations")
     public ResponseEntity<ApiResponse<TempleReservationListWrapperRes>> getReservationsByTemple(
             @PathVariable(name = "templeId") UUID templeId,
-            Pageable pageable,
-            @RequestParam(name = "tempProgramId1") UUID tempProgramId1,
-            @RequestParam(name = "tempProgramId2") UUID tempProgramId2
+            Pageable pageable
     ) {
         Pageable pageRequest = PageUtil.getCheckedPageable(pageable);
-        TempleReservationListWrapperRes responseDto = reservationQueryService.getReservationsByTemple(templeId, pageRequest, tempProgramId1, tempProgramId2);
+        TempleReservationListWrapperRes responseDto = reservationQueryService.getReservationsByTemple(templeId, pageRequest);
         return ResponseEntity.ok().body(
                 ApiResponse.of(ReservationStatusCode.GET_RESERVATIONS_OF_TEMPLE_SUCCESS, responseDto));
     }
