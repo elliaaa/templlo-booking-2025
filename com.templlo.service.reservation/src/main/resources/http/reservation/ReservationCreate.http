@@ -1,21 +1,23 @@
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzY1MDEyMTEsImV4cCI6MTczNjUwMzAxMSwibG9naW5JZCI6InRlc3QxMjM0Iiwicm9sZSI6Ik1FTUJFUiIsInR5cGUiOiJhY2Nlc3MifQ.O83AJZG2qlUsUBowQ1-OZAjKdMJf6NM9Mg4gSSNrdz0
+@promotionId = 20455a70-7c75-46c0-a87d-65baeb19b20e
+
 # CreateReservation controller api list
 
+
 ### createReservation
-POST http://localhost:19040/api/reservations
+POST http://localhost:19091/api/reservations
 Content-Type: application/json
-X-Login-Id: tempUserId77
-X-User-Role: MEMBER
-X-Token: token value something
+Authorization: Bearer {{accessToken}}
 
 {
-  "userId" : "afb0f818-0909-4d6c-a89c-50a576160702",
-  "programId" : "683ef0bb-c2d0-4379-8e10-78914ed85f13",
-  "programDate" : "2025-01-01",
+  "userId": "85491e4b-8290-44b0-9d73-c657f62ffeb6",
+  "programId": "2560006b-0962-4950-8ea7-c6babddffce3",
+  "programDate": "2025-01-01",
   "couponUsedType": "USED",
-  "couponId" : "9745ad8d-2f74-46da-a7fd-58a69b45d0ba",
-  "name" : "삐까2",
-  "phoneNumber" : "010-333-7777",
-  "gender" : "FEMALE",
+  "couponId": "b7e670f9-ae9e-41ae-8f48-9750e481813e",
+  "name": "삐까2",
+  "phoneNumber": "010-333-7777",
+  "gender": "FEMALE",
   "paymentType": "NO_PAY",
   "paymentStatus": "COMPLETED"
 }
