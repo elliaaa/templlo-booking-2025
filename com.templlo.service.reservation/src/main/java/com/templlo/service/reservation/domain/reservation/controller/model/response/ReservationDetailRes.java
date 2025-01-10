@@ -1,16 +1,15 @@
 package com.templlo.service.reservation.domain.reservation.controller.model.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.templlo.service.reservation.domain.reservation.controller.model.request.CouponUsedType;
 import com.templlo.service.reservation.domain.reservation.domain.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Builder
-public record CreateReservationRes(
+@Builder(access = AccessLevel.PRIVATE)
+public record ReservationDetailRes(
         UUID reservationId,
         UUID programId,
         String programDate,
@@ -26,10 +25,9 @@ public record CreateReservationRes(
         LocalDateTime createdAt,
         String createdBy
 ) {
-
-    public static CreateReservationRes from(Reservation reservation) {
+    public static ReservationDetailRes from(Reservation reservation) {
         CouponUsedType couponUsedType = CouponUsedType.valueOfIsUsed(reservation.isCouponUsed());
-        return CreateReservationRes.builder()
+        return ReservationDetailRes.builder()
                 .reservationId(reservation.getReservationId())
                 .programId(reservation.getProgramId())
                 .programDate(reservation.getProgramDateFormatted())

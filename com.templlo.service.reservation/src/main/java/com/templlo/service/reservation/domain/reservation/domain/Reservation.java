@@ -7,7 +7,10 @@ import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
+
+import static com.templlo.service.reservation.global.GlobalConst.PROGRAM_DATE_FORMAT;
 
 
 @Builder
@@ -66,5 +69,9 @@ public class Reservation extends BaseEntity {
 
     public void updateStatusCompleted() {
         this.status = ReservationStatus.COMPLETED;
+    }
+
+    public String getProgramDateFormatted() {
+        return DateTimeFormatter.ofPattern(PROGRAM_DATE_FORMAT).format(this.getProgramDate());
     }
 }

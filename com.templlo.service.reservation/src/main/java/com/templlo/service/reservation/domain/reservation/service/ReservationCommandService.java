@@ -6,6 +6,7 @@ import com.templlo.service.reservation.domain.reservation.controller.model.respo
 import com.templlo.service.reservation.domain.reservation.domain.Reservation;
 import com.templlo.service.reservation.domain.reservation.repository.ReservationRepository;
 import com.templlo.service.reservation.domain.reservation.service.model.produce.CreateReservationProduce;
+import com.templlo.service.reservation.domain.reservation.service.model.produce.ReservationOpenType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,7 @@ import static com.templlo.service.reservation.domain.reservation.service.model.p
 @RequiredArgsConstructor
 public class ReservationCommandService {
     private final ReservationRepository reservationRepository;
-    public final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
     private final Gson gson; // TODO : KafkaTemplate 새로 만들어서 처리하기
 
     // TODO : 함수의 책임, 트랜잭션에 대해 생각
@@ -30,14 +31,14 @@ public class ReservationCommandService {
         Reservation savedReservation = reservationRepository.save(reservation);
 
         // 예약 신청 이벤트 발행
-        produceReservationCreatedMessage(savedReservation, 0);
+        produceReservationCreatedMessage(savedReservation, 0, ReservationOpenType.ADDITIONAL_OPEN);
 
         return CreateReservationRes.from(savedReservation);
     }
 
 
-    private void produceReservationCreatedMessage(Reservation savedReservation, int amount) {
-        CreateReservationProduce createReservationMessage = CreateReservationProduce.from(savedReservation, amount);
+    private void produceReservationCreatedMessage(Reservation savedReservation, int amount, ReservationOpenType openType) {
+        CreateReservationProduce createReservationMessage = CreateReservationProduce.from(savedReservation, amount, openType);
         kafkaTemplate.send(TOPIC_CREATE_RESERVATION, null, gson.toJson(createReservationMessage));
     }
 }

@@ -6,6 +6,7 @@ import com.templlo.service.reservation.global.security.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -34,11 +35,15 @@ public class WebSecurityConfig {
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 
                 .authorizeHttpRequests((request) -> request
+                        .requestMatchers("/api/reservations").hasAnyAuthority(ROLE_MEMBER, ROLE_TEMPLE, ROLE_MASTER)
+                        .requestMatchers("/api/users/*/reservations").hasAnyAuthority(ROLE_MEMBER, ROLE_MASTER)
+                        .requestMatchers("/api/temples/*/reservations").hasAnyAuthority(ROLE_TEMPLE, ROLE_MASTER)
 
                         .requestMatchers("/api/test/kafka/**").permitAll()
                         .requestMatchers("/api/test/reservation-exception").permitAll()
                         .requestMatchers("/api/test/auth/user").hasAnyAuthority(ROLE_MEMBER, ROLE_MASTER)
                         .requestMatchers("/api/test/auth/temple").hasAnyAuthority(ROLE_TEMPLE, ROLE_MASTER)
+
                         .requestMatchers("/api/checker/**").permitAll()
                         .anyRequest().authenticated())
                 ;

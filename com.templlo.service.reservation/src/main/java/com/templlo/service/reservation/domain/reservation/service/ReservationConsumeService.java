@@ -18,7 +18,7 @@ import static com.templlo.service.reservation.domain.reservation.service.model.c
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ReservationConsumeService {
-    public final ReservationRepository reservationRepository;
+    private final ReservationRepository reservationRepository;
     private final Gson gson;
 
     @KafkaListener(groupId = GROUP_RESERVATION_CONFIRM, topics = TOPIC_RESERVATION_CONFIRM)

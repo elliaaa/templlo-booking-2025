@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/reservations")
 @RequiredArgsConstructor
-public class CreateReservationController {
+public class ReservationCreateController {
     public final ReservationCommandService reservationCommandService;
 
     @PostMapping

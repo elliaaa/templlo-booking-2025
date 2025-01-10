@@ -1,0 +1,26 @@
+# ReservationQueryController api list
+@reservationId = ac197001-944c-127e-8194-4c22fd9c0001
+@userId = aa67f7ef-bfce-49a1-ac83-bb6f0a44561b
+@templeId = ac197001-9449-11d5-8194-49e379740000
+@tempProgramId1 = b32f79c3-eadc-47c2-99a2-834e48a37b83
+@tempProgramId2 = b32f79c3-eadc-47c2-99a2-834e48a37b83
+
+### getReservation
+GET http://localhost:19040/api/reservations/{{reservationId}}
+X-Login-Id: tempUserId77
+X-User-Role: MASTER
+X-Token: token value something
+
+
+### getReservationsByUser
+GET http://localhost:19040/api/users/{{userId}}/reservations?page=-1&size=20&sort=created_at
+X-Login-Id: tempUserId77
+X-User-Role: MASTER
+X-Token: token value something
+
+
+### getReservationsByTemple
+GET http://localhost:19040/api/temples/{{templeId}}/reservations?page=0&size=&sort=updatedAt&tempProgramId1={{tempProgramId1}}&tempProgramId2={{tempProgramId2}}
+X-Login-Id: tempUserId77
+X-User-Role: MASTER
+X-Token: token value something
