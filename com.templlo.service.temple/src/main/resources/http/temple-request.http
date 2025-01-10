@@ -1,0 +1,36 @@
+### create Temple
+POST http://localhost:19020/api/temples
+Content-Type: application/json
+
+{
+  "templeName": "화엄사",
+  "templeDescription": "아름다운 자연 속 사찰",
+  "templePhone": "010-1234-5678",
+  "roadAddress": "전라남도 구례군",
+  "detailAddress": "산동면 화엄사길 1"
+}
+
+> {%
+    client.global.set("templeId", response.body.userId);
+%}
+
+### update Temple
+PATCH http://localhost:19020/api/temples/{{templeId}}
+Content-Type: application/json
+
+{
+  "templeName": "수정된 화엄사",
+  "templeDescription": "수정된 설명",
+  "templePhone": "010-9876-5432",
+  "roadAddress": "전라남도 수정된 구례군",
+  "detailAddress": "수정된 산동면 화엄사길 1"
+}
+
+### Get Temples by Region
+GET http://localhost:19020/api/temples?region=전라남도&page=0&size=10
+
+### Search Temples
+GET http://localhost:19020/api/temples/search?keyword=화엄사&page=0&size=10
+
+### Delete Temple
+DELETE http://localhost:19020/api/temples/{{templeId}}
