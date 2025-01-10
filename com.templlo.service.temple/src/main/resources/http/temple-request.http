@@ -1,5 +1,5 @@
 ### create Temple
-POST http://localhost:19020/api/temple
+POST http://localhost:19020/api/temples
 Content-Type: application/json
 
 {
@@ -15,7 +15,7 @@ Content-Type: application/json
 %}
 
 ### update Temple
-PATCH http://localhost:19020/api/temple/{{templeId}}
+PATCH http://localhost:19020/api/temples/{{templeId}}
 Content-Type: application/json
 
 {
@@ -27,10 +27,10 @@ Content-Type: application/json
 }
 
 ### Get Temples by Region
-GET http://localhost:19020/api/temple?region=전라남도&page=0&size=10
+GET http://localhost:19020/api/temples?region=전라남도&page=0&size=10
 
 ### Search Temples
-GET http://localhost:19020/api/temple/search?keyword=화엄사&page=0&size=10
+GET http://localhost:19020/api/temples/search?keyword=화엄사&page=0&size=10
 
 ### Delete Temple
-DELETE http://localhost:19020/api/temple/{{templeId}}
+DELETE http://localhost:19020/api/temples/{{templeId}}
