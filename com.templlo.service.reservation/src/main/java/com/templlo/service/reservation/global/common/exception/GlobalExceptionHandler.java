@@ -21,6 +21,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Object> handleAllRuntimeException(RuntimeException e){
+        e.printStackTrace();
         return handleException(BasicStatusCode.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
