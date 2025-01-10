@@ -20,4 +20,5 @@ public interface CouponRepository extends JpaRepository<Coupon, UUID> {
 
 	long countByPromotionAndGenderAndStatus(Promotion promotion, String gender, String status);
 
+	boolean existsByPromotion_PromotionId(UUID promotionId);
 }

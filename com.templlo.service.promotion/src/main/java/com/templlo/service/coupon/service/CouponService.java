@@ -23,8 +23,8 @@ import com.templlo.service.common.client.ProgramFeignClient;
 import com.templlo.service.common.dto.DetailProgramResponse;
 import com.templlo.service.common.response.ApiResponse;
 import com.templlo.service.coupon.dto.CouponDeleteResponseDto;
+import com.templlo.service.coupon.dto.CouponIssueRequestDto;
 import com.templlo.service.coupon.dto.CouponIssueResponseDto;
-import com.templlo.service.coupon.dto.CouponStatusEvent;
 import com.templlo.service.coupon.dto.CouponStatusResponseDto;
 import com.templlo.service.coupon.dto.CouponTransferResponseDto;
 import com.templlo.service.coupon.dto.CouponUpdateRequestDto;
@@ -33,6 +33,7 @@ import com.templlo.service.coupon.dto.CouponUseResponseDto;
 import com.templlo.service.coupon.dto.CouponValidationResponseDto;
 import com.templlo.service.coupon.entity.Coupon;
 import com.templlo.service.coupon.repository.CouponRepository;
+import com.templlo.service.kafka.KafkaProducerService;
 import com.templlo.service.promotion.entity.Promotion;
 import com.templlo.service.promotion.repository.PromotionRepository;
 import com.templlo.service.user_coupon.entity.UserCoupon;
@@ -82,26 +83,16 @@ public class CouponService {
 
 			Coupon coupon = fetchAndMarkCoupon(promotion, gender);
 
-			UserCoupon userCoupon = UserCoupon.builder()
-				.userId(userId)
-				.userLoginId(userLoginId) // 헤더에서 받은 X-Login-Id 값
-				.coupon(coupon)
-				.status("ISSUED")
-				.issuedAt(LocalDateTime.now())
-				.build();
-			userCouponRepository.save(userCoupon);
+			CouponIssueRequestDto requestDto = new CouponIssueRequestDto(
+				coupon.getCouponId(),
+				userId,
+				promotionId,
+				gender,
+				"Coupon issued successfully."
+			);
 
-			coupon.updateStatus("ISSUED");
-			couponRepository.save(coupon);
-
-			Long issuedCount = redisTemplate.opsForValue().increment("promotion:" + promotionId + ":issued");
-
-			kafkaProducerService.sendCouponStatusEvent(new CouponStatusEvent(
-				promotionId.toString(),
-				issuedCount.intValue(),
-				promotion.getTotalCoupons() - issuedCount.intValue(),
-				promotion.getTotalCoupons()
-			));
+			// Kafka Producer 호출
+			kafkaProducerService.sendCouponIssueRequest(requestDto, userLoginId);
 
 			return new CouponIssueResponseDto("SUCCESS", coupon.getCouponId(), "쿠폰이 발급되었습니다.");
 		} catch (Exception e) {
@@ -368,7 +359,7 @@ public class CouponService {
 		Coupon coupon = Coupon.builder()
 			.type("LEVEL_UP")
 			.status("ISSUED")
-			.createdBy("SYSTEM")
+			.createdBy("SYSTEM") // 시스템 사용자로 설정
 			.build();
 		coupon = couponRepository.save(coupon);
 
@@ -379,9 +370,11 @@ public class CouponService {
 			.status("ISSUED")
 			.issuedAt(LocalDateTime.now())
 			.createdBy("SYSTEM")
+			.updatedBy("SYSTEM")
 			.build();
 		userCouponRepository.save(userCoupon);
 
-		log.info("Issued level-up coupon for userId: {}", userId);
+		log.info("레벨 업 쿠폰 발급 완료: userId={}", userId);
 	}
+
 }

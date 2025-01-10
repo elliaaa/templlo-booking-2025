@@ -1,8 +1,8 @@
-@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzY0Mzk0ODAsImV4cCI6MTczNjQ0MTI4MCwibG9naW5JZCI6Im1hc3Rlcjk5OTkiLCJyb2xlIjoiTUFTVEVSIiwidHlwZSI6ImFjY2VzcyJ9.457oI-F09a1saI8GYRYaw_bV8KF33UvkHv3CD5ElZ_c
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzY0ODc0MjIsImV4cCI6MTczNjQ4OTIyMiwibG9naW5JZCI6InRlc3QxMjM0Iiwicm9sZSI6Ik1FTUJFUiIsInR5cGUiOiJhY2Nlc3MifQ.tysdQIRVt21vZhbWkoWKjMvzHrRXyGuUK8Ez5ccm1EQ
 @page = 0
 @size = 10
 @sortBy = createdAt
-@promotionId = 4d285d06-b43b-4c74-952d-3de6a50f0c91
+@promotionId = e2e60c3f-fb89-42d1-8ce8-c3b73799c133
 @couponId = 7952576e-07d1-4532-be09-1098966c991f
 @toUserId = 641d428e-797b-4bae-a9e6-855ee07a8fdb
 
@@ -47,7 +47,7 @@ Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 {
-  "name": "선예매권 프로모션",
+  "name": "나는절로 1기 프로모션",
   "type": "ADVANCED_TICKET",
   "startDate": "2025-01-01",
   "endDate": "2025-01-10",
