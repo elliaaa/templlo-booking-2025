@@ -14,6 +14,11 @@ spring:
       repositories:
         enabled: true
 
+eureka:
+  client:
+    enabled: false
+
+
 logging:
   level:
     root: INFO
