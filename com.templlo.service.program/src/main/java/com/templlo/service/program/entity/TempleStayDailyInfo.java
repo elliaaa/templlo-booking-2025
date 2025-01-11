@@ -51,4 +51,8 @@ public class TempleStayDailyInfo extends BaseEntity {
             this.status = ProgramStatus.CLOSED;
         }
     }
+
+    public void update(ProgramStatus status) {
+        this.status = status;
+    }
 }

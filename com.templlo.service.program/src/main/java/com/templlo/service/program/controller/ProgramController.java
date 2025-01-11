@@ -1,10 +1,11 @@
 package com.templlo.service.program.controller;
 
 import com.templlo.service.program.dto.request.CreateProgramRequest;
+import com.templlo.service.program.dto.request.UpdateProgramRequest;
+import com.templlo.service.program.dto.request.UpdateProgramScheduleRequest;
 import com.templlo.service.program.dto.response.ProgramScheduleResponse;
 import com.templlo.service.program.dto.response.ProgramsByTempleResponse;
 import com.templlo.service.program.dto.response.SimpleProgramResponse;
-import com.templlo.service.program.dto.request.UpdateProgramRequest;
 import com.templlo.service.program.entity.ProgramType;
 import com.templlo.service.program.exception.ProgramStatusCode;
 import com.templlo.service.program.global.common.response.ApiResponse;
@@ -19,7 +20,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -50,10 +50,10 @@ public class ProgramController {
         return programService.getPrograms(keyword, type, programDays, pageable);
     }
 
-    // 프로그램의 스케쥴 상세 조회
-    @GetMapping("/{programId}")
-    public ApiResponse<ProgramScheduleResponse> getProgramSchedule(@PathVariable(name = "programId") UUID programId, @RequestParam LocalDate programDate) {
-        return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_READ, programService.getProgramSchedule(programId, programDate));
+    // 프로그램의 스케쥴 조회
+    @GetMapping("/{programId}/schedules/{programScheduleId}")
+    public ApiResponse<ProgramScheduleResponse> getProgramSchedule(@PathVariable(name = "programId") UUID programId, @PathVariable(name = "programScheduleId") UUID programScheduleId) {
+        return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_READ, programService.getProgramSchedule(programId, programScheduleId));
     }
 
     // 사찰 별 프로그램 조회
@@ -62,10 +62,22 @@ public class ProgramController {
         return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_READ, programService.getProgramsByTemple(templeId, detail));
     }
 
+    // 프로그램 업데이트
     @PreAuthorize("hasAnyAuthority('TEMPLE_ADMIN', 'MASTER')")
     @PatchMapping("/{programId}")
-    public ApiResponse<SimpleProgramResponse> updateProgram(@PathVariable(name = "programId") UUID programId, @Valid @RequestBody UpdateProgramRequest request,  @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ApiResponse<SimpleProgramResponse> updateProgram(@PathVariable(name = "programId") UUID programId,
+                                                            @Valid @RequestBody UpdateProgramRequest request,
+                                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_UPDATE, programService.updateProgram(programId, request, userDetails));
+    }
+    // 프로그램 스케쥴 업데이트
+    @PreAuthorize("hasAnyAuthority('TEMPLE_ADMIN', 'MASTER')")
+    @PatchMapping("/{programId}/schedules/{programScheduleId}")
+    public ApiResponse<ProgramScheduleResponse> updateProgramSchedule(@PathVariable(name = "programId") UUID programId,
+                                                                      @PathVariable(name = "programScheduleId") UUID programScheduleId,
+                                                                      @RequestBody UpdateProgramScheduleRequest request,
+                                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_UPDATE, programService.updateProgramSchedule(programId, programScheduleId, request, userDetails));
     }
 
 }

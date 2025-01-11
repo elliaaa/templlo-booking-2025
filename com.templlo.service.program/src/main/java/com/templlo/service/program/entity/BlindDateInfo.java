@@ -95,4 +95,10 @@ public class BlindDateInfo extends BaseEntity {
             }
         }
     }
+
+    public void update(ProgramStatus status, LocalDate additionalReservationStartDate, LocalDate additionalReservationEndDate) {
+        this.status = status;
+        this.additionalReservationStartDate = additionalReservationStartDate;
+        this.additionalReservationEndDate = additionalReservationEndDate;
+    }
 }

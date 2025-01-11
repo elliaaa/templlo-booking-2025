@@ -1,5 +1,6 @@
 package com.templlo.service.program.dto.response;
 
+import com.templlo.service.program.entity.BlindDateInfo;
 import com.templlo.service.program.entity.Program;
 import com.templlo.service.program.entity.ProgramGenderStatus;
 import com.templlo.service.program.entity.ProgramStatus;
@@ -28,20 +29,20 @@ public record BlindDateScheduleResponse(
 
 ) implements ProgramScheduleResponse {
 
-    public static BlindDateScheduleResponse from(Program program) {
+    public static BlindDateScheduleResponse from(Program program, BlindDateInfo blindDateInfo) {
         return BlindDateScheduleResponse.builder()
                 .programId(program.getId())
-                .programDate(program.getBlindDateInfo().getProgramDate())
-                .status(program.getBlindDateInfo().getStatus())
-                .genderStatus(program.getBlindDateInfo().getGenderStatus())
+                .programDate(blindDateInfo.getProgramDate())
+                .status(blindDateInfo.getStatus())
+                .genderStatus(blindDateInfo.getGenderStatus())
                 .programStartAt(program.getProgramStartAt())
                 .programCapacity(program.getProgramCapacity())
-                .availableMaleCapacity(program.getBlindDateInfo().getAvailableMaleCapacity())
-                .availableFemaleCapacity(program.getBlindDateInfo().getAvailableFemaleCapacity())
+                .availableMaleCapacity(blindDateInfo.getAvailableMaleCapacity())
+                .availableFemaleCapacity(blindDateInfo.getAvailableFemaleCapacity())
                 .reservationStartDate(program.getReservationStartDate())
                 .reservationEndDate(program.getReservationEndDate())
-                .additionalReservationStartDate(program.getBlindDateInfo().getAdditionalReservationStartDate())
-                .additionalReservationEndDate(program.getBlindDateInfo().getAdditionalReservationEndDate())
+                .additionalReservationStartDate(blindDateInfo.getAdditionalReservationStartDate())
+                .additionalReservationEndDate(blindDateInfo.getAdditionalReservationEndDate())
                 .build();
     }
 }

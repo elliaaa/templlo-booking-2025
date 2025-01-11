@@ -2,6 +2,7 @@ package com.templlo.service.program.service;
 
 import com.templlo.service.program.dto.request.CreateProgramRequest;
 import com.templlo.service.program.dto.request.UpdateProgramRequest;
+import com.templlo.service.program.dto.request.UpdateProgramScheduleRequest;
 import com.templlo.service.program.dto.response.*;
 import com.templlo.service.program.entity.BlindDateInfo;
 import com.templlo.service.program.entity.Program;
@@ -25,7 +26,6 @@ import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -46,7 +46,7 @@ public class ProgramService {
         log.info("Create program start");
 
         if (userDetails.getUserRole() == UserRole.TEMPLE_ADMIN) {
-            if (!templeClient.checkTempleOwnership(request.templeId(), userDetails).getStatusCode().is2xxSuccessful()) {
+            if (!templeClient.checkTempleOwnership(request.templeId()).getStatusCode().is2xxSuccessful()) {
                 throw new ProgramException(BasicStatusCode.UNAUTHORIZED);
             };
         }
@@ -109,7 +109,7 @@ public class ProgramService {
     }
 
 
-    public ProgramScheduleResponse getProgramSchedule(UUID programId, LocalDate programDate) {
+    public ProgramScheduleResponse getProgramSchedule(UUID programId, UUID programScheduleId) {
 
         log.info("Get program start");
 
@@ -119,7 +119,7 @@ public class ProgramService {
 
         if (program.getType() == ProgramType.TEMPLE_STAY) {
 
-            TempleStayDailyInfo templeStayDailyInfo = jpaTempleStayDailyInfoRepository.findByProgram_IdAndProgramDate(programId, programDate)
+            TempleStayDailyInfo templeStayDailyInfo = jpaTempleStayDailyInfoRepository.findById(programScheduleId)
                     .orElseThrow(() -> new ProgramException(ProgramStatusCode.TEMPLE_STAY_DAILY_INFO_NOT_FOUND));
 
             log.info("Get temple_stay program end");
@@ -127,12 +127,14 @@ public class ProgramService {
 
         } else {
 
-            if (!program.getBlindDateInfo().getProgramDate().isEqual(programDate)) {
+            BlindDateInfo blindDateInfo = program.getBlindDateInfo();
+
+            if (!program.getBlindDateInfo().getId().equals(programScheduleId)) {
                 throw new ProgramException(ProgramStatusCode.BLIND_DATE_INFO_NOT_FOUND);
             }
 
             log.info("Get blind_date program end");
-            return BlindDateScheduleResponse.from(program);
+            return BlindDateScheduleResponse.from(program, blindDateInfo);
         }
 
     }
@@ -161,7 +163,7 @@ public class ProgramService {
         );
 
         if (userDetails.getUserRole() == UserRole.TEMPLE_ADMIN) {
-            if (!templeClient.checkTempleOwnership(program.getTempleId(), userDetails).getStatusCode().is2xxSuccessful()) {
+            if (!templeClient.checkTempleOwnership(program.getTempleId()).getStatusCode().is2xxSuccessful()) {
                 throw new ProgramException(BasicStatusCode.UNAUTHORIZED);
             };
         }
@@ -174,5 +176,53 @@ public class ProgramService {
 
     }
 
+    @Transactional
+    public ProgramScheduleResponse updateProgramSchedule(UUID programId, UUID programScheduleId, UpdateProgramScheduleRequest request, UserDetailsImpl userDetails) {
+        log.info("Update programSchedule start");
 
+        Program program = jpaProgramRepository.findById(programId).orElseThrow(
+                () -> new ProgramException(ProgramStatusCode.PROGRAM_NOT_FOUND)
+        );
+
+        if (userDetails.getUserRole() == UserRole.TEMPLE_ADMIN) {
+            if (!templeClient.checkTempleOwnership(program.getTempleId()).getStatusCode().is2xxSuccessful()) {
+                throw new ProgramException(BasicStatusCode.UNAUTHORIZED);
+            };
+        }
+
+        if (program.getType() == ProgramType.TEMPLE_STAY) {
+
+            TempleStayDailyInfo templeStayDailyInfo = jpaTempleStayDailyInfoRepository.findById(programScheduleId)
+                    .orElseThrow(() -> new ProgramException(ProgramStatusCode.TEMPLE_STAY_DAILY_INFO_NOT_FOUND));
+
+            templeStayDailyInfo.update(request.status());
+
+            log.info("Update programSchedule end");
+
+            return TempleStayScheduleResponse.from(program, templeStayDailyInfo);
+
+        } else {
+
+            BlindDateInfo blindDateInfo = program.getBlindDateInfo();
+
+            if (blindDateInfo == null || !blindDateInfo.getId().equals(programScheduleId)) {
+                throw new ProgramException(ProgramStatusCode.BLIND_DATE_INFO_NOT_FOUND);
+            }
+
+            if (request.additionalReservationStartDate() != null && request.additionalReservationEndDate() != null) {
+                //
+                if (!request.additionalReservationStartDate().isBefore(request.additionalReservationEndDate())
+                || !request.additionalReservationStartDate().isAfter(program.getReservationEndDate())) {
+                    throw new ProgramException(ProgramStatusCode.BAD_REQUEST_BLIND_INFO_ADDITIONAL_RESERVATION_DATE);
+                }
+
+            }
+
+            blindDateInfo.update(request.status(), request.additionalReservationStartDate(), request.additionalReservationEndDate());
+
+            log.info("Update programSchedule end");
+
+            return BlindDateScheduleResponse.from(program, blindDateInfo);
+        }
+    }
 }

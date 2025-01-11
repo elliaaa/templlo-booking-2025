@@ -1,5 +1,9 @@
-@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzY1MDA3MDYsImV4cCI6MTczNjUwMjUwNiwibG9naW5JZCI6InRlc3QxMjM0Iiwicm9sZSI6Ik1FTUJFUiIsInR5cGUiOiJhY2Nlc3MifQ.ln64pSVXgy_jUHecMewZxu64w5w3qbg1uP5WaYIxzeA
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzY2MTQ3MzgsImV4cCI6MTczNjYxNjUzOCwibG9naW5JZCI6ImFkbWluMTAwMCIsInJvbGUiOiJURU1QTEVfQURNSU4iLCJ0eXBlIjoiYWNjZXNzIn0.RQmMDExQLnT9VUvyOUuy8qDrnX9Ps6b4m8dG6xfXsrU
+@programId = c8caf9db-6b1f-4db2-8b0e-6823851be824
+@programScheduleId = e650e4d6-5756-44d9-ac68-b6e95c1f85fb
+@templeId = 2560006b-0962-4950-8ea7-c6babddffce0
 
+// programScheduleId 값은 templeStayDatilInfo or blindDateInfo id 값
 
 ### Create Program(BLIND_DATE)
 POST http://localhost:19091/api/programs
@@ -12,11 +16,11 @@ Content-Type: application/json
   "description": "특별한 만남을 위한 사찰에서의 블라인드 데이트.",
   "type": "BLIND_DATE",
   "programFee": 0,
-  "reservationStartDate": "2025-01-11",
-  "reservationEndDate": "2025-01-30",
+  "reservationStartDate": "2025-03-30",
+  "reservationEndDate": "2025-05-30",
   "programStartAt": "16:00",
   "programCapacity": null,
-  "programDate": "2025-02-02",
+  "programDate": "2025-06-02",
   "maleCapacity": 20,
   "femaleCapacity": 20,
   "programStatus": "ACTIVE",
@@ -24,7 +28,8 @@ Content-Type: application/json
 }
 
 ### Create Program(TEMPLE_STAY)
-POST http://localhost:19030/api/programs
+POST http://localhost:19091/api/programs
+Authorization: Bearer {{accessToken}}}
 Content-Type: application/json
 
 {
@@ -33,7 +38,7 @@ Content-Type: application/json
   "description": "템플스테이.",
   "type": "TEMPLE_STAY",
   "programFee": 0,
-  "reservationStartDate": "2025-01-11",
+  "reservationStartDate": "2025-01-16",
   "reservationEndDate": "2025-01-30",
   "programStartAt": "16:00",
   "programCapacity": 20,
@@ -49,8 +54,9 @@ Content-Type: application/json
 }
 
 ### Update Program
-PATCH http://localhost:19030/api/programs/{programId}
+PATCH http://localhost:19091/api/programs/{{programId}}
 Content-Type: application/json
+Authorization: Bearer {{accessToken}}
 
 {
   "title": "sdfdfsdf",
@@ -58,6 +64,30 @@ Content-Type: application/json
   "programStartAt": "14:00:00"
 }
 
-### Search Program
-GET http://localhost:19091/api/programs/2560006b-0962-4950-8ea7-c6babddffce3?programDate=2025-01-01
+### Get Programs
+GET http://localhost:19091/api/programs
 Authorization: Bearer {{accessToken}}
+
+### Get Programs By TempleId Detail(detail=true)
+GET http://localhost:19091/api/programs/temples/{{templeId}}?detail=true
+Authorization: Bearer {{accessToken}}
+
+### Get Programs By TempleId Detail(detail=false)
+GET http://localhost:19091/api/programs/temples/{{templeId}}
+Authorization: Bearer {{accessToken}}
+
+### Get Program Schedule
+GET http://localhost:19091/api/programs/{{programId}}/schedules/{{programScheduleId}}
+Authorization: Bearer {{accessToken}}
+
+### Update Program Schedule
+PATCH http://localhost:19091/api/programs/{{programId}}/schedules/{{programScheduleId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "status": "ACTIVE",
+  "additionalReservationStartDate": "2030-03-01",
+  "additionalReservationEndDate": null
+}
+
