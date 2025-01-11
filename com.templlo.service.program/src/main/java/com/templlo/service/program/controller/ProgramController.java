@@ -37,7 +37,7 @@ public class ProgramController {
     }
     // 프로그램 전체 조회
     @GetMapping
-    public PagedModel<SimpleProgramResponse> getPrograms(
+    public ApiResponse<PagedModel<SimpleProgramResponse>> getPrograms(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
@@ -47,7 +47,7 @@ public class ProgramController {
             @RequestParam(required = false) List<String> programDays) {
 
         Pageable pageable = PagingUtil.createPageable(page, size, isAsc, sortBy);
-        return programService.getPrograms(keyword, type, programDays, pageable);
+        return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_READ, programService.getPrograms(keyword, type, programDays, pageable));
     }
 
     // 프로그램의 스케쥴 조회
