@@ -1,4 +1,4 @@
-@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzY1MDIyNDIsImV4cCI6MTczNjUwNDA0MiwibG9naW5JZCI6InRlc3QxMjM0Iiwicm9sZSI6Ik1FTUJFUiIsInR5cGUiOiJhY2Nlc3MifQ.yDjzCGVBfqQVGHgJ_ZY6euDozNp0NDRhQbnfQ2rxYQo
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzY2MDk1MDUsImV4cCI6MTczNjYxMTMwNSwibG9naW5JZCI6InRlc3QxMjM0Iiwicm9sZSI6IlRFTVBMRV9BRE1JTiIsInR5cGUiOiJhY2Nlc3MifQ.Hq9UgA4p9JineSERbgIzpUNUARFg2oR_St9fot9bhO8
 @page = 0
 @size = 10
 @sortBy = createdAt
@@ -9,7 +9,7 @@ Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-  "programId": "1f4188f9-bca3-40c5-9e6f-b298e0354d32",
+  "reservationId": "7f000001-9455-1caf-8194-56027b160001",
   "content": "재밌었어요. 위치도 좋고, 풍경도 멋있어 힐링하고 왔네요",
   "rating": 1.0
 }
@@ -21,14 +21,14 @@ Content-Type: application/json
 
 
 ### 프로그램별 리뷰 조회
-@programId = 1f4188f9-bca3-40c5-9e6f-b298e0354d30
+@programId = 2560006b-0962-4950-8ea7-c6babddffce3
 
 GET http://localhost:19091/api/reviews?programId={{programId}}&page={{page}}&size={{size}}&sortBy={{sortBy}}
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 ### 작성한 리뷰 수정
-@reviewId = 9b065250-c5dd-44fb-b075-42764662f1fd
+@reviewId = a1883c79-252a-419f-ac2a-ccc4ab019bf2
 
 PATCH http://localhost:19091/api/reviews/{{reviewId}}
 Authorization: Bearer {{accessToken}}

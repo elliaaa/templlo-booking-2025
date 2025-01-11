@@ -23,6 +23,7 @@ public class FeignConfiguration {
 				UserDetailsImpl userDetails = (UserDetailsImpl)authentication.getPrincipal();
 				requestTemplate.header("X-Login-Id", userDetails.getLoginId());
 				requestTemplate.header("X-User-Role", userDetails.getRole());
+				requestTemplate.header("X-Token", userDetails.getToken());
 			}
 
 		};

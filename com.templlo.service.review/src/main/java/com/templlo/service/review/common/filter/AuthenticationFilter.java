@@ -27,11 +27,12 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
 		String loginId = request.getHeader("X-Login-Id");
 		String role = request.getHeader("X-User-Role");
+		String token = request.getHeader("X-Token");
 
 		log.info("Request loginId : {} , role : {}", loginId, role);
 
 		if (loginId != null && role != null) {
-			UserDetailsImpl userDetails = new UserDetailsImpl(loginId, role);
+			UserDetailsImpl userDetails = new UserDetailsImpl(loginId, role, token);
 			Authentication authentication = new PreAuthenticatedAuthenticationToken(userDetails, null,
 				userDetails.getAuthorities());
 			SecurityContextHolder.getContext().setAuthentication(authentication);

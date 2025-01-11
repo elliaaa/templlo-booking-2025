@@ -3,6 +3,7 @@ package com.templlo.service.review.external.feignClient.client;
 import java.util.UUID;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -15,6 +16,6 @@ import com.templlo.service.review.external.feignClient.dto.ReservationData;
 	configuration = FeignConfiguration.class)
 public interface ReservationClient {
 
-	@GetMapping("/api/reservations")
-	ApiResponse<ReservationData> getReservationInfo(@RequestParam(name = "userId") UUID userId);
+	@GetMapping("/api/reservations/{reservationId}")
+	ResponseEntity<ApiResponse<ReservationData>> getReservationInfo(@RequestParam(name = "reservationId") UUID reservationId);
 }

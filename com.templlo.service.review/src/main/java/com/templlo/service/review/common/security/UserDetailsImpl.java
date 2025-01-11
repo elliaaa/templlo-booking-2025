@@ -16,6 +16,7 @@ public class UserDetailsImpl implements UserDetails {
 
 	private final String loginId;
 	private final String role;
+	private final String token;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

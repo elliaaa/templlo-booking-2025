@@ -10,8 +10,8 @@ import jakarta.validation.constraints.Size;
 
 public record CreateReviewRequestDto(
 
-	@NotNull(message = "프로그램 id는 필수입니다. ")
-	UUID programId,
+	@NotNull(message = "예약 id는 필수입니다. ")
+	UUID reservationId,
 
 	@NotNull(message = "내용을 입력해주세요. ")
 	@Size(min = 20, message = "리뷰는 10자 이상 입력해주세요. ")

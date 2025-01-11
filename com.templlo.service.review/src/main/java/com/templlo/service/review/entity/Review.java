@@ -32,9 +32,8 @@ public class Review {
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
 
-	// TODO 추가 및 로직 수정
-	// @Column(nullable = false)
-	// private UUID reservationId;
+	@Column(nullable = false)
+	private UUID reservationId;
 
 	@Column(nullable = false)
 	private UUID programId;
@@ -69,7 +68,8 @@ public class Review {
 	private LocalDateTime deletedAt;
 
 	@Builder(access = AccessLevel.PRIVATE)
-	public Review(UUID programId, UUID userId, Double rating, String content) {
+	public Review(UUID reservationId, UUID programId, UUID userId, Double rating, String content) {
+		this.reservationId = reservationId;
 		this.programId = programId;
 		this.userId = userId;
 		this.rating = rating;
@@ -77,8 +77,8 @@ public class Review {
 		this.isDeleted = false;
 	}
 
-	public static Review create(UUID programId, UUID loginId, Double rating, String content) {
-		return new Review(programId, loginId, rating, content);
+	public static Review create(UUID reservationId, UUID programId, UUID userId, Double rating, String content) {
+		return new Review(reservationId, programId, userId, rating, content);
 	}
 
 	public void updateReview(Double rating, String content) {

@@ -12,7 +12,7 @@ import com.templlo.service.review.entity.Review;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, UUID> {
-	Optional<Review> findByUserIdAndProgramId(UUID userId, UUID programId);
+	Optional<Review> findByUserIdAndReservationId(UUID userId, UUID reservationId);
 
 	Page<Review> findByUserId(UUID userId, Pageable pageable);
 
