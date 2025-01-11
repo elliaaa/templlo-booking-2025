@@ -75,7 +75,7 @@ public class ProgramController {
     @PatchMapping("/{programId}/schedules/{programScheduleId}")
     public ApiResponse<ProgramScheduleResponse> updateProgramSchedule(@PathVariable(name = "programId") UUID programId,
                                                                       @PathVariable(name = "programScheduleId") UUID programScheduleId,
-                                                                      @RequestBody UpdateProgramScheduleRequest request,
+                                                                      @Valid @RequestBody UpdateProgramScheduleRequest request,
                                                                       @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_UPDATE, programService.updateProgramSchedule(programId, programScheduleId, request, userDetails));
     }
