@@ -48,7 +48,7 @@ public class ProgramService {
         if (userDetails.getUserRole() == UserRole.TEMPLE_ADMIN) {
             if (!templeClient.checkTempleOwnership(request.templeId()).getStatusCode().is2xxSuccessful()) {
                 throw new ProgramException(BasicStatusCode.UNAUTHORIZED);
-            };
+            }
         }
 
         // program 생성
@@ -165,7 +165,7 @@ public class ProgramService {
         if (userDetails.getUserRole() == UserRole.TEMPLE_ADMIN) {
             if (!templeClient.checkTempleOwnership(program.getTempleId()).getStatusCode().is2xxSuccessful()) {
                 throw new ProgramException(BasicStatusCode.UNAUTHORIZED);
-            };
+            }
         }
 
         program.update(request.title(), request.description(), request.programStartAt());
@@ -187,7 +187,7 @@ public class ProgramService {
         if (userDetails.getUserRole() == UserRole.TEMPLE_ADMIN) {
             if (!templeClient.checkTempleOwnership(program.getTempleId()).getStatusCode().is2xxSuccessful()) {
                 throw new ProgramException(BasicStatusCode.UNAUTHORIZED);
-            };
+            }
         }
 
         if (program.getType() == ProgramType.TEMPLE_STAY) {
@@ -210,7 +210,7 @@ public class ProgramService {
             }
 
             if (request.additionalReservationStartDate() != null && request.additionalReservationEndDate() != null) {
-                //
+
                 if (!request.additionalReservationStartDate().isBefore(request.additionalReservationEndDate())
                 || !request.additionalReservationStartDate().isAfter(program.getReservationEndDate())) {
                     throw new ProgramException(ProgramStatusCode.BAD_REQUEST_BLIND_INFO_ADDITIONAL_RESERVATION_DATE);
