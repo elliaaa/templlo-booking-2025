@@ -53,10 +53,10 @@ public class BlindDateInfo extends BaseEntity {
     @OneToOne(mappedBy = "blindDateInfo")
     private Program program;
 
-    public static BlindDateInfo create(Program program, LocalDate programDate, Integer maleCapacity, Integer femaleCapacity) {
+    public static BlindDateInfo create(Program program, ProgramStatus programStatus, LocalDate programDate, Integer maleCapacity, Integer femaleCapacity) {
         return BlindDateInfo.builder()
                 .program(program)
-                .status(ProgramStatus.INACTIVE)
+                .status(programStatus)
                 .genderStatus(ProgramGenderStatus.OPEN)
                 .programDate(programDate)
                 .maleCapacity(maleCapacity)

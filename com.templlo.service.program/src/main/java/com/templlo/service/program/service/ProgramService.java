@@ -71,16 +71,18 @@ public class ProgramService {
             // add blind_date_info
             program.addBlindDateInfo(BlindDateInfo.create(
                     program,
+                    request.programStatus(),
                     request.programDate(),
                     request.maleCapacity(),
                     request.femaleCapacity()
+
             ));
         }
 
         // type : temple stay
         if (request.type() == ProgramType.TEMPLE_STAY) {
             // add temple_stay_daily_info
-            program.addTempleStayDailInfo(program, request.reservationStartDate(), request.reservationEndDate(), request.programDays(), request.programCapacity());
+            program.addTempleStayDailInfo(program, request.programStatus(), request.reservationStartDate(), request.reservationEndDate(), request.programDays(), request.programCapacity());
         }
 
         jpaProgramRepository.save(program);

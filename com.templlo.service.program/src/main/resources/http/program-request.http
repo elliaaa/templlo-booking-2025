@@ -19,6 +19,7 @@ Content-Type: application/json
   "programDate": "2025-02-02",
   "maleCapacity": 20,
   "femaleCapacity": 20,
+  "programStatus": "ACTIVE",
   "programDays": []
 }
 
@@ -39,6 +40,7 @@ Content-Type: application/json
   "programDate": null,
   "maleCapacity": null,
   "femaleCapacity": null,
+  "programStatus": "ACTIVE",
   "programDays": [
     "Monday",
     "Sunday",

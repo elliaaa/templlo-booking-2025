@@ -1,5 +1,6 @@
 package com.templlo.service.program.dto.request;
 
+import com.templlo.service.program.entity.ProgramStatus;
 import com.templlo.service.program.entity.ProgramType;
 import com.templlo.service.program.validation.ValidCreateProgramRequest;
 import jakarta.validation.constraints.NotBlank;
@@ -38,6 +39,9 @@ public record CreateProgramRequest(
 
         @NotNull(message = "프로그램 예약 종료 날짜 입력은 필수입니다.")
         LocalDate reservationEndDate,
+
+        @NotNull(message = "프로그램의 예약 활성화 여부는 필수입니다.")
+        ProgramStatus programStatus,
 
         List<String> programDays, // TEMPLE_STAY 전용 필드, BLIND_DATE 일 때는 []
 

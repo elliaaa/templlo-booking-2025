@@ -97,7 +97,7 @@ public class Program extends BaseEntity {
                 .build();
     }
 
-    public void addTempleStayDailInfo(Program program, LocalDate startDate, LocalDate endDate, List<String> programDays, Integer programCapacity) {
+    public void addTempleStayDailInfo(Program program, ProgramStatus programStatus, LocalDate startDate, LocalDate endDate, List<String> programDays, Integer programCapacity) {
 
         // 프로그램 요일을 DayOfWeek로 변환 -> LocalDate에서 요일을 가져올 때 getDayOfWeek() 는 DayOfWeek 타입을 반환
         List<DayOfWeek> programDaysOfWeek = programDays.stream()
@@ -113,6 +113,7 @@ public class Program extends BaseEntity {
 
                 templeStayDailyInfos.add(
                         TempleStayDailyInfo.create(
+                                programStatus,
                                 currentDate,
                                 programCapacity,
                                 program

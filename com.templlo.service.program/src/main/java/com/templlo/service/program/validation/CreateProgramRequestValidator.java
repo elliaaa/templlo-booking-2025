@@ -1,6 +1,7 @@
 package com.templlo.service.program.validation;
 
 import com.templlo.service.program.dto.request.CreateProgramRequest;
+import com.templlo.service.program.entity.ProgramStatus;
 import com.templlo.service.program.entity.ProgramType;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -75,6 +76,11 @@ public class CreateProgramRequestValidator implements ConstraintValidator<ValidC
                 addConstraintViolation(context, "예약 시작 날짜는 현재 날짜 이후로 입력이 가능합니다.", "reservationStartDate");
                 isValid = false;
             }
+        }
+
+        if (request.programStatus() == ProgramStatus.CLOSED) {
+            addConstraintViolation(context, "프로그램 예약 활성화 여부는 ACTIVE/INACTIVE 만 가능합니다.", "programStatus");
+            isValid = false;
         }
 
         return isValid;
