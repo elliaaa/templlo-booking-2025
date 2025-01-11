@@ -36,7 +36,7 @@ public class ReviewConsumer {
                 () -> new ProgramException(ProgramStatusCode.PROGRAM_NOT_FOUND)
         );
 
-        program.updateCalculateRating(message.rating(), message.totalCount());
+        program.updateCalculateRating(message.rating(), program.getReviewCount());
 
         log.info("Consume Review Created Message end");
 
@@ -55,7 +55,7 @@ public class ReviewConsumer {
                 () -> new ProgramException(ProgramStatusCode.PROGRAM_NOT_FOUND)
         );
 
-        program.updateReCalculateRating(message.newRating(),message.oldRating(), message.totalCount());
+        program.updateReCalculateRating(message.newRating(),message.oldRating(), program.getReviewCount());
 
         log.info("Consume Review Updated Message start");
     }
