@@ -18,7 +18,10 @@ public enum ProgramStatusCode implements StatusCode {
     // 실패
     PROGRAM_NOT_FOUND(HttpStatus.NOT_FOUND,"해당 프로그램을 찾을 수 없습니다."),
     TEMPLE_STAY_DAILY_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 날짜의 템플 스테이 정보를 찾을 수 없습니다."),
-    BLIND_DATE_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 블라인드 소개팅의 정보를 찾을 수 없습니다.")
+    BLIND_DATE_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 블라인드 소개팅의 정보를 찾을 수 없습니다."),
+
+    // 검증
+    BAD_REQUEST_BLIND_INFO_ADDITIONAL_RESERVATION_DATE(HttpStatus.BAD_REQUEST, "추가 예약 시작 및 종료 날짜는 기존 날짜 이후로 입력 가능합니다.")
     ;
 
     private final HttpStatus httpStatus;

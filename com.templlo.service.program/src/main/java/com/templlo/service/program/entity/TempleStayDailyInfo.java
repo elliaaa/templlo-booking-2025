@@ -35,12 +35,12 @@ public class TempleStayDailyInfo extends BaseEntity {
     @JoinColumn(name = "program_id", nullable = false)
     private Program program;
 
-    public static TempleStayDailyInfo create(LocalDate programDate, Integer availableCapacity, Program program) {
+    public static TempleStayDailyInfo create(ProgramStatus programStatus, LocalDate programDate, Integer availableCapacity, Program program) {
         return TempleStayDailyInfo.builder()
                 .program(program)
+                .status(programStatus)
                 .programDate(programDate)
                 .availableCapacity(availableCapacity)
-                .status(ProgramStatus.INACTIVE)
                 .build();
     }
 
@@ -50,5 +50,9 @@ public class TempleStayDailyInfo extends BaseEntity {
         if (this.availableCapacity == 0) {
             this.status = ProgramStatus.CLOSED;
         }
+    }
+
+    public void update(ProgramStatus status) {
+        this.status = status;
     }
 }

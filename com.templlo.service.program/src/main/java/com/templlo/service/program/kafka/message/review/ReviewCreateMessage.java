@@ -5,7 +5,6 @@ import java.util.UUID;
 public record ReviewCreateMessage(
         UUID userId,
         UUID programId,
-        double rating,
-        Integer totalCount
+        double rating
 ) {
 }

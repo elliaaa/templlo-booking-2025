@@ -44,9 +44,9 @@ public record ProgramsByTempleResponse(
                                         ?
                                         program.getTempleStayDailyInfos().stream()
                                                 .map(dailyInfo ->
-                                                        new ProgramDateInfo(dailyInfo.getProgramDate(), dailyInfo.getStatus())).toList()
+                                                        new ProgramDateInfo(dailyInfo.getId(),dailyInfo.getProgramDate(), dailyInfo.getStatus())).toList()
                                         // blind date
-                                        : List.of(new ProgramDateInfo(program.getBlindDateInfo().getProgramDate(), program.getBlindDateInfo().getStatus()))
+                                        : List.of(new ProgramDateInfo(program.getBlindDateInfo().getId(), program.getBlindDateInfo().getProgramDate(), program.getBlindDateInfo().getStatus()))
                         )
                         .build()
                 )
@@ -63,6 +63,7 @@ public record ProgramsByTempleResponse(
     }
     @Builder
     public static record ProgramDateInfo(
+            UUID programScheduleId,
             LocalDate date,
             ProgramStatus status
     ) {
