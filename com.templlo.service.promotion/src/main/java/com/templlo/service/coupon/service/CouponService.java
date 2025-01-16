@@ -11,6 +11,7 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +24,6 @@ import com.templlo.service.common.client.ProgramFeignClient;
 import com.templlo.service.common.dto.DetailProgramResponse;
 import com.templlo.service.common.response.ApiResponse;
 import com.templlo.service.coupon.dto.CouponDeleteResponseDto;
-import com.templlo.service.coupon.dto.CouponIssueRequestDto;
 import com.templlo.service.coupon.dto.CouponIssueResponseDto;
 import com.templlo.service.coupon.dto.CouponStatusResponseDto;
 import com.templlo.service.coupon.dto.CouponTransferResponseDto;
@@ -32,8 +32,12 @@ import com.templlo.service.coupon.dto.CouponUpdateResponseDto;
 import com.templlo.service.coupon.dto.CouponUseResponseDto;
 import com.templlo.service.coupon.dto.CouponValidationResponseDto;
 import com.templlo.service.coupon.entity.Coupon;
+import com.templlo.service.coupon.helper.RedisPromotionHelper;
 import com.templlo.service.coupon.repository.CouponRepository;
 import com.templlo.service.kafka.KafkaProducerService;
+import com.templlo.service.outbox.OutboxEvent;
+import com.templlo.service.outbox.entity.OutboxMessage;
+import com.templlo.service.outbox.repository.OutboxRepository;
 import com.templlo.service.promotion.entity.Promotion;
 import com.templlo.service.promotion.repository.PromotionRepository;
 import com.templlo.service.user_coupon.entity.UserCoupon;
@@ -52,8 +56,11 @@ public class CouponService {
 	private final PromotionRepository promotionRepository;
 	private final RedissonClient redissonClient;
 	private final KafkaProducerService kafkaProducerService;
-	private final RedisTemplate<String, Object> redisTemplate; // RedisTemplate 주입
+	private final RedisTemplate<String, Object> redisTemplate;
 	private final ProgramFeignClient programFeignClient;
+	private final RedisPromotionHelper redisPromotionHelper;
+	private final OutboxRepository outboxRepository;
+	private final ApplicationEventPublisher eventPublisher;
 
 	@Transactional
 	public CouponIssueResponseDto issueCoupon(UUID promotionId, String gender, UUID userId, String userLoginId) {
@@ -64,8 +71,10 @@ public class CouponService {
 
 		try {
 			if (!lock.tryLock(10, 5, TimeUnit.SECONDS)) {
+				log.warn("락 획득 실패: {}", lockKey);
 				throw new IllegalStateException("현재 쿠폰 발급 중입니다. 잠시 후 다시 시도해주세요.");
 			}
+			log.debug("락 획득 성공: {}", lockKey);
 
 			Promotion promotion = promotionRepository.findById(promotionId)
 				.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 프로모션 ID입니다."));
@@ -74,7 +83,8 @@ public class CouponService {
 				throw new IllegalStateException("이미 해당 프로모션에 참여한 사용자입니다.");
 			}
 
-			initializeRedisPromotionCounters(promotionId, promotion.getTotalCoupons());
+			// RedisPromotionHelper를 통해 Redis 초기화
+			redisPromotionHelper.initializeRedisPromotionCounters(promotionId, promotion.getTotalCoupons());
 
 			boolean success = decrementRemainingCouponsAtomically(promotionId);
 
@@ -84,16 +94,34 @@ public class CouponService {
 
 			Coupon coupon = fetchAndMarkCoupon(promotion, gender);
 
-			CouponIssueRequestDto requestDto = new CouponIssueRequestDto(
-				coupon.getCouponId(),
-				userId,
-				promotionId,
-				gender,
-				"Coupon issued successfully."
-			);
+			// UserCoupon 생성 및 저장
+			UserCoupon userCoupon = UserCoupon.builder()
+				.userId(userId)
+				.userLoginId(userLoginId)
+				.coupon(coupon)
+				.status("ISSUED")
+				.issuedAt(LocalDateTime.now())
+				.createdBy(userLoginId)
+				.updatedBy(userLoginId)
+				.build();
+			userCouponRepository.save(userCoupon);
 
-			// Kafka Producer 호출
-			kafkaProducerService.sendCouponIssueRequest(requestDto, userLoginId);
+			// OutboxMessage 생성 및 저장
+			OutboxMessage outboxMessage = OutboxMessage.builder()
+				.eventType("COUPON_ISSUED")
+				.payload(String.format("{\"couponId\":\"%s\",\"userId\":\"%s\",\"promotionId\":\"%s\"}",
+					coupon.getCouponId(), userId, promotionId))
+				.status("PENDING")
+				.createdAt(LocalDateTime.now())
+				.build();
+			outboxRepository.save(outboxMessage);
+
+			// Spring 이벤트 발행
+			eventPublisher.publishEvent(OutboxEvent.builder()
+				.eventType(outboxMessage.getEventType())
+				.payload(outboxMessage.getPayload())
+				.timestamp(outboxMessage.getCreatedAt())
+				.build());
 
 			return new CouponIssueResponseDto("SUCCESS", coupon.getCouponId(), "쿠폰이 발급되었습니다.");
 		} catch (Exception e) {
@@ -102,6 +130,7 @@ public class CouponService {
 		} finally {
 			if (lock.isHeldByCurrentThread()) {
 				lock.unlock();
+				log.debug("락 해제 성공: {}", lockKey);
 			}
 		}
 	}
@@ -321,15 +350,6 @@ public class CouponService {
 		// 이 메서드는 캐시 무효화를 트리거하기 위해 사용됩니다.
 	}
 
-	private void initializeRedisPromotionCounters(UUID promotionId, int totalCoupons) {
-		if (redisTemplate.opsForValue().get("promotion:" + promotionId + ":remaining") == null) {
-			redisTemplate.opsForValue().set("promotion:" + promotionId + ":remaining", (long)totalCoupons);
-		}
-		if (redisTemplate.opsForValue().get("promotion:" + promotionId + ":issued") == null) {
-			redisTemplate.opsForValue().set("promotion:" + promotionId + ":issued", 0L);
-		}
-	}
-
 	private boolean decrementRemainingCouponsAtomically(UUID promotionId) {
 		String luaScript =
 			"local remaining = redis.call('GET', KEYS[1]) " +
@@ -340,17 +360,13 @@ public class CouponService {
 				"    return 0 " +
 				"end";
 
-		// RedisScript<Long> 객체 생성
 		RedisScript<Long> redisScript = RedisScript.of(luaScript, Long.class);
+		String key = "promotion:" + promotionId + ":remaining";
 
-		// Lua 스크립트 실행
-		Long result = redisTemplate.execute(
-			redisScript,
-			List.of("promotion:" + promotionId + ":remaining"),
-			new Object[0] // 추가적인 ARGV 값이 없을 경우 빈 배열 사용
-		);
+		// 키를 리스트로 전달
+		Long result = redisPromotionHelper.executeScript(redisScript, List.of(key));
 
-		System.out.println("Lua script execution result: " + result); // 디버깅 로그
+		log.debug("Lua 스크립트 실행 결과: {}", result);
 		return result != null && result == 1;
 	}
 

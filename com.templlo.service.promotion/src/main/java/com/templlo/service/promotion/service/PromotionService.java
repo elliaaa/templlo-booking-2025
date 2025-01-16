@@ -1,8 +1,10 @@
 package com.templlo.service.promotion.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,9 @@ import com.templlo.service.common.response.PageResponse;
 import com.templlo.service.coupon.entity.Coupon;
 import com.templlo.service.coupon.repository.CouponRepository;
 import com.templlo.service.kafka.KafkaProducerService;
+import com.templlo.service.outbox.OutboxEvent;
+import com.templlo.service.outbox.entity.OutboxMessage;
+import com.templlo.service.outbox.repository.OutboxRepository;
 import com.templlo.service.promotion.dto.PromotionCreatedEvent;
 import com.templlo.service.promotion.dto.PromotionDetailResponseDto;
 import com.templlo.service.promotion.dto.PromotionRequestDto;
@@ -30,6 +35,8 @@ public class PromotionService {
 	private final PromotionRepository promotionRepository;
 	private final CouponRepository couponRepository;
 	private final KafkaProducerService kafkaProducerService;
+	private final OutboxRepository outboxRepository;
+	private final ApplicationEventPublisher eventPublisher;
 
 	@Transactional
 	public PromotionResponseDto createPromotion(PromotionRequestDto requestDto, String userId, String role) {
@@ -38,37 +45,77 @@ public class PromotionService {
 			throw new IllegalArgumentException("권한이 부족합니다. 프로모션을 생성하려면 MASTER 또는 ADMIN 역할이 필요합니다.");
 		}
 
-		// 프로모션 엔티티 생성
+		// 프로모션 생성
 		Promotion promotion = Promotion.builder()
 			.name(requestDto.name())
 			.type(requestDto.type())
 			.startDate(requestDto.startDate())
 			.endDate(requestDto.endDate())
 			.couponType(requestDto.couponType())
-			.maleCoupons(requestDto.maleCoupon() != null ? requestDto.maleCoupon() : 0)
-			.femaleCoupons(requestDto.femaleCoupon() != null ? requestDto.femaleCoupon() : 0)
 			.totalCoupons(requestDto.totalCoupon())
-			.issuedCoupons(0)
-			.remainingCoupons(requestDto.totalCoupon())
-			.status(requestDto.status() != null ? requestDto.status() : "ACTIVE")
+			.remainingCoupons(requestDto.totalCoupon()) // 초기 remainingCoupons 설정
+			.status("ACTIVE")
 			.build();
-
 		promotion.setCreatedBy(userId);
-		promotion.setUpdatedBy(userId);
-
-		promotion = promotionRepository.save(promotion);
+		promotionRepository.save(promotion);
 
 		// 쿠폰 생성
 		createCouponsForPromotion(promotion, requestDto);
 
-		// Kafka 메시지 발행 (별도 트랜잭션에서 처리)
-		sendPromotionCreatedEvent(promotion);
+		// OutboxMessage 생성 및 저장
+		OutboxMessage outboxMessage = OutboxMessage.builder()
+			.eventType("PROMOTION_CREATED")
+			.payload(String.format("{\"promotionId\":\"%s\",\"name\":\"%s\"}", promotion.getPromotionId(),
+				promotion.getName()))
+			.status("PENDING")
+			.createdAt(LocalDateTime.now())
+			.build();
+		outboxRepository.save(outboxMessage);
+
+		// Spring 이벤트 발행
+		eventPublisher.publishEvent(OutboxEvent.builder()
+			.eventType(outboxMessage.getEventType())
+			.payload(outboxMessage.getPayload())
+			.timestamp(outboxMessage.getCreatedAt())
+			.build());
 
 		return new PromotionResponseDto(
 			promotion.getPromotionId(),
 			"SUCCESS",
 			"프로모션이 생성되었습니다."
 		);
+	}
+
+	private Promotion createAndSavePromotion(PromotionRequestDto requestDto, String userId) {
+		Promotion promotion = Promotion.builder()
+			.name(requestDto.name())
+			.type(requestDto.type())
+			.startDate(requestDto.startDate())
+			.endDate(requestDto.endDate())
+			.couponType(requestDto.couponType())
+			.totalCoupons(requestDto.totalCoupon())
+			.status("ACTIVE")
+			.build();
+		promotion.setCreatedBy(userId);
+		return promotionRepository.save(promotion);
+	}
+
+	private OutboxMessage createAndSaveOutboxMessage(String eventType, String payload) {
+		OutboxMessage outboxMessage = OutboxMessage.builder()
+			.eventType(eventType)
+			.payload(payload)
+			.status("PENDING")
+			.createdAt(LocalDateTime.now())
+			.build();
+		return outboxRepository.save(outboxMessage);
+	}
+
+	private void publishOutboxEvent(OutboxMessage outboxMessage) {
+		eventPublisher.publishEvent(OutboxEvent.builder()
+			.eventType(outboxMessage.getEventType())
+			.payload(outboxMessage.getPayload())
+			.timestamp(outboxMessage.getCreatedAt())
+			.build());
 	}
 
 	@TransactionalEventListener
@@ -137,6 +184,13 @@ public class PromotionService {
 				couponRepository.save(generalCoupon);
 			}
 		}
+
+		// Promotion 객체 복사 및 remainingCoupons 업데이트
+		Promotion updatedPromotion = promotion.toBuilder()
+			.remainingCoupons(remainingCoupons)
+			.build();
+
+		promotionRepository.save(updatedPromotion); // 변경된 객체 저장
 	}
 
 	@Transactional
