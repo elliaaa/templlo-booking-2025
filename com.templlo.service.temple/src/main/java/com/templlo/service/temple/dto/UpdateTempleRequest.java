@@ -13,6 +13,4 @@ public class UpdateTempleRequest {
     private String templeName;
     private String templeDescription;
     private String templePhone;
-    private String roadAddress;
-    private String detailAddress;
 }

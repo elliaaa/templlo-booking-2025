@@ -4,19 +4,17 @@ import com.templlo.service.temple.common.exception.BaseException;
 import com.templlo.service.temple.common.response.ApiResponse;
 import com.templlo.service.temple.common.response.BasicStatusCode;
 import com.templlo.service.temple.common.response.PageResponse;
+import com.templlo.service.temple.redis.RedisCacheEvictor;
 import com.templlo.service.temple.dto.CreateTempleRequest;
 import com.templlo.service.temple.dto.TempleResponse;
 import com.templlo.service.temple.dto.UpdateTempleRequest;
 import com.templlo.service.temple.external.client.UserClient;
 import com.templlo.service.temple.external.dto.UserData;
-import com.templlo.service.temple.model.SearchTemple;
 import com.templlo.service.temple.model.Temple;
 import com.templlo.service.temple.repository.TempleRepository;
-import com.templlo.service.temple.repository.elasticsearch.TempleElasticSearchRepository;
 import com.templlo.service.temple.service.elasticsearch.ElasticSearchSynchronizer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,10 +31,10 @@ public class TempleService {
 
     private final UserClient userClient;
     private final TempleRepository templeRepository;
+    private final RedisCacheEvictor redisCacheEvictor;
     private final ElasticSearchSynchronizer elasticSearchSynchronizer;
 
     @Transactional
-    @CacheEvict(value = "templesByRegion", key = "#request.getRoadAddress().substring(0,2)+'-*'")
     public TempleResponse createTemple(CreateTempleRequest request, String loginId) {
 
         UserData userData = getUserDataAndValidateRole(loginId, "TEMPLE_ADMIN");
@@ -61,12 +59,16 @@ public class TempleService {
             log.error("Elasticsearch 저장 실패: {}", e.getMessage());
         }
 
+        // 3. 해당 지역 캐시 삭제
+        String regionPrefix = request.getRoadAddress().substring(0, 2);
+        String cachePattern = "templesByRegion::" + regionPrefix + "-*";
+        redisCacheEvictor.evictCachesByPattern(cachePattern);
+
         return TempleResponse.from(savedTemple);
     }
 
 
     @Transactional
-    @CacheEvict(value = "templesByRegion", key = "@templeRepository.findById(#templeId).orElseThrow().address.roadAddress.substring(0,2)+'-*'")
     public TempleResponse updateTemple(UUID templeId, UpdateTempleRequest request, String loginId) {
 
         UserData userData = getUserDataAndValidateRole(loginId, "TEMPLE_ADMIN");
@@ -84,12 +86,6 @@ public class TempleService {
         if (request.getTemplePhone() != null) {
             temple.setTemplePhone(request.getTemplePhone());
         }
-        if (request.getRoadAddress() != null) {
-            temple.getAddress().setRoadAddress(request.getRoadAddress());
-        }
-        if (request.getDetailAddress() != null) {
-            temple.getAddress().setDetailAddress(request.getDetailAddress());
-        }
 
         Temple savedTemple = templeRepository.save(temple);
 
@@ -99,6 +95,11 @@ public class TempleService {
         } catch (Exception e) {
             log.error("Elasticsearch 업데이트 실패: {}", e.getMessage());
         }
+
+        // 해당 지역 캐시 삭제
+        String regionPrefix = temple.getAddress().getRoadAddress().substring(0, 2);
+        String cachePattern = "templesByRegion::" + regionPrefix + "-*";
+        redisCacheEvictor.evictCachesByPattern(cachePattern);
 
         return TempleResponse.from(savedTemple);
     }
