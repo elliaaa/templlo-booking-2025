@@ -1,4 +1,4 @@
-package com.templlo.service.temple.Service;
+package com.templlo.service.temple.service;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
