@@ -7,7 +7,7 @@ import com.templlo.service.temple.common.security.UserDetailsImpl;
 import com.templlo.service.temple.dto.CreateTempleRequest;
 import com.templlo.service.temple.dto.TempleResponse;
 import com.templlo.service.temple.dto.UpdateTempleRequest;
-import com.templlo.service.temple.service.TempleSearchService;
+import com.templlo.service.temple.service.elasticsearch.TempleSearchService;
 import com.templlo.service.temple.service.TempleService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
