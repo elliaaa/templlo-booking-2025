@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import com.templlo.service.common.aop.OutboxPublisher;
+import com.templlo.service.common.aop.RoleCheck;
 import com.templlo.service.common.response.PageResponse;
 import com.templlo.service.coupon.entity.Coupon;
 import com.templlo.service.coupon.repository.CouponRepository;
@@ -38,14 +40,10 @@ public class PromotionService {
 	private final OutboxRepository outboxRepository;
 	private final ApplicationEventPublisher eventPublisher;
 
+	@RoleCheck(allowedRoles = {"MASTER", "ADMIN"})
+	@OutboxPublisher(eventType = "PROMOTION_CREATED")
 	@Transactional
 	public PromotionResponseDto createPromotion(PromotionRequestDto requestDto, String userId, String role) {
-		// 권한 검증
-		if (!"MASTER".equalsIgnoreCase(role) && !"ADMIN".equalsIgnoreCase(role)) {
-			throw new IllegalArgumentException("권한이 부족합니다. 프로모션을 생성하려면 MASTER 또는 ADMIN 역할이 필요합니다.");
-		}
-
-		// 프로모션 생성
 		Promotion promotion = Promotion.builder()
 			.name(requestDto.name())
 			.type(requestDto.type())
@@ -53,31 +51,13 @@ public class PromotionService {
 			.endDate(requestDto.endDate())
 			.couponType(requestDto.couponType())
 			.totalCoupons(requestDto.totalCoupon())
-			.remainingCoupons(requestDto.totalCoupon()) // 초기 remainingCoupons 설정
+			.remainingCoupons(requestDto.totalCoupon())
 			.status("ACTIVE")
 			.build();
 		promotion.setCreatedBy(userId);
 		promotionRepository.save(promotion);
 
-		// 쿠폰 생성
 		createCouponsForPromotion(promotion, requestDto);
-
-		// OutboxMessage 생성 및 저장
-		OutboxMessage outboxMessage = OutboxMessage.builder()
-			.eventType("PROMOTION_CREATED")
-			.payload(String.format("{\"promotionId\":\"%s\",\"name\":\"%s\"}", promotion.getPromotionId(),
-				promotion.getName()))
-			.status("PENDING")
-			.createdAt(LocalDateTime.now())
-			.build();
-		outboxRepository.save(outboxMessage);
-
-		// Spring 이벤트 발행
-		eventPublisher.publishEvent(OutboxEvent.builder()
-			.eventType(outboxMessage.getEventType())
-			.payload(outboxMessage.getPayload())
-			.timestamp(outboxMessage.getCreatedAt())
-			.build());
 
 		return new PromotionResponseDto(
 			promotion.getPromotionId(),
