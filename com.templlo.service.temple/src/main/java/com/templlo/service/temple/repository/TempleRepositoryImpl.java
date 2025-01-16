@@ -16,12 +16,12 @@ public class TempleRepositoryImpl implements TempleRepository{
 
     private final TempleJpaRepository templeJpaRepository;
     private final TempleCustomRepository templeCustomRepository;
-    private final TempleElasticSearchRepository templeElasticSearchRepository;
+//    private final TempleElasticSearchRepository templeElasticSearchRepository;
 
-    public TempleRepositoryImpl(TempleJpaRepository templeJpaRepository, TempleCustomRepository templeCustomRepository, TempleElasticSearchRepository templeElasticSearchRepository) {
+    public TempleRepositoryImpl(TempleJpaRepository templeJpaRepository, TempleCustomRepository templeCustomRepository) {
         this.templeJpaRepository = templeJpaRepository;
         this.templeCustomRepository = templeCustomRepository;
-        this.templeElasticSearchRepository = templeElasticSearchRepository;
+//        this.templeElasticSearchRepository = templeElasticSearchRepository;
 
     }
 
@@ -45,8 +45,8 @@ public class TempleRepositoryImpl implements TempleRepository{
         // 1. 데이터베이스에서 Temple 삭제
         templeJpaRepository.deleteById(templeId);
 
-        // 2. Elasticsearch에서 해당 Temple 데이터 삭제
-        templeElasticSearchRepository.deleteById(templeId.toString());
+//        // 2. Elasticsearch에서 해당 Temple 데이터 삭제
+//        templeElasticSearchRepository.deleteById(templeId.toString());
     }
 
 

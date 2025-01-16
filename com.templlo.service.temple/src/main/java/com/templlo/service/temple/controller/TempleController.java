@@ -1,19 +1,17 @@
 package com.templlo.service.temple.controller;
 
-import com.templlo.service.temple.Service.TempleSearchService;
-import com.templlo.service.temple.Service.TempleService;
+import com.templlo.service.temple.common.response.ApiResponse;
+import com.templlo.service.temple.common.response.BasicStatusCode;
+import com.templlo.service.temple.common.response.PageResponse;
 import com.templlo.service.temple.common.security.UserDetailsImpl;
 import com.templlo.service.temple.dto.CreateTempleRequest;
 import com.templlo.service.temple.dto.TempleResponse;
 import com.templlo.service.temple.dto.UpdateTempleRequest;
-import com.templlo.service.temple.common.response.ApiResponse;
-import com.templlo.service.temple.common.response.BasicStatusCode;
-import com.templlo.service.temple.common.response.PageResponse;
-import lombok.RequiredArgsConstructor;
+import com.templlo.service.temple.service.TempleSearchService;
+import com.templlo.service.temple.service.TempleService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -22,11 +20,15 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/temples")
-@RequiredArgsConstructor
 public class TempleController {
 
     private final TempleService templeService;
     private final TempleSearchService templeSearchService;
+
+    public TempleController(TempleService templeService, TempleSearchService templeSearchService) {
+        this.templeService = templeService;
+        this.templeSearchService = templeSearchService;
+    }
 
     @PreAuthorize("hasAuthority('TEMPLE_ADMIN')")
     @PostMapping
