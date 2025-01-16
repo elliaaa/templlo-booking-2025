@@ -70,9 +70,9 @@ public class CouponService {
 			Promotion promotion = promotionRepository.findById(promotionId)
 				.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 프로모션 ID입니다."));
 
-			// if (userCouponRepository.existsByUserIdAndCoupon_Promotion_PromotionId(userId, promotionId)) {
-			// 	throw new IllegalStateException("이미 해당 프로모션에 참여한 사용자입니다.");
-			// }
+			if (userCouponRepository.existsByUserIdAndCoupon_Promotion_PromotionId(userId, promotionId)) {
+				throw new IllegalStateException("이미 해당 프로모션에 참여한 사용자입니다.");
+			}
 
 			initializeRedisPromotionCounters(promotionId, promotion.getTotalCoupons());
 
