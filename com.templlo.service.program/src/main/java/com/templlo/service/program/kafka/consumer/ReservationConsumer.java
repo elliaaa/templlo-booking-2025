@@ -30,21 +30,22 @@ public class ReservationConsumer {
     private final JpaProgramRepository jpaProgramRepository;
     private final JpaTempleStayDailyInfoRepository jpaTempleStayDailyInfoRepository;
     private final ReservationConfirmProducer reservationConfirmProducer;
-    private final ObjectMapper objectMapper;
+//    private final ObjectMapper objectMapper;
 //    private final RedissonClient redissonClient;
 
     @Value("${spring.kafka.topics.reservation-confirmed}")
     private String reservationConfirmedTopic;
 
 
-    @DistributedLock(keyType = DistributedLockKey.TEMPLE_STAY_PROGRAM_CAPACITY_PREFIX, maxWaitTime = 1000L)
+    @DistributedLock(keyType = DistributedLockKey.TEMPLE_STAY_PROGRAM_CAPACITY_PREFIX, idSpEL = "#message.programId()", maxWaitTime = 1000L)
     @KafkaListener(topics = "${spring.kafka.topics.reservation-created}", groupId = "reservation-created-program")
     @Transactional
-    public void consumeReservationCreated(String reservationCreatedMessage) throws Exception {
+//    public void consumeReservationCreated(String reservationCreatedMessage) throws Exception {
+    public void consumeReservationCreated(ReservationCreateMessage message) throws Exception {
 
         log.info("Consume ReservationCreated Message start");
 
-        ReservationCreateMessage message = objectMapper.readValue(reservationCreatedMessage, ReservationCreateMessage.class);
+//        ReservationCreateMessage message = objectMapper.readValue(reservationCreatedMessage, ReservationCreateMessage.class);
 
 
         // 프로그램 조회
@@ -60,7 +61,7 @@ public class ReservationConsumer {
         try {
             // 예약 시작일 전 & 예약 종료일 후 -> 예약 못함 -> 스케쥴러로 오늘날짜 지난 스케쥴들은 전부 INACTIVE 처리
             // 예약 시작일 전 검증 처리
-            if (program.getReservationStartDate().isBefore(LocalDate.now())) {
+            if (program.getReservationStartDate().isBefore(LocalDate.now())) { // TODO : 테스트해봤는데 이거 로직 반대로 짜신 것 같아요..!
                 reservationConfirmProducer.send(reservationConfirmedTopic,
                         ReservationConfirmMessage.from(message.reservationId(), ReservationStatus.FAILURE));
                 return;
@@ -76,6 +77,7 @@ public class ReservationConsumer {
                 if (templeStayDailyInfo.getStatus() == ProgramStatus.ACTIVE) {
                     // 정원 감소
                     templeStayDailyInfo.reduceAvailableCapacity();
+                    log.info("after templeStayDailyInfo.reduceAvailableCapacity()={}", templeStayDailyInfo.getAvailableCapacity());
                     // 예약에 성공 message produce
                     reservationConfirmProducer.send(reservationConfirmedTopic,
                             ReservationConfirmMessage.from(message.reservationId(), ReservationStatus.SUCCESS));

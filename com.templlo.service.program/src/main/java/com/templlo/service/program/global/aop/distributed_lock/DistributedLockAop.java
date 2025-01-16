@@ -1,10 +1,6 @@
 package com.templlo.service.program.global.aop.distributed_lock;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.templlo.service.program.exception.ProgramException;
-import com.templlo.service.program.exception.ProgramStatusCode;
-import com.templlo.service.program.kafka.message.reservation.ReservationCreateMessage;
+import com.templlo.service.program.validation.CustomSpELParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -25,7 +21,6 @@ public class DistributedLockAop {
     private static final String LOCK_PREFIX = "lock:";
 
     private final RedissonClient redissonClient;
-    private final ObjectMapper objectMapper;
     private final AopTransaction aopTransaction;
 
     /**
@@ -51,8 +46,8 @@ public class DistributedLockAop {
     /**
      * 락을 적용할 키 생성
      */
-    private String getKey(ProceedingJoinPoint joinPoint, DistributedLock lockAnnotation, MethodSignature signature) throws JsonProcessingException {
-        return LOCK_PREFIX + lockAnnotation.keyType() + getProgramId(joinPoint, signature);
+    private String getKey(ProceedingJoinPoint joinPoint, DistributedLock lockAnnotation, MethodSignature signature) {
+        return LOCK_PREFIX + lockAnnotation.keyType().getKeyName() + CustomSpELParser.getDynamicValue(lockAnnotation.idSpEL(), joinPoint, signature);
     }
 
     /**
@@ -60,27 +55,5 @@ public class DistributedLockAop {
      */
     private boolean isAvailable(RLock rLock, DistributedLock lockAnnotation) throws InterruptedException {
         return rLock.tryLock(lockAnnotation.maxWaitTime(), lockAnnotation.maxLeaseTime(), TimeUnit.SECONDS);
-    }
-
-    /**
-     * 작업 대상 메서드의 인자로부터 programId 값을 추출
-     */
-    private String getProgramId(ProceedingJoinPoint joinPoint, MethodSignature signature) throws JsonProcessingException {
-        Object[] args = joinPoint.getArgs();
-        String[] parameterNames = signature.getParameterNames();
-        Class[] parameterTypes = signature.getParameterTypes();
-
-        String programId = "";
-        for (int i=0; i<args.length; i++){
-            if (parameterNames[i].equals("reservationCreatedMessage") && parameterTypes[i].equals(String.class)){
-                ReservationCreateMessage message = objectMapper.readValue(args[i].toString(), ReservationCreateMessage.class);
-                programId = message.programId().toString();
-            }
-        }
-
-        if(programId.isBlank()) {
-            throw new ProgramException(ProgramStatusCode.BAD_REQUEST_WITHOUT_PROGRAM_ID);
-        }
-        return programId;
     }
 }
