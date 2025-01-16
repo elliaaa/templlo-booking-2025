@@ -1,4 +1,4 @@
-package com.templlo.service.program.validation;
+package com.templlo.service.program.global.aop.distributed_lock;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
