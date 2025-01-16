@@ -1,4 +1,4 @@
-@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzcwMTk2MTUsImV4cCI6MTczNzAyMTQxNSwibG9naW5JZCI6InRlc3QxMjM0Iiwicm9sZSI6Ik1FTUJFUiIsInR5cGUiOiJhY2Nlc3MifQ.AaTvFJ4-V6-gxCDzvp8TuEpDebFyLLvRuNiLtaT6Vx0
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzcwMzg0MDIsImV4cCI6MTczNzA0MDIwMiwibG9naW5JZCI6Im1hc3Rlcjk5OTkiLCJyb2xlIjoiTUFTVEVSIiwidHlwZSI6ImFjY2VzcyJ9.QRzqMWbIVnkEo0umECV-Cv0z_f2G4qrkIQFZ5aAb_Ao
 @page = 0
 @size = 10
 @sortBy = createdAt
@@ -18,7 +18,7 @@ Authorization: Bearer {{accessToken}}
   "startDate": "2025-01-01",
   "endDate": "2025-01-10",
   "couponType": "DISCOUNT",
-  "totalCoupon": 10,
+  "totalCoupon": 100,
   "value": 20,
   "discountType": "PERCENTAGE",
   "status": "ACTIVE"
