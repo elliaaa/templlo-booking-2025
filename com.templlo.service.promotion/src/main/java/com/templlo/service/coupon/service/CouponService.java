@@ -5,9 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
-import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -20,6 +18,7 @@ import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.templlo.service.common.aop.DistributedLock;
 import com.templlo.service.common.client.ProgramFeignClient;
 import com.templlo.service.common.dto.DetailProgramResponse;
 import com.templlo.service.common.response.ApiResponse;
@@ -63,86 +62,79 @@ public class CouponService {
 	private final ApplicationEventPublisher eventPublisher;
 
 	@Transactional
+	@DistributedLock(key = "promotion:lock:#promotionId", waitTime = 15, leaseTime = 10)
 	public CouponIssueResponseDto issueCoupon(UUID promotionId, String gender, UUID userId, String userLoginId) {
 		log.debug("issueCoupon 호출: userLoginId={}", userLoginId);
 
-		String lockKey = "promotion:lock:" + promotionId;
-		RLock lock = redissonClient.getLock(lockKey);
+		// 프로모션 조회
+		Promotion promotion = promotionRepository.findById(promotionId)
+			.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 프로모션 ID입니다."));
 
-		try {
-			if (!lock.tryLock(10, 5, TimeUnit.SECONDS)) {
-				log.warn("락 획득 실패: {}", lockKey);
-				throw new IllegalStateException("현재 쿠폰 발급 중입니다. 잠시 후 다시 시도해주세요.");
-			}
-			log.debug("락 획득 성공: {}", lockKey);
+		// 사용자가 이미 해당 프로모션 쿠폰을 소유하고 있는지 확인
+		// if (userCouponRepository.existsByUserIdAndCoupon_Promotion_PromotionId(userId, promotionId)) {
+		// 	throw new IllegalStateException("이미 해당 프로모션에 참여한 사용자입니다.");
+		// }
 
-			Promotion promotion = promotionRepository.findById(promotionId)
-				.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 프로모션 ID입니다."));
+		// Redis를 통한 쿠폰 카운터 초기화
+		redisPromotionHelper.initializeRedisPromotionCounters(promotionId, promotion.getTotalCoupons());
 
-			if (userCouponRepository.existsByUserIdAndCoupon_Promotion_PromotionId(userId, promotionId)) {
-				throw new IllegalStateException("이미 해당 프로모션에 참여한 사용자입니다.");
-			}
-
-			// RedisPromotionHelper를 통해 Redis 초기화
-			redisPromotionHelper.initializeRedisPromotionCounters(promotionId, promotion.getTotalCoupons());
-
-			boolean success = decrementRemainingCouponsAtomically(promotionId);
-
-			if (!success) {
-				throw new IllegalStateException("남은 쿠폰 수량이 부족합니다.");
-			}
-
-			Coupon coupon = fetchAndMarkCoupon(promotion, gender);
-
-			// UserCoupon 생성 및 저장
-			UserCoupon userCoupon = UserCoupon.builder()
-				.userId(userId)
-				.userLoginId(userLoginId)
-				.coupon(coupon)
-				.status("ISSUED")
-				.issuedAt(LocalDateTime.now())
-				.createdBy(userLoginId)
-				.updatedBy(userLoginId)
-				.build();
-			userCouponRepository.save(userCoupon);
-
-			// OutboxMessage 생성 및 저장
-			OutboxMessage outboxMessage = OutboxMessage.builder()
-				.eventType("COUPON_ISSUED")
-				.payload(String.format("{\"couponId\":\"%s\",\"userId\":\"%s\",\"promotionId\":\"%s\"}",
-					coupon.getCouponId(), userId, promotionId))
-				.status("PENDING")
-				.createdAt(LocalDateTime.now())
-				.build();
-			outboxRepository.save(outboxMessage);
-
-			// Spring 이벤트 발행
-			eventPublisher.publishEvent(OutboxEvent.builder()
-				.eventType(outboxMessage.getEventType())
-				.payload(outboxMessage.getPayload())
-				.timestamp(outboxMessage.getCreatedAt())
-				.build());
-
-			return new CouponIssueResponseDto("SUCCESS", coupon.getCouponId(), "쿠폰이 발급되었습니다.");
-		} catch (Exception e) {
-			log.error("쿠폰 발급 중 오류 발생: userId={}, userLoginId={}, error={}", userId, userLoginId, e.getMessage(), e);
-			throw new IllegalStateException("쿠폰 발급 중 오류가 발생했습니다.", e);
-		} finally {
-			if (lock.isHeldByCurrentThread()) {
-				lock.unlock();
-				log.debug("락 해제 성공: {}", lockKey);
-			}
+		// Redis Lua 스크립트를 사용하여 남은 쿠폰 수 감소
+		boolean success = decrementRemainingCouponsAtomically(promotionId);
+		if (!success) {
+			throw new IllegalStateException("남은 쿠폰 수량이 부족합니다.");
 		}
+
+		// 사용 가능한 쿠폰 조회 및 상태 업데이트
+		Coupon coupon = fetchAndMarkCoupon(promotion, gender);
+
+		// UserCoupon 생성 및 저장
+		UserCoupon userCoupon = UserCoupon.builder()
+			.userId(userId)
+			.userLoginId(userLoginId)
+			.coupon(coupon)
+			.status("ISSUED")
+			.issuedAt(LocalDateTime.now())
+			.createdBy(userLoginId)
+			.updatedBy(userLoginId)
+			.build();
+		userCouponRepository.save(userCoupon);
+
+		// OutboxMessage 생성 및 저장
+		OutboxMessage outboxMessage = OutboxMessage.builder()
+			.eventType("COUPON_ISSUED")
+			.payload(String.format("{\"couponId\":\"%s\",\"userId\":\"%s\",\"promotionId\":\"%s\"}",
+				coupon.getCouponId(), userId, promotionId))
+			.status("PENDING")
+			.createdAt(LocalDateTime.now())
+			.build();
+		outboxRepository.save(outboxMessage);
+
+		// Outbox 이벤트 발행
+		eventPublisher.publishEvent(OutboxEvent.builder()
+			.eventType(outboxMessage.getEventType())
+			.payload(outboxMessage.getPayload())
+			.timestamp(outboxMessage.getCreatedAt())
+			.build());
+
+		log.info("쿠폰 발급 성공: userId={}, promotionId={}, couponId={}", userId, promotionId, coupon.getCouponId());
+		return new CouponIssueResponseDto("SUCCESS", coupon.getCouponId(), "쿠폰이 발급되었습니다.");
 	}
 
 	private Coupon fetchAndMarkCoupon(Promotion promotion, String gender) {
+		Coupon coupon;
 		if (gender != null) {
-			return couponRepository.findFirstByPromotionAndGenderAndStatus(promotion, gender, "AVAILABLE")
+			coupon = couponRepository.findFirstByPromotionAndGenderAndStatus(promotion, gender, "AVAILABLE")
 				.orElseThrow(() -> new IllegalStateException("해당 성별에 사용 가능한 쿠폰이 없습니다."));
 		} else {
-			return couponRepository.findFirstByPromotionAndStatus(promotion, "AVAILABLE")
+			coupon = couponRepository.findFirstByPromotionAndStatus(promotion, "AVAILABLE")
 				.orElseThrow(() -> new IllegalStateException("사용 가능한 쿠폰이 없습니다."));
 		}
+
+		// 쿠폰 상태를 ISSUED로 업데이트
+		coupon.updateStatus("ISSUED");
+		couponRepository.save(coupon); // 변경된 상태 저장
+		log.debug("쿠폰 상태 업데이트: couponId={}, status={}", coupon.getCouponId(), coupon.getStatus());
+		return coupon;
 	}
 
 	@Transactional
@@ -363,10 +355,10 @@ public class CouponService {
 		RedisScript<Long> redisScript = RedisScript.of(luaScript, Long.class);
 		String key = "promotion:" + promotionId + ":remaining";
 
-		// 키를 리스트로 전달
+		// Redis Lua 스크립트를 실행하여 남은 쿠폰 수 감소
 		Long result = redisPromotionHelper.executeScript(redisScript, List.of(key));
 
-		log.debug("Lua 스크립트 실행 결과: {}", result);
+		log.debug("Redis Lua 스크립트 실행 결과: promotionId={}, remaining={}", promotionId, result);
 		return result != null && result == 1;
 	}
 
