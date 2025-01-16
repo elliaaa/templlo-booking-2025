@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.templlo.service.program.entity.*;
 import com.templlo.service.program.exception.ProgramException;
 import com.templlo.service.program.exception.ProgramStatusCode;
+import com.templlo.service.program.global.aop.distributed_lock.DistributedLock;
+import com.templlo.service.program.global.aop.distributed_lock.DistributedLockKey;
 import com.templlo.service.program.kafka.message.reservation.Gender;
 import com.templlo.service.program.kafka.message.reservation.ReservationConfirmMessage;
 import com.templlo.service.program.kafka.message.reservation.ReservationCreateMessage;
@@ -13,8 +15,6 @@ import com.templlo.service.program.repository.JpaProgramRepository;
 import com.templlo.service.program.repository.JpaTempleStayDailyInfoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
@@ -31,12 +31,13 @@ public class ReservationConsumer {
     private final JpaTempleStayDailyInfoRepository jpaTempleStayDailyInfoRepository;
     private final ReservationConfirmProducer reservationConfirmProducer;
     private final ObjectMapper objectMapper;
-    private final RedissonClient redissonClient;
+//    private final RedissonClient redissonClient;
 
     @Value("${spring.kafka.topics.reservation-confirmed}")
     private String reservationConfirmedTopic;
 
 
+    @DistributedLock(keyType = DistributedLockKey.TEMPLE_STAY_PROGRAM_CAPACITY_PREFIX, maxWaitTime = 1000L)
     @KafkaListener(topics = "${spring.kafka.topics.reservation-created}", groupId = "reservation-created-program")
     @Transactional
     public void consumeReservationCreated(String reservationCreatedMessage) throws Exception {
@@ -51,8 +52,8 @@ public class ReservationConsumer {
                 () -> new ProgramException(ProgramStatusCode.PROGRAM_NOT_FOUND)
         );
 
-        RLock lock = redissonClient.getLock("programScheduleLock:" + message.programId());
-        lock.lock();  // 락을 먼저 획득
+//        RLock lock = redissonClient.getLock("programScheduleLock:" + message.programId());
+//        lock.lock();  // 락을 먼저 획득
 
         log.info("Program Schedule Lock acquired for programId: {}", message.programId());
 
@@ -118,8 +119,9 @@ public class ReservationConsumer {
 
         } finally {
             // 락 해제
-            lock.unlock();
-            log.info("Program Schedule Lock released for programId: {}", message.programId());
+//            lock.unlock();
+//            log.info("Program Schedule Lock released for programId: {}", message.programId());
+            log.info("Program Schedule end finally for programId: {}", message.programId());
         }
     }
 }
