@@ -7,7 +7,7 @@ import com.templlo.service.temple.dto.CreateTempleRequest;
 import com.templlo.service.temple.dto.TempleResponse;
 import com.templlo.service.temple.external.client.UserClient;
 import com.templlo.service.temple.external.dto.UserData;
-import com.templlo.service.temple.service.TempleSearchService;
+import com.templlo.service.temple.service.elasticsearch.TempleSearchService;
 import com.templlo.service.temple.service.TempleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
