@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.templlo.service.common.aop.DistributedLock;
+import com.templlo.service.common.aop.OutboxPublisher;
 import com.templlo.service.common.client.ProgramFeignClient;
 import com.templlo.service.common.dto.DetailProgramResponse;
 import com.templlo.service.common.response.ApiResponse;
@@ -34,8 +35,6 @@ import com.templlo.service.coupon.entity.Coupon;
 import com.templlo.service.coupon.helper.RedisPromotionHelper;
 import com.templlo.service.coupon.repository.CouponRepository;
 import com.templlo.service.kafka.KafkaProducerService;
-import com.templlo.service.outbox.OutboxEvent;
-import com.templlo.service.outbox.entity.OutboxMessage;
 import com.templlo.service.outbox.repository.OutboxRepository;
 import com.templlo.service.promotion.entity.Promotion;
 import com.templlo.service.promotion.repository.PromotionRepository;
@@ -62,18 +61,17 @@ public class CouponService {
 	private final ApplicationEventPublisher eventPublisher;
 
 	@Transactional
-	@DistributedLock(key = "promotion:lock:#promotionId", waitTime = 15, leaseTime = 10)
+	@DistributedLock(key = "'promotion:lock:' + #promotionId", waitTime = 15, leaseTime = 10)
+	@OutboxPublisher(
+		eventType = "COUPON_ISSUED",
+		payloadExpression = "{'couponId': #response.couponId, 'userId': #arg2, 'promotionId': #arg0}"
+	)
 	public CouponIssueResponseDto issueCoupon(UUID promotionId, String gender, UUID userId, String userLoginId) {
 		log.debug("issueCoupon 호출: userLoginId={}", userLoginId);
 
 		// 프로모션 조회
 		Promotion promotion = promotionRepository.findById(promotionId)
 			.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 프로모션 ID입니다."));
-
-		// 사용자가 이미 해당 프로모션 쿠폰을 소유하고 있는지 확인
-		// if (userCouponRepository.existsByUserIdAndCoupon_Promotion_PromotionId(userId, promotionId)) {
-		// 	throw new IllegalStateException("이미 해당 프로모션에 참여한 사용자입니다.");
-		// }
 
 		// Redis를 통한 쿠폰 카운터 초기화
 		redisPromotionHelper.initializeRedisPromotionCounters(promotionId, promotion.getTotalCoupons());
@@ -98,23 +96,6 @@ public class CouponService {
 			.updatedBy(userLoginId)
 			.build();
 		userCouponRepository.save(userCoupon);
-
-		// OutboxMessage 생성 및 저장
-		OutboxMessage outboxMessage = OutboxMessage.builder()
-			.eventType("COUPON_ISSUED")
-			.payload(String.format("{\"couponId\":\"%s\",\"userId\":\"%s\",\"promotionId\":\"%s\"}",
-				coupon.getCouponId(), userId, promotionId))
-			.status("PENDING")
-			.createdAt(LocalDateTime.now())
-			.build();
-		outboxRepository.save(outboxMessage);
-
-		// Outbox 이벤트 발행
-		eventPublisher.publishEvent(OutboxEvent.builder()
-			.eventType(outboxMessage.getEventType())
-			.payload(outboxMessage.getPayload())
-			.timestamp(outboxMessage.getCreatedAt())
-			.build());
 
 		log.info("쿠폰 발급 성공: userId={}, promotionId={}, couponId={}", userId, promotionId, coupon.getCouponId());
 		return new CouponIssueResponseDto("SUCCESS", coupon.getCouponId(), "쿠폰이 발급되었습니다.");
