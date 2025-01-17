@@ -52,7 +52,7 @@ public class TempleService {
 
         Temple savedTemple = templeRepository.save(temple);
 
-        // 2. Elasticsearch에 SearchTemple 저장
+        // 2. Elasticsearch에 저장
         try {
             elasticSearchSynchronizer.saveTemple(savedTemple);
         } catch (Exception e) {
