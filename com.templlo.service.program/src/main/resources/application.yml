@@ -29,9 +29,11 @@ spring:
       review-updated: review-updated
       reservation-created: reservation-created
       reservation-confirmed: reservation-confirmed
+      reservation-canceled: reservation-canceled
     consumer:
       groups:
         reservation-created-program: reservation-created-program
+        reservation-canceled-program: reservation-canceled-program
         review-created-program: review-created-program
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:

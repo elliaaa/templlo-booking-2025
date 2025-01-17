@@ -1,5 +1,6 @@
 package com.templlo.service.program.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.templlo.service.program.auditor.BaseEntity;
@@ -66,10 +67,12 @@ public class Program extends BaseEntity {
     private Integer reviewCount;
 
     @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     List<TempleStayDailyInfo> templeStayDailyInfos = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "blind_date_info_id")
+    @JsonManagedReference
     private BlindDateInfo blindDateInfo;
 
     public static Program create(

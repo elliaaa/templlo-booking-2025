@@ -10,8 +10,13 @@ public record ReservationConfirmMessage(
         UUID reservationId,
         ReservationStatus status
 ) {
-    public static ReservationConfirmMessage from(UUID reservationId, ReservationStatus status) throws Exception {
+    public static ReservationConfirmMessage SuccessMessageFrom(UUID reservationId) {
 
-        return new ReservationConfirmMessage(reservationId, status);
+        return new ReservationConfirmMessage(reservationId, ReservationStatus.SUCCESS);
+    }
+
+    public static ReservationConfirmMessage FailureMessageFrom(UUID reservationId) {
+
+        return new ReservationConfirmMessage(reservationId, ReservationStatus.FAILURE);
     }
 }

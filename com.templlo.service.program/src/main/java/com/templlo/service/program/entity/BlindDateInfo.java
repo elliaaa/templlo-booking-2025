@@ -1,5 +1,6 @@
 package com.templlo.service.program.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.templlo.service.program.auditor.BaseEntity;
 import com.templlo.service.program.kafka.message.reservation.Gender;
 import jakarta.persistence.*;
@@ -51,6 +52,7 @@ public class BlindDateInfo extends BaseEntity {
     private LocalDate additionalReservationEndDate;
 
     @OneToOne(mappedBy = "blindDateInfo")
+    @JsonBackReference
     private Program program;
 
     public static BlindDateInfo create(Program program, ProgramStatus programStatus, LocalDate programDate, Integer maleCapacity, Integer femaleCapacity) {
