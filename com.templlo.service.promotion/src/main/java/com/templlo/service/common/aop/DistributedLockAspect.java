@@ -7,6 +7,9 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -22,10 +25,20 @@ public class DistributedLockAspect {
 	private final RedissonClient redissonClient;
 	private final TransactionTemplate transactionTemplate;
 
+	private final ExpressionParser parser = new SpelExpressionParser();
+
 	@Around("@annotation(distributedLock)")
 	public Object handleDistributedLock(ProceedingJoinPoint joinPoint, DistributedLock distributedLock) throws
 		Throwable {
-		String lockKey = distributedLock.key();
+		// SpEL 파싱 컨텍스트 생성
+		StandardEvaluationContext context = new StandardEvaluationContext();
+		Object[] args = joinPoint.getArgs();
+		for (int i = 0; i < args.length; i++) {
+			context.setVariable("arg" + i, args[i]); // 메서드 파라미터를 arg0, arg1 등으로 설정
+		}
+
+		// SpEL을 사용해 락 키 동적 생성
+		String lockKey = parser.parseExpression(distributedLock.key()).getValue(context, String.class);
 		long waitTime = distributedLock.waitTime();
 		long leaseTime = distributedLock.leaseTime();
 

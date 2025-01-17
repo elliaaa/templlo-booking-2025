@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DistributedLock {
-	String key(); // 락의 키
+	String key(); // SpEL 표현식으로 락 키를 설정
 
 	long waitTime() default 10; // 락 획득 대기 시간 (초)
 
