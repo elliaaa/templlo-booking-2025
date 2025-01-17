@@ -1,4 +1,4 @@
-package com.templlo.service.review.external.kafka.config;
+package com.templlo.service.review.event.external.config;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +30,7 @@ public class KafkaProducerConfig {
 		configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
 		configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 		configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+
 		return new DefaultKafkaProducerFactory<>(configProps);
 	}
 

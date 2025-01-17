@@ -1,4 +1,4 @@
-package com.templlo.service.review.external.kafka.producer.dto;
+package com.templlo.service.review.event.dto;
 
 import java.util.UUID;
 
@@ -20,4 +20,5 @@ public record ReviewCreatedEventDto(
 	public static ReviewCreatedEventDto of(String loginId, Review review) {
 		return new ReviewCreatedEventDto(loginId, review.getProgramId(), review.getRating());
 	}
+
 }
