@@ -5,12 +5,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
-import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,11 +18,12 @@ import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.templlo.service.common.aop.DistributedLock;
+import com.templlo.service.common.aop.OutboxPublisher;
 import com.templlo.service.common.client.ProgramFeignClient;
 import com.templlo.service.common.dto.DetailProgramResponse;
 import com.templlo.service.common.response.ApiResponse;
 import com.templlo.service.coupon.dto.CouponDeleteResponseDto;
-import com.templlo.service.coupon.dto.CouponIssueRequestDto;
 import com.templlo.service.coupon.dto.CouponIssueResponseDto;
 import com.templlo.service.coupon.dto.CouponStatusResponseDto;
 import com.templlo.service.coupon.dto.CouponTransferResponseDto;
@@ -32,8 +32,10 @@ import com.templlo.service.coupon.dto.CouponUpdateResponseDto;
 import com.templlo.service.coupon.dto.CouponUseResponseDto;
 import com.templlo.service.coupon.dto.CouponValidationResponseDto;
 import com.templlo.service.coupon.entity.Coupon;
+import com.templlo.service.coupon.helper.RedisPromotionHelper;
 import com.templlo.service.coupon.repository.CouponRepository;
 import com.templlo.service.kafka.KafkaProducerService;
+import com.templlo.service.outbox.repository.OutboxRepository;
 import com.templlo.service.promotion.entity.Promotion;
 import com.templlo.service.promotion.repository.PromotionRepository;
 import com.templlo.service.user_coupon.entity.UserCoupon;
@@ -52,68 +54,68 @@ public class CouponService {
 	private final PromotionRepository promotionRepository;
 	private final RedissonClient redissonClient;
 	private final KafkaProducerService kafkaProducerService;
-	private final RedisTemplate<String, Object> redisTemplate; // RedisTemplate 주입
+	private final RedisTemplate<String, Object> redisTemplate;
 	private final ProgramFeignClient programFeignClient;
+	private final RedisPromotionHelper redisPromotionHelper;
+	private final OutboxRepository outboxRepository;
+	private final ApplicationEventPublisher eventPublisher;
 
 	@Transactional
+	@DistributedLock(key = "'promotion:lock:' + #promotionId", waitTime = 15, leaseTime = 10)
+	@OutboxPublisher(
+		eventType = "COUPON_ISSUED",
+		payloadExpression = "{'couponId': #response.couponId, 'userId': #arg2, 'promotionId': #arg0}" // ObjectMapper 호출 제거
+	)
 	public CouponIssueResponseDto issueCoupon(UUID promotionId, String gender, UUID userId, String userLoginId) {
 		log.debug("issueCoupon 호출: userLoginId={}", userLoginId);
 
-		String lockKey = "promotion:lock:" + promotionId;
-		RLock lock = redissonClient.getLock(lockKey);
+		// 프로모션 조회
+		Promotion promotion = promotionRepository.findById(promotionId)
+			.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 프로모션 ID입니다."));
 
-		try {
-			if (!lock.tryLock(10, 5, TimeUnit.SECONDS)) {
-				throw new IllegalStateException("현재 쿠폰 발급 중입니다. 잠시 후 다시 시도해주세요.");
-			}
+		// Redis를 통한 쿠폰 카운터 초기화
+		redisPromotionHelper.initializeRedisPromotionCounters(promotionId, promotion.getTotalCoupons());
 
-			Promotion promotion = promotionRepository.findById(promotionId)
-				.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 프로모션 ID입니다."));
-
-			if (userCouponRepository.existsByUserIdAndCoupon_Promotion_PromotionId(userId, promotionId)) {
-				throw new IllegalStateException("이미 해당 프로모션에 참여한 사용자입니다.");
-			}
-
-			initializeRedisPromotionCounters(promotionId, promotion.getTotalCoupons());
-
-			boolean success = decrementRemainingCouponsAtomically(promotionId);
-
-			if (!success) {
-				throw new IllegalStateException("남은 쿠폰 수량이 부족합니다.");
-			}
-
-			Coupon coupon = fetchAndMarkCoupon(promotion, gender);
-
-			CouponIssueRequestDto requestDto = new CouponIssueRequestDto(
-				coupon.getCouponId(),
-				userId,
-				promotionId,
-				gender,
-				"Coupon issued successfully."
-			);
-
-			// Kafka Producer 호출
-			kafkaProducerService.sendCouponIssueRequest(requestDto, userLoginId);
-
-			return new CouponIssueResponseDto("SUCCESS", coupon.getCouponId(), "쿠폰이 발급되었습니다.");
-		} catch (Exception e) {
-			log.error("쿠폰 발급 중 오류 발생: userId={}, userLoginId={}, error={}", userId, userLoginId, e.getMessage(), e);
-			throw new IllegalStateException("쿠폰 발급 중 오류가 발생했습니다.", e);
-		} finally {
-			if (lock.isHeldByCurrentThread()) {
-				lock.unlock();
-			}
+		// Redis Lua 스크립트를 사용하여 남은 쿠폰 수 감소
+		boolean success = decrementRemainingCouponsAtomically(promotionId);
+		if (!success) {
+			throw new IllegalStateException("남은 쿠폰 수량이 부족합니다.");
 		}
+
+		// 사용 가능한 쿠폰 조회 및 상태 업데이트
+		Coupon coupon = fetchAndMarkCoupon(promotion, gender);
+
+		// UserCoupon 생성 및 저장
+		UserCoupon userCoupon = UserCoupon.builder()
+			.userId(userId)
+			.userLoginId(userLoginId)
+			.coupon(coupon)
+			.status("ISSUED")
+			.issuedAt(LocalDateTime.now())
+			.createdBy(userLoginId)
+			.updatedBy(userLoginId)
+			.build();
+		userCouponRepository.save(userCoupon);
+
+		log.info("쿠폰 발급 성공: userId={}, promotionId={}, couponId={}", userId, promotionId, coupon.getCouponId());
+		return new CouponIssueResponseDto("SUCCESS", coupon.getCouponId(), "쿠폰이 발급되었습니다.");
 	}
 
 	private Coupon fetchAndMarkCoupon(Promotion promotion, String gender) {
+		Coupon coupon;
 		if (gender != null) {
-			return couponRepository.findFirstByPromotionAndGenderAndStatus(promotion, gender, "AVAILABLE")
+			coupon = couponRepository.findFirstByPromotionAndGenderAndStatus(promotion, gender, "AVAILABLE")
 				.orElseThrow(() -> new IllegalStateException("해당 성별에 사용 가능한 쿠폰이 없습니다."));
 		} else {
-			return couponRepository.findFirstByPromotionAndStatus(promotion, "AVAILABLE")
+			coupon = couponRepository.findFirstByPromotionAndStatus(promotion, "AVAILABLE")
 				.orElseThrow(() -> new IllegalStateException("사용 가능한 쿠폰이 없습니다."));
 		}
+
+		// 쿠폰 상태를 ISSUED로 업데이트
+		coupon.updateStatus("ISSUED");
+		couponRepository.save(coupon); // 변경된 상태 저장
+		log.debug("쿠폰 상태 업데이트: couponId={}, status={}", coupon.getCouponId(), coupon.getStatus());
+		return coupon;
 	}
 
 	@Transactional
@@ -321,15 +323,6 @@ public class CouponService {
 		// 이 메서드는 캐시 무효화를 트리거하기 위해 사용됩니다.
 	}
 
-	private void initializeRedisPromotionCounters(UUID promotionId, int totalCoupons) {
-		if (redisTemplate.opsForValue().get("promotion:" + promotionId + ":remaining") == null) {
-			redisTemplate.opsForValue().set("promotion:" + promotionId + ":remaining", (long)totalCoupons);
-		}
-		if (redisTemplate.opsForValue().get("promotion:" + promotionId + ":issued") == null) {
-			redisTemplate.opsForValue().set("promotion:" + promotionId + ":issued", 0L);
-		}
-	}
-
 	private boolean decrementRemainingCouponsAtomically(UUID promotionId) {
 		String luaScript =
 			"local remaining = redis.call('GET', KEYS[1]) " +
@@ -340,17 +333,13 @@ public class CouponService {
 				"    return 0 " +
 				"end";
 
-		// RedisScript<Long> 객체 생성
 		RedisScript<Long> redisScript = RedisScript.of(luaScript, Long.class);
+		String key = "promotion:" + promotionId + ":remaining";
 
-		// Lua 스크립트 실행
-		Long result = redisTemplate.execute(
-			redisScript,
-			List.of("promotion:" + promotionId + ":remaining"),
-			new Object[0] // 추가적인 ARGV 값이 없을 경우 빈 배열 사용
-		);
+		// Redis Lua 스크립트를 실행하여 남은 쿠폰 수 감소
+		Long result = redisPromotionHelper.executeScript(redisScript, List.of(key));
 
-		System.out.println("Lua script execution result: " + result); // 디버깅 로그
+		log.debug("Redis Lua 스크립트 실행 결과: promotionId={}, remaining={}", promotionId, result);
 		return result != null && result == 1;
 	}
 
