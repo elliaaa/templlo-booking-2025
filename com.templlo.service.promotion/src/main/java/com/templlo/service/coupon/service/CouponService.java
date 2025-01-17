@@ -64,7 +64,7 @@ public class CouponService {
 	@DistributedLock(key = "'promotion:lock:' + #promotionId", waitTime = 15, leaseTime = 10)
 	@OutboxPublisher(
 		eventType = "COUPON_ISSUED",
-		payloadExpression = "{'couponId': #response.couponId, 'userId': #arg2, 'promotionId': #arg0}"
+		payloadExpression = "{'couponId': #response.couponId, 'userId': #arg2, 'promotionId': #arg0}" // ObjectMapper 호출 제거
 	)
 	public CouponIssueResponseDto issueCoupon(UUID promotionId, String gender, UUID userId, String userLoginId) {
 		log.debug("issueCoupon 호출: userLoginId={}", userLoginId);

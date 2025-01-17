@@ -41,7 +41,7 @@ public class PromotionService {
 
 	@OutboxPublisher(
 		eventType = "PROMOTION_CREATED",
-		payloadExpression = "{'promotionId': #response.promotionId, 'message': #response.message}"
+		payloadExpression = "{'promotionId': #response.promotionId, 'message': #response.message}" // ObjectMapper 호출 제거
 	)
 	@Transactional
 	public PromotionResponseDto createPromotion(PromotionRequestDto requestDto, String userId, String role) {
