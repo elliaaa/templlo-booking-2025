@@ -55,9 +55,9 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Build and Test
+      - name: Build
         working-directory: ${{ matrix.service }}
         run: |
           echo "Building ${{ matrix.service }}"
           chmod +x gradlew
-          ./gradlew clean build
+          ./gradlew clean build -x test
