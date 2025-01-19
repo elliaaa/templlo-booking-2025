@@ -1,10 +1,12 @@
-package com.templlo.service.temple.Service;
+package com.templlo.service.temple.service.elasticsearch;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
+import com.templlo.service.temple.common.response.ErrorPageResponse;
 import com.templlo.service.temple.dto.TempleResponse;
 import com.templlo.service.temple.common.response.PageResponse;
 import com.templlo.service.temple.model.SearchTemple;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +25,7 @@ public class TempleSearchService {
 
     private final ElasticsearchOperations elasticsearchOperations;
 
+    @CircuitBreaker(name = "templeSearchService", fallbackMethod = "fallbackSearchTemples")
     public PageResponse<TempleResponse> searchTemples(String keyword, Pageable pageable) {
 
         log.info("Searching temples with keyword: '{}' and pageable: {}", keyword, pageable);
@@ -51,4 +54,13 @@ public class TempleSearchService {
 
         return new PageResponse<>(totalPages, pageable.getPageNumber() + 1, content);
     }
+
+    // Fallback method
+    public ErrorPageResponse fallbackSearchTemples(String keyword, Pageable pageable, Throwable throwable) {
+
+        log.error("Fallback triggered for searchTemples due to: {}", throwable.getMessage());
+
+        return ErrorPageResponse.of("현재 검색 서비스를 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.", pageable);
+    }
+
 }
