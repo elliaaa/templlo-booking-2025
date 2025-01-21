@@ -45,6 +45,25 @@ spring:
         locator:
           enabled: true
 
+springdoc:
+  swagger-ui:
+    use-root-path: true
+    urls:
+      - name: 인증 서비스
+        url: http://localhost:19091/api/auth/v3/api-docs
+      - name: 회원 서비스
+        url: http://localhost:19091/api/users/v3/api-docs
+      - name: 리뷰 서비스
+        url: http://localhost:19091/api/reviews/v3/api-docs
+      - name: 사찰 서비스
+        url: http://localhost:19091/api/temples/v3/api-docs
+      - name: 프로그램 서비스
+        url: http://localhost:19091/api/programs/v3/api-docs
+      - name: 예약 서비스
+        url: http://localhost:19091/api/reservations/v3/api-docs
+      - name: 프로모션 서비스
+        url: http://localhost:19091/api/promotions/v3/api-docs
+
 jwt:
   secret: ${JWT_SECRET_KEY}
 
