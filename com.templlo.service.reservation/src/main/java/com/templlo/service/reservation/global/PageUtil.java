@@ -25,11 +25,10 @@ public class PageUtil {
         }
 
         Sort sort = pageable.getSort();
-        Sort.Order order = sort.stream().iterator().next(); // TODO : 없을 경우 예외처리
-        String sortBy = order.getProperty();
-        if (!SortBy.isValid(sortBy)) {
-            sortBy = DEFAULT_SORT_BY;
-        }
+        String sortBy = sort.stream()
+                .map(Sort.Order::getProperty) // sort 에 사용된 이름 가져옴
+                .filter(SortBy::isValid).findFirst() // 첫번째 요소가 유효한 enum 값인지 검증한 값 가져옴
+                .orElse(DEFAULT_SORT_BY); // 유효하지 않으면 이 값으로 대체
 
         return PageRequest.of(page, size, Sort.by(sortBy).descending());
     }
