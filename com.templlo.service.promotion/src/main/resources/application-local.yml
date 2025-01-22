@@ -77,3 +77,13 @@ feign:
 user:
   service:
     url: http://localhost:19010
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  prometheus:
+    metrics:
+      export:
+        enabled: true

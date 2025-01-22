@@ -1,4 +1,4 @@
-package com.templlo.service.user.common.security;
+package com.templlo.service.review.common.config;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.*;
 
@@ -9,12 +9,10 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.templlo.service.user.common.filter.AuthenticationFilter;
+import com.templlo.service.review.common.filter.AuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,11 +20,6 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
 
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -41,7 +34,6 @@ public class SecurityConfig {
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
 			.authorizeHttpRequests(auth -> {
-				auth.requestMatchers("/api/users/sign-up", "/api/auth/login").permitAll();
 				auth.anyRequest().authenticated();
 			})
 			.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
