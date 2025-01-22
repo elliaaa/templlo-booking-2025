@@ -1,4 +1,4 @@
-package com.templlo.service.common.config;
+package com.templlo.service.user.common.config;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -8,8 +8,6 @@ import org.springframework.cloud.netflix.eureka.EurekaInstanceConfigBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-
-import com.netflix.appinfo.EurekaInstanceConfig;
 
 @Configuration
 @Profile("prod")
@@ -27,7 +25,8 @@ public class EcsConfig {
 
 		config.setIpAddress(ip);
 		config.setPreferIpAddress(true);
-		config.setNonSecurePort(19050);
+		config.setNonSecurePort(19010);
+
 
 		return config;
 	}

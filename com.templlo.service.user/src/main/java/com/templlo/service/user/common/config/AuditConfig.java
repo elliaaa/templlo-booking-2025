@@ -1,9 +1,11 @@
-package com.templlo.service.review.common.audit;
+package com.templlo.service.user.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+
+import com.templlo.service.user.common.audit.AuditorAwareImpl;
 
 @Configuration
 @EnableJpaAuditing

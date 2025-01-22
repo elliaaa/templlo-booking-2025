@@ -69,13 +69,3 @@ feign:
         connectTimeout: 5000
         readTimeout: 5000
         loggerLevel: NONE # 배포 환경에서는 Feign 로깅 비활성화
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: prometheus
-  prometheus:
-    metrics:
-      export:
-        enabled: true

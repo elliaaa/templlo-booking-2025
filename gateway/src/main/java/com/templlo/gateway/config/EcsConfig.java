@@ -1,4 +1,4 @@
-package com.templlo.service.common.config;
+package com.templlo.gateway.config;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -27,7 +27,8 @@ public class EcsConfig {
 
 		config.setIpAddress(ip);
 		config.setPreferIpAddress(true);
-		config.setNonSecurePort(19050);
+		config.setNonSecurePort(19090);
+
 
 		return config;
 	}

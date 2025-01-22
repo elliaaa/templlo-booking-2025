@@ -1,4 +1,4 @@
-package com.templlo.service.user.common.redis;
+package com.templlo.service.user.common.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

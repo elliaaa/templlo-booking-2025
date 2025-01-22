@@ -1,0 +1,92 @@
+name: Push to ECR and Deploy to ECS 🚀
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.filter.outputs.changes }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            gateway:
+              - 'gateway/**'
+            com.templlo.service.user:
+              - 'com.templlo.service.user/**'
+            com.templlo.service.promotion:
+              - 'com.templlo.service.promotion/**'
+            com.templlo.service.review:
+              - 'com.templlo.service.review/**'
+
+  build-and-deploy:
+    needs: changes
+    if: ${{ needs.changes.outputs.matrix != '[]' }}
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: ${{ fromJSON(needs.changes.outputs.matrix) }}
+
+    steps:
+      - name: 1️⃣ Checkout
+        uses: actions/checkout@v4
+
+      - name: 2️⃣ Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: 3️⃣ Build
+        working-directory: ${{ matrix.service }}
+        run: |
+          echo "Building ${{ matrix.service }}"
+          chmod +x gradlew
+          ./gradlew clean build -x test
+
+      - name: 4️⃣ Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: 5️⃣ Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: 6️⃣ Build DockerFile, push image to ECR, Deploy to ECS
+        id: build-image
+        env:
+          ECR_REGISTRY: 354891846810.dkr.ecr.ap-northeast-2.amazonaws.com/templlo-booking-2025
+        run: |
+          # Convert matrix.service name to repository name, service name
+          if [ "${{ matrix.service }}" == "server" ]; then REPO_NAME="eureka-service"; ECS_SERVICE_NAME="eureka"
+          elif [ "${{ matrix.service }}" == "gateway" ]; then REPO_NAME="gateway-service"; ECS_SERVICE_NAME="gateway"
+          elif [ "${{ matrix.service }}" == "com.templlo.service.user" ]; then REPO_NAME="user-service"; ECS_SERVICE_NAME="user"
+          elif [ "${{ matrix.service }}" == "com.templlo.service.promotion" ]; then REPO_NAME="promotion-service"; ECS_SERVICE_NAME="promotion"
+          elif [ "${{ matrix.service }}" == "com.templlo.service.reservation" ]; then REPO_NAME="reservation-service"; ECS_SERVICE_NAME="reservation"
+          elif [ "${{ matrix.service }}" == "com.templlo.service.temple" ]; then REPO_NAME="temple-service"; ECS_SERVICE_NAME="temple"
+          elif [ "${{ matrix.service }}" == "com.templlo.service.program" ]; then REPO_NAME="program-service"; ECS_SERVICE_NAME="program"
+          elif [ "${{ matrix.service }}" == "com.templlo.service.review" ]; then REPO_NAME="review-service"; ECS_SERVICE_NAME="review"
+          fi
+          
+          # Build Docker image
+          docker build -t $ECR_REGISTRY/$REPO_NAME:latest ./${{ matrix.service }}
+          
+          # Push Docker image
+          docker push $ECR_REGISTRY/$REPO_NAME:latest
+          
+          # New deployment of ECS service
+          aws ecs update-service --cluster templlo-booking-2025-cluster --service $ECS_SERVICE_NAME --force-new-deployment
+
+          # Check Deploy Status
+          aws ecs wait services-stable --cluster templlo-booking-2025-cluster --services $ECS_SERVICE_NAME
