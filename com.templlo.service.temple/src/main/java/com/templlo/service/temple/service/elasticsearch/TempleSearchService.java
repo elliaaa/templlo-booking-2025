@@ -2,9 +2,11 @@ package com.templlo.service.temple.service.elasticsearch;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
+import com.templlo.service.temple.common.response.ErrorPageResponse;
 import com.templlo.service.temple.dto.TempleResponse;
 import com.templlo.service.temple.common.response.PageResponse;
 import com.templlo.service.temple.model.SearchTemple;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
