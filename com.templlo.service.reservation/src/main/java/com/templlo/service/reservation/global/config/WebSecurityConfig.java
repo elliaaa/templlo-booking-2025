@@ -35,7 +35,8 @@ public class WebSecurityConfig {
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 
                 .authorizeHttpRequests((request) -> request
-                        .requestMatchers("/api/reservations").hasAnyAuthority(ROLE_MEMBER, ROLE_TEMPLE, ROLE_MASTER)
+                        .requestMatchers(HttpMethod.POST, "/api/reservations").hasAnyAuthority(ROLE_MEMBER, ROLE_TEMPLE, ROLE_MASTER)
+                        .requestMatchers(HttpMethod.GET, "/api/reservations").hasAnyAuthority(ROLE_MEMBER, ROLE_TEMPLE, ROLE_MASTER)
                         .requestMatchers("/api/users/*/reservations").hasAnyAuthority(ROLE_MEMBER, ROLE_MASTER)
                         .requestMatchers("/api/temples/*/reservations").hasAnyAuthority(ROLE_TEMPLE, ROLE_MASTER)
 
