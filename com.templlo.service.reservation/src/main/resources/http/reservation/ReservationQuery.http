@@ -1,5 +1,5 @@
 # ReservationQueryController api list
-@reservationId = ac197001-944c-127e-8194-4c22fd9c0001
+@reservationId = c0a80014-9484-179e-8194-84d160640000
 @userId = 85491e4b-8290-44b0-9d73-c657f62ffeb6
 @templeId = 2560006b-0962-4950-8ea7-c6babddffce0
 @tempProgramId1 = 2560006b-0962-4950-8ea7-c6babddffce3
@@ -29,9 +29,17 @@ GET http://localhost:19091/api/temples/2560006b-0962-4950-8ea7-c6babddffce0/rese
     tempProgramId1={{tempProgramId1}}&tempProgramId2={{tempProgramId2}}
 Authorization: Bearer {{accessTokenTemple}}
 
+
 ### getReservationsByTemple : 19040
 GET http://localhost:19040/api/temples/2560006b-0962-4950-8ea7-c6babddffce0/reservations?page=0&size=&
     sort=updatedAt
 X-Login-Id: tempUserId77
 X-User-Role: TEMPLE_ADMIN
+X-Token: token value something
+
+### searchReservations : 19040
+# 다양한 조건 검색 가능 : couponUsedType, status 등
+GET http://localhost:19040/api/reservations?name=삐까&programDate=2025-01-27
+X-Login-Id: tempUserId77
+X-User-Role: MEMBER
 X-Token: token value something
