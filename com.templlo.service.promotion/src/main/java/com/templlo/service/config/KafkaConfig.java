@@ -7,6 +7,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -27,10 +28,13 @@ import com.templlo.service.coupon.dto.CouponIssueRequestDto;
 @Configuration
 public class KafkaConfig {
 
+	@Value("${spring.kafka.bootstrap-servers}")
+	private String bootstrapServers;
+
 	@Bean
 	public ConsumerFactory<String, CouponIssueRequestDto> consumerFactory() {
 		Map<String, Object> props = new HashMap<>();
-		props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+		props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
 		props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class.getName());
 		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class.getName());
 		props.put(ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, StringDeserializer.class.getName());
@@ -47,20 +51,20 @@ public class KafkaConfig {
 			new ConcurrentKafkaListenerContainerFactory<>();
 		factory.setConsumerFactory(consumerFactory());
 		factory.setConcurrency(10);
-		factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL); // Acknowledgment 모드
+		factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
 		return factory;
 	}
 
 	@Bean
 	public Map<String, Object> consumerConfigs() {
 		Map<String, Object> props = new HashMap<>();
-		props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+		props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
 		props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
 		props.put(ConsumerConfig.GROUP_ID_CONFIG, "coupon-consumer-group");
 		props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-		props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false); // 수동 커밋을 위해 설정
-		props.put(JsonDeserializer.TRUSTED_PACKAGES, "*"); // 모든 패키지 신뢰
+		props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
+		props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
 		return props;
 	}
 
@@ -72,10 +76,10 @@ public class KafkaConfig {
 	@Bean
 	public ProducerFactory<String, Object> producerFactory() {
 		Map<String, Object> configProps = new HashMap<>();
-		configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+		configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
 		configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 		configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-			org.springframework.kafka.support.serializer.JsonSerializer.class); // 올바른 클래스 지정
+			org.springframework.kafka.support.serializer.JsonSerializer.class);
 		return new DefaultKafkaProducerFactory<>(configProps);
 	}
 

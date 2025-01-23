@@ -31,5 +31,15 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:19090/eureka/
+      defaultZone: ${EUREKA_SERVER_URL}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    hostname: reservation-service
 
+logging:
+  level:
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.hibernate.sql: INFO
