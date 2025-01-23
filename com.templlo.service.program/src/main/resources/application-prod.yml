@@ -1,0 +1,74 @@
+spring:
+  application:
+    name: program-service
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database: postgresql
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        type: trace
+        default_schema: program
+  cache:
+    type: redis
+  data:
+    redis:
+      host: ${REDIS_URL}
+      port: ${REDIS_PORT}
+  kafka:
+    bootstrap-servers: ${KAFKA_URL}:${KAFKA_PORT}
+    topics:
+      review-created: review-created
+      review-updated: review-updated
+      reservation-created: reservation-created
+      reservation-confirmed: reservation-confirmed
+      reservation-canceled: reservation-canceled
+      reservation-cancel-confirmed: reservation-cancel-confirmed
+    consumer:
+      groups:
+        reservation-created-program: reservation-created-program
+        reservation-canceled-program: reservation-canceled-program
+        review-created-program: review-created-program
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.templlo.service.program" # 역직렬화 가능한 패키지 설정
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: trace
+
+
+
+server:
+  port: 19030
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    hostname: program-service
+
+springdoc:
+  api-docs:
+    version: openapi_3_1
+    enabled: true
+    path: /api/programs/v3/api-docs
+  enable-spring-security: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
