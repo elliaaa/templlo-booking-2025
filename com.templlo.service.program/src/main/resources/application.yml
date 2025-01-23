@@ -1,56 +1,5 @@
 spring:
   application:
     name: program-service
-  datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    database: postgresql
-    hibernate:
-      ddl-auto: update
-    show-sql: false
-    properties:
-      hibernate:
-        format_sql: true
-        type: trace
-        default_schema: program
-  cache:
-    type: redis
-  data:
-    redis:
-      host: localhost
-      port: 6379
-  kafka:
-    bootstrap-servers: localhost:9092
-    topics:
-      review-created: review-created
-      review-updated: review-updated
-      reservation-created: reservation-created
-      reservation-confirmed: reservation-confirmed
-    consumer:
-      groups:
-        reservation-created-program: reservation-created-program
-        review-created-program: review-created-program
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.trusted.packages: "com.templlo.service.program" # 역직렬화 가능한 패키지 설정
-
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-
-logging:
-  level:
-    org.hibernate.SQL: debug
-    org.hibernate.orm.jdbc.bind: trace
-
-server:
-  port: 19030
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:19090/eureka/
-
+  profiles:
+    active: local
