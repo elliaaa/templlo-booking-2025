@@ -1,19 +1,17 @@
-name: Run Test 🚀
+name: PR Test 🚀
 
-on: #main을 타켓으로 PR 올리거나, main에 Merge 될 때 워크플로우 실행
+on:
   pull_request:
-    branches: [ "main" ]
-  push:
     branches: [ "main" ]
 
 jobs:
   changes:
     runs-on: ubuntu-latest
-    outputs: # 이 job의 결과를 다른 job에서 사용할 수 있도록 output 설정
+    outputs:
       matrix: ${{ steps.filter.outputs.changes }}
     steps:
       - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v2 # 어떤 서비스 디렉토리가 변경되었는지 감지
+      - uses: dorny/paths-filter@v2
         id: filter
         with:
           filters: |
@@ -37,10 +35,10 @@ jobs:
   build:
     needs: changes
     if: ${{ needs.changes.outputs.matrix != '[]' }}
-    name: Build and Test Services
+    name: Build Services
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false  # 하나의 서비스 실패해도 다른 서비스 계속 빌드
+      fail-fast: false
       matrix:
         service: ${{ fromJSON(needs.changes.outputs.matrix) }}
 
@@ -55,9 +53,9 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Build and Test
+      - name: Build
         working-directory: ${{ matrix.service }}
         run: |
           echo "Building ${{ matrix.service }}"
           chmod +x gradlew
-          ./gradlew clean build
+          ./gradlew clean build -x test

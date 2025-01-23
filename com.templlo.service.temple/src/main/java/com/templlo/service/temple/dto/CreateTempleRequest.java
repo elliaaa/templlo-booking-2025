@@ -1,12 +1,15 @@
 package com.templlo.service.temple.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CreateTempleRequest {
 
     @NotBlank(message = "사찰 이름은 필수 입력값입니다.")

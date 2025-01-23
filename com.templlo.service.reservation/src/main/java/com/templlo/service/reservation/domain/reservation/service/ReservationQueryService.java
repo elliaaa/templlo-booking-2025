@@ -1,5 +1,6 @@
 package com.templlo.service.reservation.domain.reservation.service;
 
+import com.querydsl.core.types.Predicate;
 import com.templlo.service.reservation.domain.reservation.client.TempleClient;
 import com.templlo.service.reservation.domain.reservation.client.model.response.GetProgramsByTempleRes;
 import com.templlo.service.reservation.domain.reservation.client.model.response.ProgramServiceWrapperRes;
@@ -46,6 +47,11 @@ public class ReservationQueryService {
         PagedModel<ReservationListRes> dtos = reservationRepository.findAllByByProgramIdOfPagedModel(programIds, pageable);
         PageResponse<ReservationListRes> pageResponseDtos = PageResponse.of(dtos);
         return TempleReservationListWrapperRes.from(templeId, pageResponseDtos);
+    }
+
+    public PageResponse<ReservationListRes> searchReservations(Predicate predicate, Pageable pageable) {
+        PagedModel<ReservationListRes> dtos = reservationRepository.findAllInPagedModel(predicate, pageable);
+        return PageResponse.of(dtos);
     }
 
     private List<UUID> getProgramIds(UUID templeId) {
