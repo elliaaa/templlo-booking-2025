@@ -15,7 +15,7 @@ import java.net.UnknownHostException;
 public class EcsConfig {
 
     @Bean
-    public EurekaInstanceConfig eurekaInstanceConfig(InetUtils inetUtils) {
+    public EurekaInstanceConfigBean eurekaInstanceConfig(InetUtils inetUtils) {
         EurekaInstanceConfigBean config = new EurekaInstanceConfigBean(inetUtils);
         String ip = null;
         try {
