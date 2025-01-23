@@ -19,11 +19,13 @@ import java.time.Duration;
 @Configuration
 public class RedisConfig {
 
-    @Value("${data.redis.host}")
-    private String redisHost;
 
-    @Value("${data.redis.port}")
-    private int redisPort;
+    @Value("${spring.data.redis.host}")
+    private String host;
+
+    @Value("${spring.data.redis.port}")
+    private int port;
+
 
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
@@ -44,7 +46,7 @@ public class RedisConfig {
     @Bean
     public RedissonClient redissonClient() {
         Config config = new Config();
-        String redisAddress = String.format("redis://%s:%d", redisHost, redisPort);
+        String redisAddress = String.format("redis://%s:%d", host, port);
         config.useSingleServer().setAddress(redisAddress);
         return org.redisson.Redisson.create(config);
     }
