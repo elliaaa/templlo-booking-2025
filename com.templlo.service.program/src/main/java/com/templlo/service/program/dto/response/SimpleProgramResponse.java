@@ -16,6 +16,7 @@ public record SimpleProgramResponse(
         UUID templeId,
         String title,
         String description,
+        Double programRating,
         ProgramType type,
         Integer programFee,
         LocalTime programStartAt,
@@ -32,6 +33,7 @@ public record SimpleProgramResponse(
                .templeId(program.getTempleId())
                .title(program.getTitle())
                .description(program.getDescription())
+               .programRating(program.getProgramRating())
                .type(program.getType())
                .programFee(program.getProgramFee())
                .programStartAt(program.getProgramStartAt())
