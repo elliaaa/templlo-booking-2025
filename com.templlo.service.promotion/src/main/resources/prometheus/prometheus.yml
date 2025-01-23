@@ -1,0 +1,47 @@
+global:
+  scrape_interval: 15s  # 데이터를 수집하는 주기
+  evaluation_interval: 15s  # 경고 규칙 평가 주기
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - 'alertmanager:9093'  # Alertmanager의 주소
+
+rule_files:
+  # 경고 규칙 파일을 지정
+  - "alert.rules.yml"
+
+scrape_configs:
+  # Promotion Service
+  - job_name: 'promotion-service'
+    metrics_path: '/actuator/prometheus'  # Spring Boot Actuator 경로
+    static_configs:
+      - targets:
+          - 'promotion-service:19050'
+
+  # Kafka Exporter
+  - job_name: 'kafka-exporter'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets:
+          - 'kafka-exporter:9308'
+
+  # Redis Exporter
+  - job_name: 'redis'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets:
+          - 'redis:6379'
+
+  # Prometheus 자체 모니터링
+  - job_name: 'prometheus'
+    static_configs:
+      - targets:
+          - 'localhost:9090'
+
+  # Alertmanager
+  - job_name: 'alertmanager'
+    static_configs:
+      - targets:
+          - 'alertmanager:9093'
