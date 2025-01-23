@@ -1,0 +1,37 @@
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3Mzc2MDQ1NjksImV4cCI6MTczNzYwNjM2OSwibG9naW5JZCI6InRlc3QxMjM0Iiwicm9sZSI6Ik1FTUJFUiIsInR5cGUiOiJhY2Nlc3MifQ.0dbm8BTBuwxtYjJW-XUJF_gw-fRL5XFLVVFbw1veSSA
+@accessTokenTemple = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzY1ODMzMDgsImV4cCI6MTczNjU4NTEwOCwibG9naW5JZCI6ImFkbWluMTAwMCIsInJvbGUiOiJURU1QTEVfQURNSU4iLCJ0eXBlIjoiYWNjZXNzIn0.-4k5vrjKec7RDZADPAwJ-_dGk1m9Ze8mM5hqv-zq5Vw
+@promotionId = 20455a70-7c75-46c0-a87d-65baeb19b20e
+@reservationId = c0a87b75-9491-1aee-8194-914e60d40000
+
+# CreateReservation controller api list
+
+
+### createReservation
+POST http://localhost:19091/api/reservations
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+#X-Login-Id: tempUserId77
+#X-User-Role: MEMBER
+#X-Token: token value something
+
+{
+  "userId": "e33f0f5e-4d17-4d32-a5a5-5c2e448c5111",
+  "programId": "5025e3ad-0677-4a76-a51b-5cf4a1600a32",
+  "programDate": "2025-01-23",
+  "couponUsedType": "USED",
+  "couponId": "b7e670f9-ae9e-41ae-8f48-9750e481813e",
+  "name": "고냥이",
+  "phoneNumber": "010-333-7777",
+  "gender": "FEMALE",
+  "paymentType": "NO_PAY",
+  "paymentStatus": "COMPLETED"
+}
+
+
+### cancelReservation
+PATCH http://localhost:19091/api/reservations/{{reservationId}}/cancel
+Authorization: Bearer {{accessToken}}
+
+### rejectReservation
+PATCH http://localhost:19091/api/reservations/{{reservationId}}/reject
+Authorization: Bearer {{accessToken}}
