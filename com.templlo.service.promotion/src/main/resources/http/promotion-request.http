@@ -1,9 +1,9 @@
-@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzcwOTU3NDYsImV4cCI6MTczNzA5NzU0NiwibG9naW5JZCI6InRlc3QxMjM0Iiwicm9sZSI6Ik1FTUJFUiIsInR5cGUiOiJhY2Nlc3MifQ.T-zWKqZ6gZAUotoYDEpSJ51DDCpnvSO6tQFG2sAbofs
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3Mzc2MzQ5MjUsImV4cCI6MTczNzYzNjcyNSwibG9naW5JZCI6InRlc3QxMjM0Iiwicm9sZSI6Ik1FTUJFUiIsInR5cGUiOiJhY2Nlc3MifQ.2ussJ5NmZuQBXunE_vLazoftJN2-OGoAEyaDNYnDy3E
 @page = 0
 @size = 10
 @sortBy = createdAt
-@promotionId = e8cdc174-5031-4ebb-bf8a-86a8b939a146
-@couponId = bc102bff-e987-4360-a5b6-40df5e3bfaff
+@promotionId = 4c95ef6e-2d2e-4901-9bd5-074dc7e297ee
+@couponId = e235655c-15ea-45ed-885b-cc61ea60f59f
 @toUserId = 641d428e-797b-4bae-a9e6-855ee07a8fdb
 
 
@@ -102,6 +102,17 @@ Authorization: Bearer {{accessToken}}
 POST http://localhost:19091/api/coupons/issue?promotionId={{promotionId}}
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
+
+
+### Use Coupon
+POST http://localhost:19091/api/coupons/{{couponId}}/use
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "programId" : "50bd166c-764e-4fb7-9616-652106f6dcf1",
+  "programDate" : "2025-01-30"
+}
 
 
 ### Coupon
