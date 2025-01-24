@@ -28,6 +28,8 @@ services:
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
+    platform: linux/amd64
+
     container_name: kafka-ui
     ports:
       - "8080:8080"
