@@ -134,7 +134,7 @@ public class TempleService {
     }
 
     @Transactional(readOnly = true)
-    public void validateTempleAdmin(UUID templeId, String loginId) {
+    public UserData validateTempleAdmin(UUID templeId, String loginId) {
         // 사용자 정보 및 권한 확인
         UserData userData = getUserDataAndValidateRole(loginId, "TEMPLE_ADMIN");
 
@@ -145,6 +145,8 @@ public class TempleService {
         if (!temple.getUserId().equals(userData.id())) {
             throw new AccessDeniedException("해당 사찰의 관리자가 아닙니다.");
         }
+
+        return userData;
     }
 
 
