@@ -1,8 +1,8 @@
 package com.templlo.service.reservation.domain.reservation.client;
 
-import com.templlo.service.reservation.domain.reservation.client.model.response.DetailProgramResponse;
+import com.templlo.service.reservation.domain.reservation.client.model.response.DetailProgramRes;
 import com.templlo.service.reservation.domain.reservation.client.model.response.GetProgramsByTempleRes;
-import com.templlo.service.reservation.domain.reservation.client.model.response.ProgramServiceWrapperRes;
+import com.templlo.service.reservation.domain.reservation.client.model.response.wrapper.ProgramServiceWrapperRes;
 import com.templlo.service.reservation.global.feign.AuthHeader;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,5 +21,5 @@ public interface ProgramClient {
 
     @AuthHeader
     @GetMapping("/api/programs/{programId}")
-    ProgramServiceWrapperRes<DetailProgramResponse> getProgram(@PathVariable UUID programId);
+    ProgramServiceWrapperRes<DetailProgramRes> getProgram(@PathVariable UUID programId);
 }

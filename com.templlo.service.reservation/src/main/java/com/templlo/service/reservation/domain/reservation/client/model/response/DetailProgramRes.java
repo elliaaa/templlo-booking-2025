@@ -5,7 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
-public record DetailProgramResponse(
+public record DetailProgramRes(
 		UUID programId,
 		UUID templeId,
 		String title,

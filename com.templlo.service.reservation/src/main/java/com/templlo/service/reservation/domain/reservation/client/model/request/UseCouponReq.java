@@ -1,6 +1,6 @@
 package com.templlo.service.reservation.domain.reservation.client.model.request;
 
-import com.templlo.service.reservation.domain.reservation.client.model.response.DetailProgramResponse;
+import com.templlo.service.reservation.domain.reservation.client.model.response.DetailProgramRes;
 import lombok.AccessLevel;
 import lombok.Builder;
 
@@ -12,9 +12,9 @@ public record UseCouponReq(
         UUID programId,
         LocalDate programDate
 ) {
-    public static UseCouponReq toDto(DetailProgramResponse detailProgramResponse, LocalDate programDate) {
+    public static UseCouponReq toDto(DetailProgramRes detailProgramRes, LocalDate programDate) {
         return UseCouponReq.builder()
-                .programId(detailProgramResponse.programId())
+                .programId(detailProgramRes.programId())
                 .programDate(programDate)
                 .build();
     }

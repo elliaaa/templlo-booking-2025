@@ -3,7 +3,7 @@ package com.templlo.service.reservation.domain.reservation.service;
 import com.querydsl.core.types.Predicate;
 import com.templlo.service.reservation.domain.reservation.client.ProgramClient;
 import com.templlo.service.reservation.domain.reservation.client.model.response.GetProgramsByTempleRes;
-import com.templlo.service.reservation.domain.reservation.client.model.response.ProgramServiceWrapperRes;
+import com.templlo.service.reservation.domain.reservation.client.model.response.wrapper.ProgramServiceWrapperRes;
 import com.templlo.service.reservation.domain.reservation.controller.exception.ReservationException;
 import com.templlo.service.reservation.domain.reservation.controller.exception.ReservationStatusCode;
 import com.templlo.service.reservation.domain.reservation.controller.model.response.ReservationDetailRes;

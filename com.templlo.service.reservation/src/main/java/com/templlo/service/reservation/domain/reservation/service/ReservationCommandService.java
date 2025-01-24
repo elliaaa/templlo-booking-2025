@@ -5,8 +5,8 @@ import com.templlo.service.reservation.domain.reservation.client.ProgramClient;
 import com.templlo.service.reservation.domain.reservation.client.PromotionClient;
 import com.templlo.service.reservation.domain.reservation.client.UserClient;
 import com.templlo.service.reservation.domain.reservation.client.model.request.UseCouponReq;
-import com.templlo.service.reservation.domain.reservation.client.model.response.DetailProgramResponse;
-import com.templlo.service.reservation.domain.reservation.client.model.response.ProgramServiceWrapperRes;
+import com.templlo.service.reservation.domain.reservation.client.model.response.DetailProgramRes;
+import com.templlo.service.reservation.domain.reservation.client.model.response.wrapper.ProgramServiceWrapperRes;
 import com.templlo.service.reservation.domain.reservation.client.model.response.UseCouponRes;
 import com.templlo.service.reservation.domain.reservation.controller.exception.ReservationException;
 import com.templlo.service.reservation.domain.reservation.controller.exception.ReservationStatusCode;
@@ -50,10 +50,10 @@ public class ReservationCommandService {
         // TODO : 사용자 id 비교 검증
 
         // 프로그램 조회 - 가격 화인
-        DetailProgramResponse detailProgramResponse = getDetailProgramResponse(requestDto);
+        DetailProgramRes detailProgramRes = getDetailProgramResponse(requestDto);
 
         // 쿠폰 사용 후 최종 금액 계산
-        int paymentAmount = useCouponAndGetPaymentAmount(requestDto, detailProgramResponse);
+        int paymentAmount = useCouponAndGetPaymentAmount(requestDto, detailProgramRes);
 
         // save
         Reservation reservation = requestDto.toEntity(paymentAmount);
@@ -65,20 +65,20 @@ public class ReservationCommandService {
         return CreateReservationRes.from(savedReservation);
     }
 
-    private int useCouponAndGetPaymentAmount(CreateReservationReq requestDto, DetailProgramResponse detailProgramResponse) {
+    private int useCouponAndGetPaymentAmount(CreateReservationReq requestDto, DetailProgramRes detailProgramRes) {
         if(isCouponUsed(requestDto)) {
-            UseCouponRes useCouponRes = promotionClient.useCouponAndGetFinalPrice(requestDto.couponId(), UseCouponReq.toDto(detailProgramResponse, requestDto.programDate()));
+            UseCouponRes useCouponRes = promotionClient.useCouponAndGetFinalPrice(requestDto.couponId(), UseCouponReq.toDto(detailProgramRes, requestDto.programDate()));
             return useCouponRes.finalPrice();
         }
-        return detailProgramResponse.programFee();
+        return detailProgramRes.programFee();
     }
 
     private boolean isCouponUsed(CreateReservationReq requestDto) {
         return requestDto.couponUsedType().equals(CouponUsedType.USED) && requestDto.couponId() != null;
     }
 
-    private DetailProgramResponse getDetailProgramResponse(CreateReservationReq requestDto) {
-        ProgramServiceWrapperRes<DetailProgramResponse> programResponse = programClient.getProgram(requestDto.programId());
+    private DetailProgramRes getDetailProgramResponse(CreateReservationReq requestDto) {
+        ProgramServiceWrapperRes<DetailProgramRes> programResponse = programClient.getProgram(requestDto.programId());
         return programResponse.data();
     }
 
