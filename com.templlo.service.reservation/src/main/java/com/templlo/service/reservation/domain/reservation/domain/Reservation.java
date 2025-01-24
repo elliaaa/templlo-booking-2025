@@ -57,6 +57,9 @@ public class Reservation extends BaseEntity {
     @Column(name = "payment_type", nullable = false, length = 20)
     private PaymentType paymentType;
 
+    @Column(name = "payment_amount", nullable = false)
+    private int paymentAmount;
+
     @Column(name = "is_coupon_used", nullable = false)
     private boolean isCouponUsed;
 
