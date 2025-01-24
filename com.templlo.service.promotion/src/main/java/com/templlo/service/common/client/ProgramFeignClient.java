@@ -15,5 +15,5 @@ import com.templlo.service.common.response.ApiResponse;
 public interface ProgramFeignClient {
 
 	@GetMapping("/api/programs/{programId}")
-	ApiResponse<DetailProgramResponse> getProgram(@PathVariable UUID programId, @RequestParam LocalDate programDate);
+	ApiResponse<DetailProgramResponse> getProgram(@PathVariable UUID programId);
 }
