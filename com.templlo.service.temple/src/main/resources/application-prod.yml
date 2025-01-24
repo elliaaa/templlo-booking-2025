@@ -12,7 +12,6 @@ spring:
     redis:
       host: ${REDIS_URL}
       port: ${REDIS_PORT}
-      password: ${REDIS_PASSWORD}
       timeout: 5000ms
       lettuce:
         pool:
@@ -24,8 +23,6 @@ spring:
 
     elasticsearch:
       host: ${ELASTICSEARCH_URL}
-      username: ${ELASTICSEARCH_USERNAME}
-      password: ${ELASTICSEARCH_PASSWORD}
       repositories:
         enabled: true
   jpa:
@@ -39,9 +36,6 @@ spring:
         type: trace
         default_schema: temples
     open-in-view: false
-
-jwt:
-  secret: ${JWT_SECRET_KEY}
 
 eureka:
   client:
