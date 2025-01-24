@@ -9,6 +9,6 @@ public class AmountDiscount implements DiscountStrategy {
 
     @Override
     public int getDiscountPrice(int originalPrice) {
-        return Math.min(0, originalPrice - amount);
+        return Math.max(0, originalPrice - amount);
     }
 }
