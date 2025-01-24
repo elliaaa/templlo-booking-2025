@@ -12,6 +12,7 @@ public record UserResponse(
 	String birth,
 	String role,
 	String phone,
-	int reviewCount
+	int reviewCount,
+	boolean isDeleted
 ) {
 }
