@@ -48,7 +48,7 @@ public record CreateReservationReq(
         if (paymentStatus == null) { paymentStatus = PaymentStatus.PENDING; }
     }
 
-    public Reservation toEntity() {
+    public Reservation toEntity(int paymentAmount) {
         return Reservation.builder()
                 .programId(this.programId)
                 .programDate(this.programDate)
@@ -59,6 +59,7 @@ public record CreateReservationReq(
                 .gender(this.gender)
                 .paymentStatus(this.paymentStatus)
                 .paymentType(this.paymentType)
+                .paymentAmount(paymentAmount)
                 .isCouponUsed(this.couponUsedType.isUsed())
                 .couponId(this.couponId)
                 .build();

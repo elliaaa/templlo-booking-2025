@@ -1,9 +1,16 @@
 package com.templlo.service.reservation.domain.reservation.service;
 
 import com.google.gson.Gson;
+import com.templlo.service.reservation.domain.reservation.client.ProgramClient;
+import com.templlo.service.reservation.domain.reservation.client.PromotionClient;
 import com.templlo.service.reservation.domain.reservation.client.UserClient;
+import com.templlo.service.reservation.domain.reservation.client.model.request.UseCouponReq;
+import com.templlo.service.reservation.domain.reservation.client.model.response.DetailProgramResponse;
+import com.templlo.service.reservation.domain.reservation.client.model.response.ProgramServiceWrapperRes;
+import com.templlo.service.reservation.domain.reservation.client.model.response.UseCouponRes;
 import com.templlo.service.reservation.domain.reservation.controller.exception.ReservationException;
 import com.templlo.service.reservation.domain.reservation.controller.exception.ReservationStatusCode;
+import com.templlo.service.reservation.domain.reservation.controller.model.request.CouponUsedType;
 import com.templlo.service.reservation.domain.reservation.controller.model.request.CreateReservationReq;
 import com.templlo.service.reservation.domain.reservation.controller.model.response.CancelReservationRes;
 import com.templlo.service.reservation.domain.reservation.controller.model.response.CreateReservationRes;
@@ -34,20 +41,45 @@ public class ReservationCommandService {
     private final ReservationRepository reservationRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final UserClient userClient;
+    private final PromotionClient promotionClient;
     private final Gson gson; // TODO : KafkaTemplate 새로 만들어서 처리하기
+    private final ProgramClient programClient;
 
     // TODO : 함수의 책임, 트랜잭션에 대해 생각
     public CreateReservationRes createReservation(CreateReservationReq requestDto, String userId) {
         // TODO : 사용자 id 비교 검증
 
+        // 프로그램 조회 - 가격 화인
+        DetailProgramResponse detailProgramResponse = getDetailProgramResponse(requestDto);
+
+        // 쿠폰 사용 후 최종 금액 계산
+        int paymentAmount = useCouponAndGetPaymentAmount(requestDto, detailProgramResponse);
+
         // save
-        Reservation reservation = requestDto.toEntity();
+        Reservation reservation = requestDto.toEntity(paymentAmount);
         Reservation savedReservation = reservationRepository.save(reservation);
 
         // 예약 신청 이벤트 발행
         produceReservationCreatedMessage(savedReservation, 0, ReservationOpenType.ADDITIONAL_OPEN);
 
         return CreateReservationRes.from(savedReservation);
+    }
+
+    private int useCouponAndGetPaymentAmount(CreateReservationReq requestDto, DetailProgramResponse detailProgramResponse) {
+        if(isCouponUsed(requestDto)) {
+            UseCouponRes useCouponRes = promotionClient.useCouponAndGetFinalPrice(requestDto.couponId(), UseCouponReq.toDto(detailProgramResponse, requestDto.programDate()));
+            return useCouponRes.finalPrice();
+        }
+        return detailProgramResponse.programFee();
+    }
+
+    private boolean isCouponUsed(CreateReservationReq requestDto) {
+        return requestDto.couponUsedType().equals(CouponUsedType.USED) && requestDto.couponId() != null;
+    }
+
+    private DetailProgramResponse getDetailProgramResponse(CreateReservationReq requestDto) {
+        ProgramServiceWrapperRes<DetailProgramResponse> programResponse = programClient.getProgram(requestDto.programId());
+        return programResponse.data();
     }
 
     public CancelReservationRes cancelReservation(UUID reservationId, String userId) {

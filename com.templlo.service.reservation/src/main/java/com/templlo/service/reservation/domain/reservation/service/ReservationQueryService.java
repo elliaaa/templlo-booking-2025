@@ -1,7 +1,7 @@
 package com.templlo.service.reservation.domain.reservation.service;
 
 import com.querydsl.core.types.Predicate;
-import com.templlo.service.reservation.domain.reservation.client.TempleClient;
+import com.templlo.service.reservation.domain.reservation.client.ProgramClient;
 import com.templlo.service.reservation.domain.reservation.client.model.response.GetProgramsByTempleRes;
 import com.templlo.service.reservation.domain.reservation.client.model.response.ProgramServiceWrapperRes;
 import com.templlo.service.reservation.domain.reservation.controller.exception.ReservationException;
@@ -27,7 +27,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ReservationQueryService {
     private final ReservationRepository reservationRepository;
-    public final TempleClient templeClient;
+    public final ProgramClient programClient;
 
     public ReservationDetailRes getReservationById(UUID reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
@@ -55,7 +55,7 @@ public class ReservationQueryService {
     }
 
     private List<UUID> getProgramIds(UUID templeId) {
-        ProgramServiceWrapperRes<List<GetProgramsByTempleRes>> programsDto = templeClient.getProgramsByTemple(templeId);
+        ProgramServiceWrapperRes<List<GetProgramsByTempleRes>> programsDto = programClient.getProgramsByTemple(templeId);
         List<UUID> programIds = GetProgramsByTempleRes.getProgramIds(programsDto.data());
         return programIds;
     }
