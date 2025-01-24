@@ -1,0 +1,60 @@
+server:
+  port: 19020
+spring:
+  application:
+    name: temple-service
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  data:
+    redis:
+      host: ${REDIS_URL}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+      timeout: 5000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: 1000ms
+      database: 0
+
+    elasticsearch:
+      host: ${ELASTICSEARCH_URL}
+      username: ${ELASTICSEARCH_USERNAME}
+      password: ${ELASTICSEARCH_PASSWORD}
+      repositories:
+        enabled: true
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        type: trace
+        default_schema: temples
+    open-in-view: false
+
+jwt:
+  secret: ${JWT_SECRET_KEY}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    hostname: temple-service
+
+logging:
+  level:
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.hibernate.sql: INFO
