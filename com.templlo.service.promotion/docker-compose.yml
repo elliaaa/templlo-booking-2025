@@ -38,6 +38,3 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-broker:29092
     depends_on:
       - kafka
-
-volumes:
-  grafana-storage:
