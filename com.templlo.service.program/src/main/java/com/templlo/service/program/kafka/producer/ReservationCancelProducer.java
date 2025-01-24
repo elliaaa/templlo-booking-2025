@@ -16,22 +16,22 @@ import java.util.concurrent.CompletableFuture;
 
 @Component
 @Slf4j
-public class ReservationConfirmProducer {
+public class ReservationCancelProducer {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final RedisTemplate<String, Object> redisTemplate;
     private static final int MAX_RETRY_COUNT = 3;
 
-    public ReservationConfirmProducer(KafkaTemplate<String, Object> kafkaTemplate, RedisTemplate<String, Object> redisTemplate, ObjectMapper objectMapper) {
+    public ReservationCancelProducer(KafkaTemplate<String, Object> kafkaTemplate, RedisTemplate<String, Object> redisTemplate, ObjectMapper objectMapper) {
         this.kafkaTemplate = kafkaTemplate;
         this.redisTemplate = redisTemplate;
     }
 
-    public void send(String reservationConfirmedTopic, ReservationConfirmMessage message) {
+    public void send(String reservationCancelConfirmedTopic, ReservationConfirmMessage message) {
 
-        String reservationConfirmKey = "createdReservationId:" + message.reservationId();
+        String reservationConfirmKey = "canceledReservationId:" + message.reservationId();
 
-        CompletableFuture<SendResult<String, Object>> future = kafkaTemplate.send(reservationConfirmedTopic, message);
+        CompletableFuture<SendResult<String, Object>> future = kafkaTemplate.send(reservationCancelConfirmedTopic, message);
 
         // 전송 성공/실패 처리
         future.whenComplete((result, ex) -> {
@@ -41,7 +41,7 @@ public class ReservationConfirmProducer {
             } else {
                 // 실패 시 Redis 상태를 failure로 업데이트 및 재시도 로직
                 log.error("Failed to send message for reservationId: {}. Error: {}", message.reservationId(), ex.getMessage());
-                handleSendFailure(reservationConfirmedTopic, message, reservationConfirmKey);
+                handleSendFailure(reservationCancelConfirmedTopic, message, reservationConfirmKey);
             }
         });
     }

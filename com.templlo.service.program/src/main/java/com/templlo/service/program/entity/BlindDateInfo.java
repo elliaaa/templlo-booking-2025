@@ -103,4 +103,33 @@ public class BlindDateInfo extends BaseEntity {
         this.additionalReservationStartDate = additionalReservationStartDate;
         this.additionalReservationEndDate = additionalReservationEndDate;
     }
+
+    public void increaseAvailableCapacity(Gender gender) {
+        // 남성
+        if (gender == Gender.MALE) {
+            // 정원 감소
+            this.availableMaleCapacity += 1;
+            // 남성 가능 정원이 0 이라면
+            if (availableMaleCapacity != 0) {
+                // 남성 가능 정원이 0이 되었는데 이미 여성 정원도 마감이라면, 해당 스케쥴 마감으로 변경
+                if (this.genderStatus != ProgramGenderStatus.FEMALE_CLOSED) {
+                    this.genderStatus = ProgramGenderStatus.OPEN;
+                    this.status = ProgramStatus.ACTIVE;
+                }
+            }
+        }
+        // 여성
+        if (gender == Gender.FEMALE) {
+
+            this.availableFemaleCapacity += 1;
+            System.out.println("availableFemaleCapacity = " + availableFemaleCapacity);
+            if (availableFemaleCapacity != 0) {
+                System.out.println("availableFemaleCapacity = " + availableFemaleCapacity);
+                if (this.genderStatus != ProgramGenderStatus.MALE_CLOSED) {
+                    this.genderStatus = ProgramGenderStatus.OPEN;
+                    this.status = ProgramStatus.ACTIVE;
+                }
+            }
+        }
+    }
 }

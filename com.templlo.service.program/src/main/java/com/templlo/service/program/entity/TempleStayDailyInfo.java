@@ -57,4 +57,11 @@ public class TempleStayDailyInfo extends BaseEntity {
     public void update(ProgramStatus status) {
         this.status = status;
     }
+
+    public void increaseAvailableCapacity(Integer amount) {
+        this.availableCapacity += amount;
+        if (this.availableCapacity != 0) {
+            this.status = ProgramStatus.ACTIVE;
+        }
+    }
 }
