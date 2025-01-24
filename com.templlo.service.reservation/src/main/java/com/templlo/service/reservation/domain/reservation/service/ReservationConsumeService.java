@@ -5,14 +5,16 @@ import com.templlo.service.reservation.domain.reservation.controller.exception.R
 import com.templlo.service.reservation.domain.reservation.controller.exception.ReservationStatusCode;
 import com.templlo.service.reservation.domain.reservation.domain.Reservation;
 import com.templlo.service.reservation.domain.reservation.repository.ReservationRepository;
+import com.templlo.service.reservation.domain.reservation.service.model.consume.CancelReservationResultConsume;
 import com.templlo.service.reservation.domain.reservation.service.model.consume.CreateReservationResultConsume;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.templlo.service.reservation.domain.reservation.service.model.consume.ConsumerTopicGroupName.GROUP_RESERVATION_CONFIRM;
-import static com.templlo.service.reservation.domain.reservation.service.model.consume.ConsumerTopicGroupName.TOPIC_RESERVATION_CONFIRM;
+import java.util.UUID;
+
+import static com.templlo.service.reservation.domain.reservation.service.model.consume.ConsumerTopicGroupName.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -26,12 +28,29 @@ public class ReservationConsumeService {
     public void createReservationResultConsumer(String messageStr) {
         CreateReservationResultConsume message = gson.fromJson(messageStr, CreateReservationResultConsume.class);
 
-        Reservation reservation = reservationRepository.findById(message.reservationId()).orElseThrow(
-                () -> new ReservationException(ReservationStatusCode.RESERVATION_NOT_FOUND));
+        Reservation reservation = getReservation(message.reservationId());
 
         switch (message.status()) {
             case SUCCESS -> reservation.updateStatusCompleted();
             case FAILURE -> reservation.updateStatusFailed();
         }
+    }
+
+    @KafkaListener(groupId = GROUP_RESERVATION_CANCEL_CONFIRM, topics = TOPIC_RESERVATION_CANCEL_CONFIRM)
+    @Transactional
+    public void cancelReservationResultConsumer (String messageStr){
+        CancelReservationResultConsume message = gson.fromJson(messageStr, CancelReservationResultConsume.class);
+
+        Reservation reservation = getReservation(message.reservationId());
+
+        switch (message.status()) {
+            case SUCCESS -> reservation.updateStatusCanceledOrRejected();
+            case FAILURE -> reservation.updateStatusCanceledOrRejectedFailed();
+        }
+    }
+
+    private Reservation getReservation(UUID message) {
+        return reservationRepository.findById(message).orElseThrow(
+                () -> new ReservationException(ReservationStatusCode.RESERVATION_NOT_FOUND));
     }
 }
