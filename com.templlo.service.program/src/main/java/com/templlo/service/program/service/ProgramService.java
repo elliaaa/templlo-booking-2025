@@ -95,6 +95,19 @@ public class ProgramService {
 
     }
 
+    public SimpleProgramResponse getProgram(UUID programId) {
+
+        log.info("Get program start");
+
+        Program program = jpaProgramRepository.findById(programId).orElseThrow(
+                () -> new ProgramException(ProgramStatusCode.PROGRAM_NOT_FOUND)
+        );
+
+        log.info("Get program end");
+
+        return SimpleProgramResponse.from(program);
+    }
+
     @Transactional(readOnly = true)
     public PagedModel<SimpleProgramResponse> getPrograms(String keyword, ProgramType type, List<String> days, Pageable pageable) {
 
@@ -227,4 +240,5 @@ public class ProgramService {
             return BlindDateScheduleResponse.from(program, blindDateInfo);
         }
     }
+
 }

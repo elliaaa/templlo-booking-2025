@@ -49,15 +49,13 @@ logging:
     org.hibernate.SQL: debug
     org.hibernate.orm.jdbc.bind: trace
 
-
-
 server:
   port: 19030
 
 eureka:
   client:
     service-url:
-      defaultZone: ${EUREKA_SERVER_URL}
+      defaultZone: http://localhost:19090/eureka/
     register-with-eureka: true
     fetch-registry: true
   instance:

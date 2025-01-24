@@ -35,6 +35,12 @@ public class ProgramController implements ProgramControllerSwagger {
     public ApiResponse<SimpleProgramResponse> createProgram(@Valid @RequestBody CreateProgramRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_CREATE, programService.createProgram(request, userDetails));
     }
+
+    @GetMapping("/{programId}")
+    public ApiResponse<SimpleProgramResponse> getProgram(@PathVariable UUID programId) {
+        return ApiResponse.of(ProgramStatusCode.SUCCESS_PROGRAM_READ, programService.getProgram(programId));
+    }
+
     // 프로그램 전체 조회
     @GetMapping
     public ApiResponse<PagedModel<SimpleProgramResponse>> getPrograms(

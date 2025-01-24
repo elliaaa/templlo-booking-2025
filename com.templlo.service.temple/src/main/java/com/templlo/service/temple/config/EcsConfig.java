@@ -1,5 +1,6 @@
-package com.templlo.service.program.config;
+package com.templlo.service.temple.config;
 
+import com.netflix.appinfo.EurekaInstanceConfig;
 import org.springframework.cloud.commons.util.InetUtils;
 import org.springframework.cloud.netflix.eureka.EurekaInstanceConfigBean;
 import org.springframework.context.annotation.Bean;
@@ -25,9 +26,9 @@ public class EcsConfig {
 
         config.setIpAddress(ip);
         config.setPreferIpAddress(true);
-        config.setNonSecurePort(19030);
+        config.setNonSecurePort(19020);
+
 
         return config;
     }
-
 }
