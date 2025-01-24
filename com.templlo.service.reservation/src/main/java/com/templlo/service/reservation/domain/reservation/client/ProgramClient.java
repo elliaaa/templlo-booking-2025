@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @FeignClient("program-service")
-public interface TempleClient {
+public interface ProgramClient {
 
     @AuthHeader
     @GetMapping("/api/programs/temples/{templeId}")
