@@ -1,5 +1,6 @@
 package com.templlo.service.reservation.domain.reservation.client;
 
+import com.templlo.service.reservation.domain.reservation.client.model.response.DetailProgramResponse;
 import com.templlo.service.reservation.domain.reservation.client.model.response.GetProgramsByTempleRes;
 import com.templlo.service.reservation.domain.reservation.client.model.response.ProgramServiceWrapperRes;
 import com.templlo.service.reservation.global.feign.AuthHeader;
@@ -17,4 +18,8 @@ public interface ProgramClient {
     @AuthHeader
     @GetMapping("/api/programs/temples/{templeId}")
     ProgramServiceWrapperRes<List<GetProgramsByTempleRes>> getProgramsByTemple(@PathVariable(name = "templeId") UUID templeId);
+
+    @AuthHeader
+    @GetMapping("/api/programs/{programId}")
+    ProgramServiceWrapperRes<DetailProgramResponse> getProgram(@PathVariable UUID programId);
 }
