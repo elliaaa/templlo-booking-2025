@@ -1,4 +1,4 @@
-@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzY2MTY4OTQsImV4cCI6MTczNjYxODY5NCwibG9naW5JZCI6ImFkbWluMTAwMCIsInJvbGUiOiJURU1QTEVfQURNSU4iLCJ0eXBlIjoiYWNjZXNzIn0.OlttCNvAWX0PUnH7o6_E5Tisq_s7Lux7SOc3_ix_VRk
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3Mzc2MjU4MTcsImV4cCI6MTczNzYyNzYxNywibG9naW5JZCI6ImFkbWluMTAwMCIsInJvbGUiOiJURU1QTEVfQURNSU4iLCJ0eXBlIjoiYWNjZXNzIn0.CwnebolpjzSAZyPsZDfn6agkknADzGQqepqeepcd2tg
 @programId = 1fcb6837-3861-4ad6-b183-da3ba8c95fb3
 @programScheduleId = c3013665-de5f-4f05-86bb-27779c2fe391
 @templeId = 2560006b-0962-4950-8ea7-c6babddffce0
@@ -33,12 +33,12 @@ Authorization: Bearer {{accessToken}}}
 Content-Type: application/json
 
 {
-  "templeId": "789e1234-e89b-56d3-a789-426614178999",
+  "templeId": "924800ac-5cc4-4790-8afb-3e86d7a14b93",
   "title": "템플 스테이",
   "description": "템플스테이.",
   "type": "TEMPLE_STAY",
-  "programFee": 0,
-  "reservationStartDate": "2025-01-16",
+  "programFee": 10000,
+  "reservationStartDate": "2025-01-24",
   "reservationEndDate": "2025-01-30",
   "programStartAt": "16:00",
   "programCapacity": 20,
