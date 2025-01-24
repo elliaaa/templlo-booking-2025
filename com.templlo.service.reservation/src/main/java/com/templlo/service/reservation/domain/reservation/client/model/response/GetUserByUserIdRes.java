@@ -2,7 +2,7 @@ package com.templlo.service.reservation.domain.reservation.client.model.response
 
 import java.util.UUID;
 
-public record GetUserByUserId(
+public record GetUserByUserIdRes(
         UUID id,
         String loginId,
         String email,

@@ -20,7 +20,7 @@ public enum ReservationStatusCode implements StatusCode {
     REJECT_RESERVATION_SUCCESS(HttpStatus.OK, "예약 거절 신청에 성공했습니다"),
 
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 id 의 예약을 찾을 수 없습니다"),
-    ;
+    NOT_TEMPLE_OWNER(HttpStatus.FORBIDDEN, "해당 사찰에 대한 권한이 부족합니다");
 
     private final HttpStatus httpStatus;
     private final String message;

@@ -1,4 +1,4 @@
-package com.templlo.service.reservation.domain.reservation.client.model.response;
+package com.templlo.service.reservation.domain.reservation.client.model.response.wrapper;
 
 public record ProgramServiceWrapperRes<T> (
         String status,

@@ -41,7 +41,7 @@ Content-Type: application/json
   "reservationStartDate": "2025-01-24",
   "reservationEndDate": "2025-01-30",
   "programStartAt": "16:00",
-  "programCapacity": 20,
+  "programCapacity": 2000,
   "programDate": null,
   "maleCapacity": null,
   "femaleCapacity": null,

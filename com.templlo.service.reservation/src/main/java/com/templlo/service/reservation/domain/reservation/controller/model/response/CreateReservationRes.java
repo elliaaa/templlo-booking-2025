@@ -23,6 +23,7 @@ public record CreateReservationRes(
         UUID couponId,
         PaymentStatus paymentStatus,
         PaymentType paymentType,
+        int paymentAmount,
         LocalDateTime createdAt,
         String createdBy
 ) {
@@ -42,6 +43,7 @@ public record CreateReservationRes(
                 .couponId(reservation.getCouponId())
                 .paymentStatus(reservation.getPaymentStatus())
                 .paymentType(reservation.getPaymentType())
+                .paymentAmount(reservation.getPaymentAmount())
                 .createdAt(reservation.getCreatedAt())
                 .createdBy(reservation.getCreatedBy())
                 .build();

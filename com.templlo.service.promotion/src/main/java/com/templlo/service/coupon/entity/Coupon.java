@@ -71,4 +71,24 @@ public class Coupon extends BaseEntity {
 	public void updateStatus(String newStatus) {
 		this.status = newStatus;
 	}
+
+	public void checkUsable(String programType) {
+		// 3. 프로그램 타입 검증
+		if ("BLIND_DATE".equals(programType) && !"ADVANCED_TICKET".equals(this.type)) {
+			throw new IllegalStateException("이 프로그램에서는 ADVANCED_TICKET 쿠폰만 사용할 수 있습니다.");
+//			return new CouponUseResponseDto("FAILURE", "이 프로그램에서는 ADVANCED_TICKET 쿠폰만 사용할 수 있습니다.");
+		}
+
+		// 4. 쿠폰 상태 검증
+		if (!"ISSUED".equals(this.status)) {
+			String message = switch (this.status) {
+				case "AVAILABLE" -> "쿠폰이 발급되지 않았습니다.";
+				case "EXPIRED" -> "쿠폰이 만료되었습니다.";
+				case "USED" -> "쿠폰이 이미 사용되었습니다.";
+				default -> "알 수 없는 쿠폰 상태입니다.";
+			};
+			throw new IllegalStateException(message);
+//			return new CouponUseResponseDto("FAILURE", message);
+		}
+	}
 }
