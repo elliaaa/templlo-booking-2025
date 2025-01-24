@@ -1,20 +1,18 @@
 # ReservationQueryController api list
-@reservationId = c0a80014-9484-179e-8194-84d160640000
+@reservationId = c0a87b75-9491-1aee-8194-914e60d40000
 @userId = 85491e4b-8290-44b0-9d73-c657f62ffeb6
 @templeId = 2560006b-0962-4950-8ea7-c6babddffce0
 @tempProgramId1 = 2560006b-0962-4950-8ea7-c6babddffce3
 @tempProgramId2 = 2560006b-0962-4950-8ea7-c6babddffce3
 
-@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzY1ODI1ODIsImV4cCI6MTczNjU4NDM4MiwibG9naW5JZCI6InRlc3QxMjM0Iiwicm9sZSI6Ik1FTUJFUiIsInR5cGUiOiJhY2Nlc3MifQ.HT-KZcMMyeAsqYpJ9jvDqk18CFIbAsIsXkOEfUw0SzI
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3Mzc2MDU2MzYsImV4cCI6MTczNzYwNzQzNiwibG9naW5JZCI6InRlc3QxMjM0Iiwicm9sZSI6Ik1FTUJFUiIsInR5cGUiOiJhY2Nlc3MifQ.44yEYOh0Y2GlkjuyYnw_kuetzzMk_EpmcwI3zFRvTQo
 @accessTokenTemple = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzY1ODMzMDgsImV4cCI6MTczNjU4NTEwOCwibG9naW5JZCI6ImFkbWluMTAwMCIsInJvbGUiOiJURU1QTEVfQURNSU4iLCJ0eXBlIjoiYWNjZXNzIn0.-4k5vrjKec7RDZADPAwJ-_dGk1m9Ze8mM5hqv-zq5Vw
 @promotionId = 20455a70-7c75-46c0-a87d-65baeb19b20e
 
 
 ### getReservation
-GET http://localhost:19040/api/reservations/{{reservationId}}
-X-Login-Id: tempUserId77
-X-User-Role: MASTER
-X-Token: token value something
+GET http://localhost:19091/api/reservations/{{reservationId}}
+Authorization: Bearer {{accessToken}}
 
 
 ### getReservationsByUser

@@ -71,6 +71,45 @@ public class Reservation extends BaseEntity {
         this.status = ReservationStatus.COMPLETED;
     }
 
+    public void updateStatusProcessingCancel() {
+        this.status = ReservationStatus.PROCESSING_CANCEL;
+    }
+
+    public void updateStatusProcessingReject() {
+        this.status = ReservationStatus.PROCESSING_REJECT;
+    }
+
+    public void updateStatusCanceledOrRejected() {
+        switch (this.status) {
+            case PROCESSING_CANCEL -> this.updateStatusCanceled();
+            case PROCESSING_REJECT -> this.updateStatusRejected();
+        }
+    }
+
+    public void updateStatusCanceledOrRejectedFailed() {
+        switch (this.status) {
+            case PROCESSING_CANCEL -> this.updateStatusCancelFailed();
+            case PROCESSING_REJECT -> this.updateStatusRejectFailed();
+        }
+    }
+
+    private void updateStatusCanceled() {
+        this.status = ReservationStatus.CANCELED;
+    }
+
+    private void updateStatusRejected() {
+        this.status = ReservationStatus.REJECTED;
+    }
+
+    private void updateStatusCancelFailed() {
+        this.status = ReservationStatus.CANCEL_FAILED;
+    }
+
+    private void updateStatusRejectFailed() {
+        this.status = ReservationStatus.REJECT_FAILED;
+    }
+
+
     public String getProgramDateFormatted() {
         return DateTimeFormatter.ofPattern(PROGRAM_DATE_FORMAT).format(this.getProgramDate());
     }
