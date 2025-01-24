@@ -1,5 +1,6 @@
 package com.templlo.service.reservation.domain.reservation.client;
 
+import com.templlo.service.reservation.domain.reservation.client.model.response.TempleOwnerDataRes;
 import com.templlo.service.reservation.domain.reservation.client.model.response.wrapper.TempleServiceWrapperRes;
 import com.templlo.service.reservation.global.feign.AuthHeader;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -13,5 +14,5 @@ public interface TempleClient {
 
     @AuthHeader
     @GetMapping("/{templeId}/validate-admin")
-    TempleServiceWrapperRes<Void> checkTempleOwnership(@PathVariable UUID templeId);
+    TempleServiceWrapperRes<TempleOwnerDataRes> checkTempleOwnership(@PathVariable UUID templeId);
 }
