@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.templlo.service.common.exception.BaseException;
+import com.templlo.service.common.response.ApiResponse;
 import com.templlo.service.common.response.BasicStatusCode;
 import com.templlo.service.coupon.strategy.AmountDiscount;
 import com.templlo.service.coupon.strategy.DiscountStrategy;
@@ -199,7 +200,7 @@ public class CouponService {
 		DetailProgramResponse program = getDetailProgramResponse(programId, programDate);
 
 		// 3,4 : 쿠폰-프로그램 간 사용 가능 여부와 쿠폰 상태 검증
-		coupon.checkUsable(program.type());
+		coupon.checkUsable(program.type().name());
 
 		// 5. 할인 금액 계산 정책 지정
 		int discountValue = coupon.getValue().intValue();
@@ -220,22 +221,15 @@ public class CouponService {
 		return new CouponUseResponseDto("SUCCESS", "쿠폰이 사용되었습니다.", finalPrice);
 	}
 
-
 	private DetailProgramResponse getDetailProgramResponse(UUID programId, LocalDate programDate) {
+		ApiResponse<DetailProgramResponse> programResponse = programFeignClient.getProgram(programId);
 
-        return new DetailProgramResponse(UUID.fromString("50bd166c-764e-4fb7-9616-652106f6dcf1"), "TEMPLE_STAY", 1000, null);
+		if (programResponse == null || programResponse.data() == null) {
+			throw new IllegalStateException("프로그램 정보를 가져올 수 없습니다.");
+		}
+
+        return programResponse.data();
 	}
-
-//
-//	private DetailProgramResponse getDetailProgramResponse(UUID programId, LocalDate programDate) {
-//		ApiResponse<DetailProgramResponse> programResponse = programFeignClient.getProgram(programId, programDate);
-//
-//		if (programResponse == null || programResponse.data() == null) {
-//			throw new IllegalStateException("프로그램 정보를 가져올 수 없습니다.");
-//		}
-//
-//        return programResponse.data();
-//	}
 
 	private Coupon getCoupon(UUID couponId) {
 		return couponRepository.findById(couponId)
