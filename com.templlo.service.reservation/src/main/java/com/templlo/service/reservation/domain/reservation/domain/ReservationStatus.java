@@ -5,5 +5,9 @@ public enum ReservationStatus {
     COMPLETED,
     FAILED,
     CANCELED,
-    REJECTED
+    REJECTED,
+    PROCESSING_CANCEL,
+    PROCESSING_REJECT,
+    CANCEL_FAILED,
+    REJECT_FAILED
 }
