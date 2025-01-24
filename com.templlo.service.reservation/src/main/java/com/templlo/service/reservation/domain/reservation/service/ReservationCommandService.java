@@ -3,6 +3,7 @@ package com.templlo.service.reservation.domain.reservation.service;
 import com.google.gson.Gson;
 import com.templlo.service.reservation.domain.reservation.client.ProgramClient;
 import com.templlo.service.reservation.domain.reservation.client.PromotionClient;
+import com.templlo.service.reservation.domain.reservation.client.TempleClient;
 import com.templlo.service.reservation.domain.reservation.client.UserClient;
 import com.templlo.service.reservation.domain.reservation.client.model.request.UseCouponReq;
 import com.templlo.service.reservation.domain.reservation.client.model.response.DetailProgramRes;
@@ -22,8 +23,11 @@ import com.templlo.service.reservation.domain.reservation.service.model.produce.
 import com.templlo.service.reservation.domain.reservation.service.model.produce.ReservationOpenType;
 import com.templlo.service.reservation.global.common.exception.BaseException;
 import com.templlo.service.reservation.global.common.response.BasicStatusCode;
+import com.templlo.service.reservation.global.security.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +48,7 @@ public class ReservationCommandService {
     private final PromotionClient promotionClient;
     private final Gson gson; // TODO : KafkaTemplate 새로 만들어서 처리하기
     private final ProgramClient programClient;
+    private final TempleClient templeClient;
 
     // TODO : 함수의 책임, 트랜잭션에 대해 생각
     public CreateReservationRes createReservation(CreateReservationReq requestDto, String userId) {
@@ -84,7 +89,7 @@ public class ReservationCommandService {
 
     public CancelReservationRes cancelReservation(UUID reservationId, String userId) {
         Reservation reservation = getReservation(reservationId);
-        checkUser(userId, reservation);
+        checkCancelUser(userId, reservation);
 
         reservation.updateStatusProcessingCancel();
         Reservation savedReservation = reservationRepository.save(reservation);
@@ -96,7 +101,8 @@ public class ReservationCommandService {
 
     public RejectReservationRes rejectReservation(UUID reservationId, String userId) {
         Reservation reservation = getReservation(reservationId);
-        checkUser(userId, reservation);
+
+        checkRoleForTemple(reservation);
 
         reservation.updateStatusProcessingReject();
         Reservation savedReservation = reservationRepository.save(reservation);
@@ -106,7 +112,35 @@ public class ReservationCommandService {
         return RejectReservationRes.from(savedReservation);
     }
 
+    private void checkRoleForTemple(Reservation reservation) {
+        String role = getRole();
+        if(role.equals(UserRole.TEMPLE_ADMIN.name())) {
+            UUID templeId = getTempleOfProgram(reservation.getProgramId());
+            checkTempleOwnership(templeId);
+        }
+        // MASTER 면 그냥 허용
+    }
 
+    private String getRole() {
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .findFirst()
+                .orElseThrow();
+    }
+
+    private void checkTempleOwnership(UUID templeId) {
+        try{
+            templeClient.checkTempleOwnership(templeId);
+        } catch (Exception e) {
+            throw new ReservationException(ReservationStatusCode.NOT_TEMPLE_OWNER);
+        }
+    }
+
+    private UUID getTempleOfProgram(UUID programId) {
+        ProgramServiceWrapperRes<DetailProgramRes> programRes = programClient.getProgram(programId);
+        DetailProgramRes detailProgramRes = programRes.data();
+        return detailProgramRes.templeId();
+    }
 
 
     private void produceReservationCreatedMessage(Reservation savedReservation, int amount, ReservationOpenType openType) {
@@ -120,7 +154,7 @@ public class ReservationCommandService {
     }
 
 
-    private void checkUser(String userId, Reservation reservation) {
+    private void checkCancelUser(String userId, Reservation reservation) {
         UUID userUUID = userClient.getUser(userId).data().id();
 
         if(!reservation.getUserId().equals(userUUID)) {
