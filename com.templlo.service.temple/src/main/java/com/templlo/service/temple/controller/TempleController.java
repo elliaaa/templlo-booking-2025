@@ -7,6 +7,7 @@ import com.templlo.service.temple.common.security.UserDetailsImpl;
 import com.templlo.service.temple.dto.CreateTempleRequest;
 import com.templlo.service.temple.dto.TempleResponse;
 import com.templlo.service.temple.dto.UpdateTempleRequest;
+import com.templlo.service.temple.external.dto.UserData;
 import com.templlo.service.temple.service.elasticsearch.TempleSearchService;
 import com.templlo.service.temple.service.TempleService;
 import org.springframework.data.domain.Pageable;
@@ -59,10 +60,11 @@ public class TempleController {
 
     @PreAuthorize("hasAuthority('TEMPLE_ADMIN')")
     @GetMapping("/{templeId}/validate-admin")
-    public ResponseEntity<ApiResponse<Void>> checkTempleOwnership(@PathVariable UUID templeId,
-                                                                  @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        templeService.validateTempleAdmin(templeId, userDetails.getLoginId());
-        return ResponseEntity.ok(ApiResponse.of(BasicStatusCode.OK, null));
+    public ResponseEntity<ApiResponse<UserData>> checkTempleOwnership(
+            @PathVariable UUID templeId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        UserData userData = templeService.validateTempleAdmin(templeId, userDetails.getLoginId());
+        return ResponseEntity.ok(ApiResponse.ofSuccess(userData)); // 관리자 정보 포함 응답
     }
 
 
