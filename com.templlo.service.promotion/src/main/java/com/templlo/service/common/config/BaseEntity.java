@@ -28,7 +28,7 @@ public abstract class BaseEntity {
 
 	@LastModifiedDate
 	@Column(nullable = false)
-	private LocalDateTime updatedAt;
+	protected LocalDateTime updatedAt;
 
 	@LastModifiedBy
 	@Column(nullable = false)
