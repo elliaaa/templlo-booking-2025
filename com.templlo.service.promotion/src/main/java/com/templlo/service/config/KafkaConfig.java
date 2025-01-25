@@ -23,6 +23,7 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.templlo.service.coupon.dto.CouponIssueRequestDto;
+import com.templlo.service.kafka.dto.ReservationCreatedEvent;
 
 @EnableKafka
 @Configuration
@@ -86,6 +87,27 @@ public class KafkaConfig {
 	@Bean
 	public KafkaTemplate<String, Object> kafkaTemplate() {
 		return new KafkaTemplate<>(producerFactory());
+	}
+
+	@Bean
+	public ConsumerFactory<String, ReservationCreatedEvent> reservationConsumerFactory() {
+		Map<String, Object> props = new HashMap<>();
+		props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+		props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+		props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
+		props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "com.templlo.service.kafka.dto.ReservationCreatedEvent");
+		return new DefaultKafkaConsumerFactory<>(props);
+	}
+
+	@Bean
+	public ConcurrentKafkaListenerContainerFactory<String, ReservationCreatedEvent> reservationKafkaListenerContainerFactory() {
+		ConcurrentKafkaListenerContainerFactory<String, ReservationCreatedEvent> factory =
+			new ConcurrentKafkaListenerContainerFactory<>();
+		factory.setConsumerFactory(reservationConsumerFactory());
+		factory.setConcurrency(10); // 필요한 경우 조정
+		factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
+		return factory;
 	}
 
 }
