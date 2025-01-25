@@ -1,4 +1,4 @@
-@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3Mzc3MDc1MDEsImV4cCI6MTczNzcwOTMwMSwibG9naW5JZCI6InRlc3QxMjM0Iiwicm9sZSI6Ik1FTUJFUiIsInR5cGUiOiJhY2Nlc3MifQ.nzwzfvsc2FWkdNNZLGeoCwJLz3z6uErFH0gW5oPQLL8
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3Mzc3OTcxMTcsImV4cCI6MTczNzc5ODkxNywibG9naW5JZCI6InRlc3QxMjM0Iiwicm9sZSI6Ik1FTUJFUiIsInR5cGUiOiJhY2Nlc3MifQ.ztxy9XfGYcHw7R6BoIInpLIKXWzzLc39paEzSZPoSxA
 @accessTokenTemple = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzY1ODMzMDgsImV4cCI6MTczNjU4NTEwOCwibG9naW5JZCI6ImFkbWluMTAwMCIsInJvbGUiOiJURU1QTEVfQURNSU4iLCJ0eXBlIjoiYWNjZXNzIn0.-4k5vrjKec7RDZADPAwJ-_dGk1m9Ze8mM5hqv-zq5Vw
 @promotionId = 20455a70-7c75-46c0-a87d-65baeb19b20e
 @reservationId = c0a87b75-9491-1aee-8194-914e60d40000
@@ -15,11 +15,32 @@ Content-Type: application/json
 #X-Token: token value something
 
 {
-  "userId": "e33f0f5e-4d17-4d32-a5a5-5c2e448c5111",
-  "programId": "50bd166c-764e-4fb7-9616-652106f6dcf1",
+  "userId": "85491e4b-8290-44b0-9d73-c657f62ffeb6",
+  "programId": "70114609-a92d-4742-b9da-3458bbba6c4f",
   "programDate": "2025-01-30",
   "couponUsedType": "USED",
-  "couponId": "e991fda3-c17c-4f86-bd5f-a11220850db8",
+  "couponId": "7ca1332d-2917-42bc-9311-3f59a955e830",
+  "name": "고냥이",
+  "phoneNumber": "010-333-7777",
+  "gender": "FEMALE",
+  "paymentType": "NO_PAY",
+  "paymentStatus": "COMPLETED"
+}
+
+### 쿠폰 안 쓰고 createReservation
+POST http://localhost:19091/api/reservations
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+#X-Login-Id: tempUserId77
+#X-User-Role: MEMBER
+#X-Token: token value something
+
+{
+  "userId": "85491e4b-8290-44b0-9d73-c657f62ffeb6",
+  "programId": "70114609-a92d-4742-b9da-3458bbba6c4f",
+  "programDate": "2025-01-30",
+  "couponUsedType": "NOT_USED",
+  "couponId": "7ca1332d-2917-42bc-9311-3f59a955e830",
   "name": "고냥이",
   "phoneNumber": "010-333-7777",
   "gender": "FEMALE",

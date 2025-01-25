@@ -1,8 +1,8 @@
-@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3Mzc2MzQ5MjUsImV4cCI6MTczNzYzNjcyNSwibG9naW5JZCI6InRlc3QxMjM0Iiwicm9sZSI6Ik1FTUJFUiIsInR5cGUiOiJhY2Nlc3MifQ.2ussJ5NmZuQBXunE_vLazoftJN2-OGoAEyaDNYnDy3E
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3Mzc3OTQ2MDEsImV4cCI6MTczNzc5NjQwMSwibG9naW5JZCI6InRlc3QxMjM0Iiwicm9sZSI6Ik1FTUJFUiIsInR5cGUiOiJhY2Nlc3MifQ.W1FXo833NNP_S6iuwiNrlU84UdhVK0tJbZEdkh4FijI
 @page = 0
 @size = 10
 @sortBy = createdAt
-@promotionId = 4c95ef6e-2d2e-4901-9bd5-074dc7e297ee
+@promotionId = 0ee35737-41ef-4239-9292-de4559af947d
 @couponId = e235655c-15ea-45ed-885b-cc61ea60f59f
 @toUserId = 641d428e-797b-4bae-a9e6-855ee07a8fdb
 
@@ -110,8 +110,8 @@ Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 {
-  "programId" : "50bd166c-764e-4fb7-9616-652106f6dcf1",
-  "programDate" : "2025-01-30"
+  "programId": "50bd166c-764e-4fb7-9616-652106f6dcf1",
+  "programDate": "2025-01-30"
 }
 
 
