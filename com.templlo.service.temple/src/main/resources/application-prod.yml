@@ -23,6 +23,8 @@ spring:
 
     elasticsearch:
       host: ${ELASTICSEARCH_URL}
+      username: ${ELASTICSEARCH_USERNAME}
+      password: ${ELASTICSEARCH_PASSWORD}
       repositories:
         enabled: true
   jpa:
