@@ -5,12 +5,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import com.templlo.service.common.exception.BaseException;
-import com.templlo.service.common.response.ApiResponse;
-import com.templlo.service.common.response.BasicStatusCode;
-import com.templlo.service.coupon.strategy.AmountDiscount;
-import com.templlo.service.coupon.strategy.DiscountStrategy;
-import com.templlo.service.coupon.strategy.PercentDiscount;
 import org.redisson.api.RedissonClient;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -27,6 +21,9 @@ import com.templlo.service.common.aop.DistributedLock;
 import com.templlo.service.common.aop.OutboxPublisher;
 import com.templlo.service.common.client.ProgramFeignClient;
 import com.templlo.service.common.dto.DetailProgramResponse;
+import com.templlo.service.common.exception.BaseException;
+import com.templlo.service.common.response.ApiResponse;
+import com.templlo.service.common.response.BasicStatusCode;
 import com.templlo.service.coupon.dto.CouponDeleteResponseDto;
 import com.templlo.service.coupon.dto.CouponIssueResponseDto;
 import com.templlo.service.coupon.dto.CouponStatusResponseDto;
@@ -38,6 +35,9 @@ import com.templlo.service.coupon.dto.CouponValidationResponseDto;
 import com.templlo.service.coupon.entity.Coupon;
 import com.templlo.service.coupon.helper.RedisPromotionHelper;
 import com.templlo.service.coupon.repository.CouponRepository;
+import com.templlo.service.coupon.strategy.AmountDiscount;
+import com.templlo.service.coupon.strategy.DiscountStrategy;
+import com.templlo.service.coupon.strategy.PercentDiscount;
 import com.templlo.service.kafka.KafkaProducerService;
 import com.templlo.service.outbox.repository.OutboxRepository;
 import com.templlo.service.promotion.entity.Promotion;
@@ -192,20 +192,19 @@ public class CouponService {
 	}
 
 	@Transactional
-	public CouponUseResponseDto useCoupon(UUID couponId, UUID programId, LocalDate programDate) {
+	public CouponUseResponseDto calculateCouponDiscount(UUID couponId, UUID programId, LocalDate programDate) {
 		// 1. 쿠폰 조회
 		Coupon coupon = getCoupon(couponId);
 
 		// 2. 프로그램 정보 조회 (Feign Client 사용)
 		DetailProgramResponse program = getDetailProgramResponse(programId, programDate);
 
-		// 3,4 : 쿠폰-프로그램 간 사용 가능 여부와 쿠폰 상태 검증
+		// 3. 쿠폰-프로그램 간 사용 가능 여부와 상태 검증
 		coupon.checkUsable(program.type().name());
 
-		// 5. 할인 금액 계산 정책 지정
+		// 4. 할인 금액 계산 정책 지정
 		int discountValue = coupon.getValue().intValue();
-		log.info("coupon.getDiscountType() = {}", coupon.getDiscountType());
-		DiscountStrategy discountStrategy = switch (coupon.getDiscountType()) { // ??
+		DiscountStrategy discountStrategy = switch (coupon.getDiscountType()) {
 			case "PERCENTAGE" -> new PercentDiscount(discountValue);
 			case "AMOUNT" -> new AmountDiscount(discountValue);
 			default -> throw new BaseException(BasicStatusCode.INTERNAL_SERVER_ERROR);
@@ -214,11 +213,49 @@ public class CouponService {
 		// 할인 금액 계산
 		int finalPrice = discountStrategy.getDiscountPrice(program.programFee());
 
-		// 6. 쿠폰 상태 업데이트
+		// 5. 최종 응답 생성
+		return new CouponUseResponseDto("SUCCESS", "할인 금액이 계산되었습니다.", finalPrice);
+	}
+
+	@Transactional
+	public CouponUseResponseDto useCoupon(UUID couponId, UUID programId, LocalDate programDate) {
+		// 1. 쿠폰 조회 및 상태 확인
+		Coupon coupon = getCoupon(couponId);
+
+		// 2. 프로그램 정보 조회
+		DetailProgramResponse program = getDetailProgramResponse(programId, programDate);
+
+		// 3. 쿠폰-프로그램 간 사용 가능 여부와 상태 검증
+		coupon.checkUsable(program.type().name());
+
+		// 4. 할인 금액 계산 (별도 메서드 호출)
+		int finalPrice = calculateDiscountPrice(coupon, program.programFee());
+
+		// 5. 쿠폰 상태 업데이트
 		coupon.updateStatus("USED");
+		couponRepository.save(coupon);
+
+		// 6. UserCoupon 상태 업데이트
+		UserCoupon userCoupon = userCouponRepository.findByCouponId(couponId)
+			.orElseThrow(() -> new IllegalArgumentException("UserCoupon 엔티티를 찾을 수 없습니다."));
+		userCoupon = userCoupon.toBuilder()
+			.status("USED")
+			.updatedAt(LocalDateTime.now())
+			.build();
+		userCouponRepository.save(userCoupon);
 
 		// 7. 응답 생성
 		return new CouponUseResponseDto("SUCCESS", "쿠폰이 사용되었습니다.", finalPrice);
+	}
+
+	private int calculateDiscountPrice(Coupon coupon, int originalPrice) {
+		int discountValue = coupon.getValue().intValue();
+		DiscountStrategy discountStrategy = switch (coupon.getDiscountType()) {
+			case "PERCENTAGE" -> new PercentDiscount(discountValue);
+			case "AMOUNT" -> new AmountDiscount(discountValue);
+			default -> throw new BaseException(BasicStatusCode.INTERNAL_SERVER_ERROR);
+		};
+		return discountStrategy.getDiscountPrice(originalPrice);
 	}
 
 	private DetailProgramResponse getDetailProgramResponse(UUID programId, LocalDate programDate) {
@@ -228,12 +265,12 @@ public class CouponService {
 			throw new IllegalStateException("프로그램 정보를 가져올 수 없습니다.");
 		}
 
-        return programResponse.data();
+		return programResponse.data();
 	}
 
 	private Coupon getCoupon(UUID couponId) {
 		return couponRepository.findById(couponId)
-				.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 쿠폰 ID입니다."));
+			.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 쿠폰 ID입니다."));
 	}
 
 	@Transactional
