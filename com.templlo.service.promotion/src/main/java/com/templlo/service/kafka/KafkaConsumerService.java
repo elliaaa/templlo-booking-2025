@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.templlo.service.coupon.dto.CouponIssueRequestDto;
-import com.templlo.service.coupon.dto.CouponUseResponseDto;
 import com.templlo.service.coupon.dto.TicketApplyRequestDto;
 import com.templlo.service.coupon.entity.Coupon;
 import com.templlo.service.coupon.repository.CouponRepository;
@@ -213,33 +212,38 @@ public class KafkaConsumerService {
 	/**
 	 * 예약 신청 메시지 처리 (쿠폰 사용 처리)
 	 */
-	@KafkaListener(topics = "reservation-created", groupId = "reservation-created-coupon")
-	public void handleReservationCreated(String message, Acknowledgment acknowledgment) {
+	@KafkaListener(
+		topics = "reservation-created",
+		groupId = "reservation-created-coupon",
+		containerFactory = "reservationKafkaListenerContainerFactory"
+	)
+	public void handleReservationCreated(ReservationCreatedEvent event, Acknowledgment acknowledgment) {
 		try {
-			log.info("예약 신청 이벤트 수신: {}", message);
+			log.info("예약 신청 이벤트 수신: {}", event);
 
-			// 메시지 역직렬화
-			ReservationCreatedEvent event = objectMapper.readValue(message, ReservationCreatedEvent.class);
+			if ("USED".equals(event.couponUsedType())) {
+				log.info("쿠폰 사용 상태 업데이트 시작 - CouponId: {}", event.couponId());
 
-			// 쿠폰 사용 처리
-			CouponUseResponseDto response = couponService.useCoupon(
-				UUID.fromString(event.couponId()),
-				UUID.fromString(event.programId()),
-				event.programDate()
-			);
+				// 쿠폰 상태 업데이트
+				Coupon coupon = couponRepository.findById(UUID.fromString(event.couponId()))
+					.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 쿠폰 ID입니다."));
+				coupon.updateStatus("USED");
+				couponRepository.save(coupon);
+				log.info("쿠폰 상태 업데이트 완료 - CouponId: {}", event.couponId());
 
-			if ("SUCCESS".equals(response.status())) {
-				log.info("쿠폰 사용 성공: CouponId={}, FinalPrice={}", event.couponId(), response.finalPrice());
+				// UserCoupon 상태 업데이트
+				UserCoupon userCoupon = userCouponRepository.findByCouponId(UUID.fromString(event.couponId()))
+					.orElseThrow(() -> new IllegalArgumentException("UserCoupon 엔티티를 찾을 수 없습니다."));
+				userCoupon.useCoupon();
+				userCouponRepository.save(userCoupon);
+				log.info("UserCoupon 상태 업데이트 완료 - CouponId: {}", event.couponId());
 			} else {
-				log.warn("쿠폰 사용 실패: CouponId={}, Reason={}", event.couponId(), response.message());
+				log.info("쿠폰 사용 처리가 필요하지 않음: CouponUsedType={}", event.couponUsedType());
 			}
 
-			// Kafka 메시지 확인 (ACK)
 			acknowledgment.acknowledge();
-
 		} catch (Exception e) {
 			log.error("예약 신청 메시지 처리 중 오류 발생: {}", e.getMessage(), e);
-			// 예외 발생 시 메시지를 다시 처리할 수 있도록 Ack를 호출하지 않음
 		}
 	}
 
