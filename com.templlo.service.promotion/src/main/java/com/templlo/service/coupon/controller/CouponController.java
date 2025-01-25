@@ -58,7 +58,7 @@ public class CouponController {
 
 			UUID promotionUUID = UUID.fromString(promotionId);
 
-			// Feign Client를 사용하여 사용자 정보 확인 (이미 존재하는 코드)
+			// Feign Client를 사용하여 사용자 정보 확인
 			ApiResponse<UserResponse> userApiResponse = userFeignClient.getUserByLoginId(loginId);
 
 			if (userApiResponse == null || userApiResponse.data() == null) {
@@ -68,7 +68,7 @@ public class CouponController {
 			UserResponse user = userApiResponse.data();
 			UUID userUUID = user.id();
 
-			// 쿠폰 발급 처리 (loginId를 전달)
+			// 쿠폰 발급 처리
 			CouponIssueResponseDto response = couponService.issueCoupon(promotionUUID, gender, userUUID, loginId);
 
 			return ResponseEntity.ok(ApiResponse.of(BasicStatusCode.OK, response));
@@ -101,12 +101,15 @@ public class CouponController {
 		return ResponseEntity.ok(response);
 	}
 
+	@PreAuthorize("hasAnyAuthority('MEMBER', 'TEMPLE_ADMIN', 'MASTER')")
 	@PostMapping("/{couponId}/use")
-	public ResponseEntity<CouponUseResponseDto> useCoupon(
+	public ResponseEntity<CouponUseResponseDto> calculateCouponDiscount(
 		@PathVariable UUID couponId,
 		@RequestBody CouponUseRequestDto request
 	) {
-		CouponUseResponseDto response = couponService.useCoupon(couponId, request.programId(), request.programDate());
+		CouponUseResponseDto response = couponService.calculateCouponDiscount(
+			couponId, request.programId(), request.programDate()
+		);
 		return ResponseEntity.ok(response);
 	}
 
