@@ -63,7 +63,7 @@ public class UserCoupon extends BaseEntity {
 	@Builder(toBuilder = true)
 	public UserCoupon(UUID userId, String userLoginId, Coupon coupon, String status, LocalDateTime issuedAt,
 		LocalDateTime usedAt, LocalDateTime transferredAt, UUID fromUserId, UUID toUserId, String createdBy,
-		String updatedBy) {
+		String updatedBy, LocalDateTime updatedAt) { // updatedAt 추가
 		this.userId = userId;
 		this.userLoginId = userLoginId;
 		this.coupon = coupon;
@@ -75,6 +75,7 @@ public class UserCoupon extends BaseEntity {
 		this.toUserId = toUserId;
 		this.createdBy = createdBy;
 		this.updatedBy = updatedBy;
+		this.updatedAt = updatedAt;
 	}
 
 	// 쿠폰 사용 메서드
