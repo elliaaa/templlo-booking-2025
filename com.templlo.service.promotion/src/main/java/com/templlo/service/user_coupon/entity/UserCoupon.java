@@ -96,4 +96,9 @@ public class UserCoupon extends BaseEntity {
 		this.toUserId = toUserId;
 	}
 
+	// 예약 처리 실패 시 쿠폰 리셋
+	public void resetCoupon() {
+		this.status = "UNUSED";
+		this.usedAt = null;
+	}
 }
