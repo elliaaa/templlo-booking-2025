@@ -3,7 +3,7 @@
 ## 📋 개요
 | 분류       | 내용                                                                                              |
 |------------|---------------------------------------------------------------------------------------------------|
-| 주제       | 나는 절로 - 자연과 음식에 취하고 새 인연을 만나는 템플 스테이                                                  |
+| 주제       | 나는 절로 - 실시간 템플 스테이 예약 시스템                                                  |
 | 개발 기간  | 2024.12.26 ~ 2025.01.26                                                                            |
 | ERD        | [ERD Cloud 링크](https://www.erdcloud.com/d/YBvebiBbk6LjsEBCu)                                  |
 | API 명세서 | [Notion 링크](https://www.notion.so/teamsparta/API-28a4059cc855459ab9cd510607efa318)       |
@@ -20,26 +20,19 @@
 |[<img width="96" src="https://github.com/user-attachments/assets/b9e6b450-5d75-4ce1-a703-6a2d21938d15"> <br> @jeeheaG](https://github.com/jeeheaG)|[<image width="102" src="https://github.com/user-attachments/assets/723a80ff-a5ed-4b9f-a621-eab8feb0397c"><br> @soo1e](https://github.com/soo1e)|[<img width="99" src="https://github.com/user-attachments/assets/8cd15873-6e07-4d3c-a3c7-524d1c7603e3"> <br>@jhbreeze](https://github.com/jhbreeze)|[<img width="98" src="https://github.com/user-attachments/assets/8b496f9a-c48f-4ae9-ba30-dc88ce1912b4"> <br>@elliaaa](https://github.com/elliaaa)|[<img width="100" src="https://github.com/user-attachments/assets/8b780871-6d98-4302-baaa-1428ba9ab59a"> <br>@hyeririjeon](https://github.com/hyeririjeon)|
 </div>
 
+---
+
 ## 📌 프로그램 개요
 ### 프로젝트 소개
-- **프로젝트명**:TempLLO
-- **설명**:"TempLLO"는 자연과 음식에 취하며 템플 스테이의 편안함을 느낄 수 있는 플랫폼이다.
-  기본 템플 스테이 예약 시스템 외에도 이벤트성 소개팅 서비스를 통해 색다른 경험을 제공한다.
-  대규모 예약 시스템과 동시성 제어를 구현하여 사용자가 원활한 예약 경험을 누릴 수 있도록 설계되었다. 
-- **특징**:
+- **프로젝트명**: TempLLO
+- "TempLLO"는 자연 속에서 편안한 휴식을 제공하는 템플 스테이 플랫폼입니다. 
+  기본 템플 스테이 예약 시스템 외에도 이벤트성 소개팅 서비스를 제공하여 특별한 경험을 선사합니다.
+  MSA 기반 실시간 예약 시스템을 통해 사용자에게 편리하고 매끄러운 예약 경험을 제공합니다. 
 
 ### 프로젝트 목표
 - 목표 1: 대량의 예약 요청과 트래픽 폭주 상황에서도 안정성과 효율성을 유지.
 - 목표 2: 동시성 제어 및 대규모 트래픽 처리를 중점적으로 구현.
 - 목표 3: 성수기 및 이벤트 상황에서도 최적화된 사용자 경험 제공.
-
-
-### 🛠️ 서비스 기능 정의 및 우선 순위
-1. **예약 시스템**: 예약 가능한 프로그램 목록 제공 및 실시간 예약 상태 확인.
-2. **대기열 관리**: 예약 인원이 초과된 경우 대기자 등록 및 취소 발생 시 대기열 순서에 따라 관리.
-3. **선착순 신청권 시스템**: 인기 프로그램 및 사찰에 대한 우선 신청권 발급 및 관리.
-4. **사용자 및 프로그램 관리**: 후기 작성 및 평가 기능 포함.
-5. **사찰 소개 및 관리**: 사찰 정보 제공 및 관리 기능.
 
 ---
 
@@ -59,34 +52,33 @@
 
 ---
 
-## 🛠 기술 스택 - 수정 필요
+## 🛠 기술 스택
 <a href="버튼을 눌렀을 때 이동할 링크" target="_blank">
-<img src="https://img.shields.io/badge/Spring boot-6DB33F?style=flat-square&logo=Spring boot&logoColor=white">
-<img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=Docker&logoColor=white">
-<img src="https://img.shields.io/badge/Jenkins-D24939?style=flat-square&logo=Jenkins&logoColor=white">
-<img src="https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=Redis&logoColor=white">
-<img src="https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=MySQL&logoColor=white">
-<img src="https://img.shields.io/badge/JUint5-25A162?style=flat-square&logo=JUnit5&logoColor=white">
-<br/>
-<img src="https://img.shields.io/badge/Amazon EC2-FF9900?style=flat-square&logo=Amazon EC2&logoColor=white">
-<img src="https://img.shields.io/badge/Amazon RDS-527FFF?style=flat-square&logo=Amazon RDS&logoColor=white">
-<img src="https://img.shields.io/badge/Amazon S3-569A31?style=flat-square&logo=Amazon S3&logoColor=white">
+<img src="https://img.shields.io/badge/Spring%20boot-6DB33F?style=for-the-badge&logo=Spring%20boot&logoColor=white">
+<img src="https://img.shields.io/badge/Spring%20Data%20JPA-6DB33F?style=for-the-badge&logoColor=white">
+<img src="https://img.shields.io/badge/QueryDSL-0769AD?style=for-the-badge&logo=querydsl&logoColor=white">
+<img src="https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white">
+<img src="https://img.shields.io/badge/Gradle-02303A.svg?style=for-the-badge&logo=Gradle&logoColor=white">
+<img src="https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white">
+<img src="https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white">
+<img src="https://img.shields.io/badge/elasticsearch-%230377CC.svg?style=for-the-badge&logo=elasticsearch&logoColor=white">
+<img src="https://img.shields.io/badge/Kibana-005571?style=for-the-badge&logo=Kibana&logoColor=white">
+<img src="https://img.shields.io/badge/Apache%20Kafka-000?style=for-the-badge&logo=apachekafka">
+<img src="https://img.shields.io/badge/JWT-pink?style=for-the-badge&logo=JSON%20web%20tokens">
+<img src="https://img.shields.io/badge/Spring%20Security-6DB33F?style=for-the-badge&logo=Spring%20Security&logoColor=white">
+<img src="https://img.shields.io/badge/JUnit5-25A162?style=for-the-badge&logo=junit5&logoColor=white">
+<img src="https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white">
+<img src="https://img.shields.io/badge/AWS ECR-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white">
+<img src="https://img.shields.io/badge/Amazon%20ECS-FF9900?style=for-the-badge&logo=Amazon%20ECS&logoColor=white">
+<img src="https://img.shields.io/badge/Amazon%20RDS-527FFF?style=for-the-badge&logo=Amazon%20RDS&logoColor=white">
+<img src="https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white">
+<img src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white">
 </a>
 <br/><br/>
 
-* Others
-    - Spring Security & JWT
-    - Spring Rest Docs & JUnit
-    - Hibernate Bean Validator
-    - Data JPA
-    - Lombok
-    - Slf4j
-
 
 ---
-# 📚 프로젝트 협업 규칙 및 컨벤션
-
----
+## 📚 프로젝트 협업 규칙 및 컨벤션
 
 <details>
 <summary>🪷 협업 규칙</summary>
@@ -119,7 +111,6 @@
 
 </details>
 
----
 
 <details>
 <summary>🪷 Git 컨벤션</summary>
@@ -161,7 +152,6 @@
 
 </details>
 
----
 
 <details>
 <summary>🪷 코드 컨벤션</summary>
@@ -265,6 +255,7 @@
 - **토큰 위조 방지:** Access Token과 Refresh Token을 활용한 다중 토큰 발급으로 보안성 확보
 - **Refresh Token Rotate:** Refresh Token이 사용될 때마다 새롭게 발급하고 이전 토큰 무효화하여 탈취 위험 최소화
 - **실시간 토큰 BlackList 관리:** 만료된 토큰 및 로그아웃된 토큰 실시간으로 무효화하여 악의적 접근 차단
+  
 ---
 
 ## 📌 기술적 의사결정
