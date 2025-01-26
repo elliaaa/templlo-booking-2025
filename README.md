@@ -8,18 +8,18 @@
 | 개발 기간  | 2024.12.26 ~ 2025.01.26                                                                            |
 | ERD        | [ERD Cloud 링크](https://www.erdcloud.com/d/YBvebiBbk6LjsEBCu)                                  |
 | API 명세서 | [Notion 링크](https://www.notion.so/teamsparta/API-28a4059cc855459ab9cd510607efa318)       |
-| API 시나리오 명세서 | [Link]()                                                                                 |
-| 배포 링크  | [Link]() |
+| API 시나리오 명세서 | [Link](https://www.notion.so/teamsparta/739599d6c7d54c3ba42fffcf1b966c2a)                                                                                 |
+| 배포 링크  | [Link](http://3.34.141.202:19091) |
 
 <br>
 
 ## 팀원 구성
 <div align="center">
 
-| 박지혜 | 채수원 | 안재희 | 장윤지 | 전혜리 | 
+| 박지혜 `팀장` | 채수원 `부팀장` | 안재희 | 장윤지 | 전혜리 | 
 | :------: |  :------: | :------: | :------: | :------: |
 |[<img width="96" src="https://github.com/user-attachments/assets/b9e6b450-5d75-4ce1-a703-6a2d21938d15"> <br> @jeeheaG](https://github.com/jeeheaG)|[<image width="102" src="https://github.com/user-attachments/assets/723a80ff-a5ed-4b9f-a621-eab8feb0397c"><br> @soo1e](https://github.com/soo1e)|[<img width="99" src="https://github.com/user-attachments/assets/8cd15873-6e07-4d3c-a3c7-524d1c7603e3"> <br>@jhbreeze](https://github.com/jhbreeze)|[<img width="98" src="https://github.com/user-attachments/assets/8b496f9a-c48f-4ae9-ba30-dc88ce1912b4"> <br>@elliaaa](https://github.com/elliaaa)|[<img width="100" src="https://github.com/user-attachments/assets/8b780871-6d98-4302-baaa-1428ba9ab59a"> <br>@hyeririjeon](https://github.com/hyeririjeon)|
-| `팀장` `예약` `DevOps` |  `부팀장` `프로모션` `쿠폰` |  `유저` `리뷰` `DevOps` | `사찰` | `프로그램` |
+|  `예약` `DevOps` |   `프로모션` `쿠폰` |  `유저` `리뷰` `DevOps` | `사찰` | `프로그램` |
 
 </div>
 
@@ -282,8 +282,8 @@
 <summary>1. 예약의 비동기 대기열 위치 고민</summary>
 
 - **후보**:
- 1. 예약 신청 시점 (동기)
- 2. 예약 신청 접수 후 처리 시점 (비동기)
+ 1. 예약 신청 시점에 대기열을 만들어 즉시 동기 처리 (동기)
+ 2. 예약 신청을 비동기 처리 후 추후 결과 확인 (비동기)
 - **결정**: 사용자를 앞단에서 기다리게 하기보다는 뒷단에 **비동기** 대기열을 만들어, 사용자가 추후 확인하도록 하여 사용성을 높이기로 결정.
 </details>
 
@@ -333,9 +333,5 @@
 <br>
 
 추가할 거 있으면 여기에 적어주세요!
-1. 주요 기능 토글로?
-2. 부하 테스트
-3. 성능 개선 : Before & After 수치나 이미지로 강조
-4. 기술적으로 도입하게 된 배경 + 고도화한 부분
-5. 브로셔 고치면 기술적 의사결정 1번 고치기
-6. 링크 추가
+1. 성능 개선 : Before & After 수치나 이미지로 강조
+2. 기술적으로 도입하게 된 배경 + 고도화한 부분
