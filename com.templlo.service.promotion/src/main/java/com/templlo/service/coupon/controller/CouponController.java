@@ -30,7 +30,9 @@ import com.templlo.service.coupon.dto.CouponUseResponseDto;
 import com.templlo.service.coupon.dto.CouponValidationResponseDto;
 import com.templlo.service.coupon.service.CouponService;
 import com.templlo.service.user_coupon.entity.UserCoupon;
+import com.templlo.service.user_coupon.repository.UserCouponRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,7 +43,8 @@ import lombok.extern.slf4j.Slf4j;
 public class CouponController {
 
 	private final CouponService couponService;
-	private final UserFeignClient userFeignClient; // FeignClient 추가
+	private final UserFeignClient userFeignClient;
+	private final UserCouponRepository userCouponRepository;
 
 	@PreAuthorize("hasAnyAuthority('MEMBER', 'TEMPLE_ADMIN', 'MASTER')")
 	@PostMapping("/issue")
@@ -58,7 +61,7 @@ public class CouponController {
 
 			UUID promotionUUID = UUID.fromString(promotionId);
 
-			// Feign Client를 사용하여 사용자 정보 확인 (이미 존재하는 코드)
+			// Feign Client를 사용하여 사용자 정보 확인
 			ApiResponse<UserResponse> userApiResponse = userFeignClient.getUserByLoginId(loginId);
 
 			if (userApiResponse == null || userApiResponse.data() == null) {
@@ -68,7 +71,7 @@ public class CouponController {
 			UserResponse user = userApiResponse.data();
 			UUID userUUID = user.id();
 
-			// 쿠폰 발급 처리 (loginId를 전달)
+			// 쿠폰 발급 처리
 			CouponIssueResponseDto response = couponService.issueCoupon(promotionUUID, gender, userUUID, loginId);
 
 			return ResponseEntity.ok(ApiResponse.of(BasicStatusCode.OK, response));
@@ -101,12 +104,15 @@ public class CouponController {
 		return ResponseEntity.ok(response);
 	}
 
+	@PreAuthorize("hasAnyAuthority('MEMBER', 'TEMPLE_ADMIN', 'MASTER')")
 	@PostMapping("/{couponId}/use")
-	public ResponseEntity<CouponUseResponseDto> useCoupon(
+	public ResponseEntity<CouponUseResponseDto> calculateCouponDiscount(
 		@PathVariable UUID couponId,
 		@RequestBody CouponUseRequestDto request
 	) {
-		CouponUseResponseDto response = couponService.useCoupon(couponId, request.programId(), request.programDate());
+		CouponUseResponseDto response = couponService.calculateCouponDiscount(
+			couponId, request.programId(), request.programDate()
+		);
 		return ResponseEntity.ok(response);
 	}
 
@@ -157,4 +163,15 @@ public class CouponController {
 		return ResponseEntity.ok(response);
 	}
 
+	@PreAuthorize("hasAnyAuthority('MEMBER', 'TEMPLE_ADMIN', 'MASTER')")
+	@PostMapping("/{couponId}/reset")
+	public ResponseEntity<Void> resetCoupon(@PathVariable UUID couponId) {
+		UserCoupon userCoupon = userCouponRepository.findByCouponId(couponId)
+			.orElseThrow(() -> new EntityNotFoundException("Coupon not found"));
+
+		userCoupon.resetCoupon();
+		userCouponRepository.save(userCoupon);
+
+		return ResponseEntity.ok().build();
+	}
 }
