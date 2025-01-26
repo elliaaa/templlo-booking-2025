@@ -84,7 +84,7 @@
 ## 📚 프로젝트 협업 규칙 및 컨벤션
 
 <details>
-<summary>🪷 협업 규칙</summary>
+<summary>🌺 협업 규칙</summary>
 
 ### **Ground Rules**
 
@@ -116,7 +116,7 @@
 
 
 <details>
-<summary>🪷 Git 컨벤션</summary>
+<summary>🌺 Git 컨벤션</summary>
 
 ### **커밋 메시지**
 
@@ -157,7 +157,7 @@
 
 
 <details>
-<summary>🪷 코드 컨벤션</summary>
+<summary>🌺 코드 컨벤션</summary>
 
 ### **기본 규칙**
 
@@ -221,14 +221,14 @@
 ## 🧑‍💻 적용 기술
 
 <details>
-<summary>🪷 Kafka를 통한 대용량 트래픽 처리</summary>
+<summary>🌺 Kafka를 통한 대용량 트래픽 처리</summary>
 
 - **대규모 트래픽 처리**: Kafka를 통한 이벤트 기반 비동기 처리
 - **사용자 경험 개선**: 요청이 완료될 때까지 기다릴 필요 없이, 예약 또는 쿠폰 발급 요청 후 결과를 나중에 확인할 수 있도록 처리하여 사용 편의성을 향상
 </details>
 
 <details>
-<summary>🪷 AOP 기반 분산락을 활용한 데이터 동시성 제어</summary>
+<summary>🌺 AOP 기반 분산락을 활용한 데이터 동시성 제어</summary>
 
 - **데이터 일관성 보장**: 분산 환경에서 동일 자원에 대한 동시 접근을 제한
 - **트랜잭션 충돌 방지**: 자원에 락을 설정하여 데이터 충돌 방지 및 안정적 처리 가능
@@ -236,28 +236,28 @@
 </details>
 
 <details>
-<summary>🪷 Elasticsearch (ELK)</summary>
+<summary>🌺 Elasticsearch (ELK)</summary>
 
 - **실시간 검색 및 분석**: 대규모 데이터에서 빠른 검색과 실시간 로그 분석 제공
 - **장애 모니터링**: 서비스 로그 데이터를 수집 및 시각화해 문제를 신속히 파악하고 대응
 </details>
 
 <details>
-<summary>🪷 Redis 캐시를 활용한 성능 향상</summary>
+<summary>🌺 Redis 캐시를 활용한 성능 향상</summary>
 
 - **데이터 조회 속도 향상**: 자주 조회되는 데이터를 인메모리 캐싱으로 처리하여 응답 속도 개선
 - **시스템 부하 감소**: 캐시 활용으로 데이터베이스 접근을 최소화
 </details>
 
 <details>
-<summary>🪷 Transactional Outbox Pattern을 적용하여 데이터 일관성 보장</summary>
+<summary>🌺 Transactional Outbox Pattern을 적용하여 데이터 일관성 보장</summary>
 
 - **트랜잭션 일관성 보장**: 비동기 통신에서의 데이터베이스와 메시지 브로커 간의 데이터 불일치 문제를 해결
 - **재처리 가능**: Outbox 테이블에 이벤트 저장 후 메시지 브로커(Kafka 등)로 전달, 장애 발생 시 안정적 복구 지원
 </details>
 
 <details>
-<summary>🪷 MSA 환경 Github Actions CI/CD 파이프라인 구성 </summary>
+<summary>🌺 MSA 환경 Github Actions CI/CD 파이프라인 구성 </summary>
 
 - **CI**: 빌드 및 테스트코드 실행으로 코드 품질 검증
 - **CD**: Docker 이미지 빌드 후 ECR에 업로드, 변경된 서비스 ECS에 자동 배포하여 MSA 구조의 서비스별 독립적 배포 환경 구축
@@ -266,7 +266,7 @@
 </details>
 
 <details>
-<summary>🪷 JWT 다중토큰 발급, 토큰 BlackList 관리</summary>
+<summary>🌺 JWT 다중토큰 발급, 토큰 BlackList 관리</summary>
 
 - **서버 리소스 최적화:** 세션 저장소를 사용하지 않아 서버 부하 감소
 - **토큰 위조 방지:** Access Token과 Refresh Token을 활용한 다중 토큰 발급으로 보안성 확보
