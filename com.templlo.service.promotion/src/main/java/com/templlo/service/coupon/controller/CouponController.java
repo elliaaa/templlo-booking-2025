@@ -30,7 +30,9 @@ import com.templlo.service.coupon.dto.CouponUseResponseDto;
 import com.templlo.service.coupon.dto.CouponValidationResponseDto;
 import com.templlo.service.coupon.service.CouponService;
 import com.templlo.service.user_coupon.entity.UserCoupon;
+import com.templlo.service.user_coupon.repository.UserCouponRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,7 +43,8 @@ import lombok.extern.slf4j.Slf4j;
 public class CouponController {
 
 	private final CouponService couponService;
-	private final UserFeignClient userFeignClient; // FeignClient 추가
+	private final UserFeignClient userFeignClient;
+	private final UserCouponRepository userCouponRepository;
 
 	@PreAuthorize("hasAnyAuthority('MEMBER', 'TEMPLE_ADMIN', 'MASTER')")
 	@PostMapping("/issue")
@@ -160,4 +163,15 @@ public class CouponController {
 		return ResponseEntity.ok(response);
 	}
 
+	@PreAuthorize("hasAnyAuthority('MEMBER', 'TEMPLE_ADMIN', 'MASTER')")
+	@PostMapping("/{couponId}/reset")
+	public ResponseEntity<Void> resetCoupon(@PathVariable UUID couponId) {
+		UserCoupon userCoupon = userCouponRepository.findByCouponId(couponId)
+			.orElseThrow(() -> new EntityNotFoundException("Coupon not found"));
+
+		userCoupon.resetCoupon();
+		userCouponRepository.save(userCoupon);
+
+		return ResponseEntity.ok().build();
+	}
 }
