@@ -320,17 +320,17 @@
 - **결정**: 제한된 시간안에 기획/개발/배포까지 마무리해야하기 때문에 학습 부담이 적으며 Github 저장소와 통합이 쉬운 Github Actions 채택
 </details>
 
----
+<br>
 
 ## 🛠️ 트러블슈팅
 [Wiki](https://github.com/TempLLO/templlo-booking-2025/wiki)에서 트러블 슈팅 파트 부분을 참고해주세요!
 
-----
+<br>
 
 ## ✅ 부하 테스트
 [Wiki](https://github.com/TempLLO/templlo-booking-2025/wiki)에서 부하 테스트 부분을 참고해주세요!
 
-----
+<br>
 
 추가할 거 있으면 여기에 적어주세요!
 1. 주요 기능 토글로?
