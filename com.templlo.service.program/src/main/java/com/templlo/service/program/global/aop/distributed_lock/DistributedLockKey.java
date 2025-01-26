@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum DistributedLockKey {
-    TEMPLE_STAY_PROGRAM_CAPACITY_PREFIX("temple-stay:capacity:");
+    PROGRAM_CAPACITY_PREFIX("program:capacity:");
 
     private final String keyName;
 

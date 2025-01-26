@@ -13,6 +13,6 @@ import java.util.UUID;
 public interface TempleClient {
 
     @AuthHeader
-    @GetMapping("/{templeId}/validate-admin")
+    @GetMapping("/api/temples/{templeId}/validate-admin")
     TempleServiceWrapperRes<TempleOwnerDataRes> checkTempleOwnership(@PathVariable UUID templeId);
 }

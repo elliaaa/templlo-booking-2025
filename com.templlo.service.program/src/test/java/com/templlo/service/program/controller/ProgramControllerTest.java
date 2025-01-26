@@ -8,12 +8,14 @@ import com.templlo.service.program.entity.ProgramType;
 import com.templlo.service.program.exception.ProgramStatusCode;
 import com.templlo.service.program.service.ProgramService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,6 +27,7 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -53,6 +56,7 @@ class ProgramControllerTest {
     }
 
     @Test
+    @DisplayName("프로그램 생성 테스트")
     @WithMockUser(authorities = "TEMPLE_ADMIN")
     void createProgram() throws Exception {
 
@@ -89,6 +93,7 @@ class ProgramControllerTest {
         // then
         resultActions
                 .andExpect(status().isCreated())
+                .andExpect(status().is(code.getHttpStatus().value()))
                 .andExpect(jsonPath("$.message").value(code.getMessage()));
 
     }
@@ -96,6 +101,24 @@ class ProgramControllerTest {
 
 
     @Test
-    void getProgramSchedule() {
+    @DisplayName("프로그램 조회 테스트")
+    @WithMockUser(authorities = "MEMBER")
+    void getProgramSchedule() throws Exception {
+
+        //when
+        MockHttpServletRequestBuilder requestPost = get("/api/programs")
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(csrf());
+
+        ResultActions resultActions = modMvc.perform(requestPost);
+
+        ProgramStatusCode code = ProgramStatusCode.SUCCESS_PROGRAM_READ;
+
+        // then
+        resultActions
+                .andExpect(status().is(code.getHttpStatus().value()))
+                .andExpect(jsonPath("$.message").value(code.getMessage()));
+
     }
+
 }

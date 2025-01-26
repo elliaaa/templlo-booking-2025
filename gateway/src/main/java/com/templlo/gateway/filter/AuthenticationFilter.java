@@ -48,7 +48,7 @@ public class AuthenticationFilter implements GlobalFilter {
 		String path = exchange.getRequest().getURI().getPath();
 		log.info("Request path : " + path);
 
-		if (path.equals("/api/auth/login") || path.equals("/api/users/sign-up")) {
+		if (path.equals("/api/auth/login") || path.equals("/api/users/sign-up") || path.contains("/v3/api-docs") || path.contains("/swagger-ui") ) {
 			return chain.filter(exchange);
 		}
 

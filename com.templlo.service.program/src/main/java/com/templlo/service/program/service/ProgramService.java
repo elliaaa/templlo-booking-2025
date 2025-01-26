@@ -22,6 +22,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +40,7 @@ public class ProgramService {
     private final QueryProgramRepository queryProgramRepository;
     private final JpaTempleStayDailyInfoRepository jpaTempleStayDailyInfoRepository;
     private final TempleClient templeClient;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Transactional
     public SimpleProgramResponse createProgram(CreateProgramRequest request, UserDetailsImpl userDetails) {

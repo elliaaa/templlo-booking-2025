@@ -26,7 +26,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/programs")
-public class ProgramController {
+public class ProgramController implements ProgramControllerSwagger {
 
     private final ProgramService programService;
 

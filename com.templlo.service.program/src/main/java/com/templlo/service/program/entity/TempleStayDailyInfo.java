@@ -1,5 +1,6 @@
 package com.templlo.service.program.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.templlo.service.program.auditor.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -33,6 +34,7 @@ public class TempleStayDailyInfo extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "program_id", nullable = false)
+    @JsonBackReference
     private Program program;
 
     public static TempleStayDailyInfo create(ProgramStatus programStatus, LocalDate programDate, Integer availableCapacity, Program program) {
@@ -44,8 +46,8 @@ public class TempleStayDailyInfo extends BaseEntity {
                 .build();
     }
 
-    public void reduceAvailableCapacity() {
-        this.availableCapacity -= 1;
+    public void reduceAvailableCapacity(Integer amount) {
+        this.availableCapacity -= amount;
 
         if (this.availableCapacity == 0) {
             this.status = ProgramStatus.CLOSED;
@@ -54,5 +56,12 @@ public class TempleStayDailyInfo extends BaseEntity {
 
     public void update(ProgramStatus status) {
         this.status = status;
+    }
+
+    public void increaseAvailableCapacity(Integer amount) {
+        this.availableCapacity += amount;
+        if (this.availableCapacity != 0) {
+            this.status = ProgramStatus.ACTIVE;
+        }
     }
 }
