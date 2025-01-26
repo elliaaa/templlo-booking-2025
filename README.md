@@ -19,7 +19,7 @@
 | 박지혜 | 채수원 | 안재희 | 장윤지 | 전혜리 | 
 | :------: |  :------: | :------: | :------: | :------: |
 |[<img width="96" src="https://github.com/user-attachments/assets/b9e6b450-5d75-4ce1-a703-6a2d21938d15"> <br> @jeeheaG](https://github.com/jeeheaG)|[<image width="102" src="https://github.com/user-attachments/assets/723a80ff-a5ed-4b9f-a621-eab8feb0397c"><br> @soo1e](https://github.com/soo1e)|[<img width="99" src="https://github.com/user-attachments/assets/8cd15873-6e07-4d3c-a3c7-524d1c7603e3"> <br>@jhbreeze](https://github.com/jhbreeze)|[<img width="98" src="https://github.com/user-attachments/assets/8b496f9a-c48f-4ae9-ba30-dc88ce1912b4"> <br>@elliaaa](https://github.com/elliaaa)|[<img width="100" src="https://github.com/user-attachments/assets/8b780871-6d98-4302-baaa-1428ba9ab59a"> <br>@hyeririjeon](https://github.com/hyeririjeon)|
-| `팀장` `예약` `DevOps` |  `부팀장` `프로모션` `쿠폰` |  `유저` `리뷰` `DevOps` | `프로그램` | `사찰` |
+| `팀장` `예약` `DevOps` |  `부팀장` `프로모션` `쿠폰` |  `유저` `리뷰` `DevOps` | `사찰` | `프로그램` |
 
 </div>
 
